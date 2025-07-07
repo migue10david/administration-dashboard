@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id(map: "user_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String?
+  email         String?   @unique
+  password      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  estado_activo Boolean?  @default(true)
+  accounts      Account[]
+  cheques       Cheque[]
+  sessions      Session[]
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String   @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String   @db.Uuid
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Cliente {
+  id           String   @id @default(cuid())
+  nombre       String
+  direccion    String?
+  telefono     String?
+  nacionalidad String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  cheques      Cheque[]
+}
+
+model Compania {
+  id          String   @id @default(cuid())
+  name        String
+  direccion   String?
+  telefono    String?
+  comentarios String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  cheques     Cheque[]
+}
+
+model Cheque {
+  id          String       @id @default(cuid())
+  clienteId   String
+  companiaId  String
+  fechaActual DateTime     @default(now())
+  fechaCheque DateTime
+  cantidad    Float
+  comision    Float
+  subtotal    Float
+  estado      EstadoCheque @default(PENDIENTE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  userId      String       @db.Uuid
+  cliente     Cliente      @relation(fields: [clienteId], references: [id])
+  compania    Compania     @relation(fields: [companiaId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
+}
+
+enum EstadoCheque {
+  PENDIENTE
+  PROCESADO
+}
