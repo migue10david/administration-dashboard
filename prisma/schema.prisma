@@ -57,6 +57,7 @@ model Cliente {
   direccion    String?
   telefono     String?
   nacionalidad String?
+  imageUrl     String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   cheques      Cheque[]

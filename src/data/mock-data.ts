@@ -1,3 +1,5 @@
+import { Companias } from "@/app/lib/types/modelTypes"
+
 export interface Cliente {
   id: number
   nombre: string
@@ -6,18 +8,6 @@ export interface Cliente {
   empresa: string
   fechaRegistro: string
   estado: "Activo" | "Inactivo"
-}
-
-export interface Compania {
-  id: number
-  nombre: string
-  ruc: string
-  direccion: string
-  telefono: string
-  email: string
-  sector: string
-  fechaCreacion: string
-  estado: "Activa" | "Inactiva"
 }
 
 export const clientesMock: Cliente[] = [
@@ -185,94 +175,83 @@ export const clientesMock: Cliente[] = [
   },
 ]
 
-export const companiasMock: Compania[] = [
+export const companiasMock: Companias[] = [
   {
     id: 1,
     nombre: "Tech Solutions SAC",
-    ruc: "20123456789",
     direccion: "Av. Javier Prado 1234, San Isidro",
     telefono: "+51 1 234 5678",
-    email: "contacto@techsolutions.com",
-    sector: "Tecnología",
-    fechaCreacion: "2020-05-15",
-    estado: "Activa",
+    comentarios: ""
   },
   {
     id: 2,
     nombre: "Innovate Corp EIRL",
-    ruc: "20234567890",
     direccion: "Jr. Las Flores 567, Miraflores",
     telefono: "+51 1 345 6789",
-    email: "info@innovatecorp.com",
-    sector: "Consultoría",
-    fechaCreacion: "2019-08-20",
-    estado: "Activa",
+    comentarios: ""
   },
   {
     id: 3,
     nombre: "Digital Marketing Pro SAC",
-    ruc: "20345678901",
     direccion: "Av. Arequipa 890, Lince",
     telefono: "+51 1 456 7890",
-    email: "ventas@digitalmarketing.com",
-    sector: "Marketing",
-    fechaCreacion: "2021-03-10",
-    estado: "Activa",
+    comentarios: ""
   },
   {
     id: 4,
     nombre: "Consulting Group SRL",
-    ruc: "20456789012",
     direccion: "Calle Los Olivos 123, San Borja",
     telefono: "+51 1 567 8901",
-    email: "contacto@consultinggroup.com",
-    sector: "Consultoría",
-    fechaCreacion: "2018-11-05",
-    estado: "Inactiva",
+    comentarios: ""
   },
   {
     id: 5,
     nombre: "Finance Solutions SAC",
-    ruc: "20567890123",
     direccion: "Av. El Sol 456, Surco",
     telefono: "+51 1 678 9012",
-    email: "info@financesolutions.com",
-    sector: "Finanzas",
-    fechaCreacion: "2020-01-30",
-    estado: "Activa",
+    comentarios: ""
   },
   {
     id: 6,
     nombre: "Creative Agency EIRL",
-    ruc: "20678901234",
     direccion: "Jr. Creatividad 789, Barranco",
     telefono: "+51 1 789 0123",
-    email: "hola@creativeagency.com",
-    sector: "Publicidad",
-    fechaCreacion: "2021-07-12",
-    estado: "Activa",
+    comentarios: ""
   },
   {
     id: 7,
     nombre: "Construction Ltd SAC",
-    ruc: "20789012345",
     direccion: "Av. Construcción 321, Ate",
     telefono: "+51 1 890 1234",
-    email: "proyectos@constructionltd.com",
-    sector: "Construcción",
-    fechaCreacion: "2017-09-25",
-    estado: "Activa",
+    comentarios: ""
   },
   {
     id: 8,
     nombre: "Healthcare Plus SRL",
-    ruc: "20890123456",
     direccion: "Calle Salud 654, San Miguel",
     telefono: "+51 1 901 2345",
-    email: "atencion@healthcareplus.com",
-    sector: "Salud",
-    fechaCreacion: "2019-12-08",
-    estado: "Inactiva",
+    comentarios: ""
+  },
+  {
+    id: 9,
+    nombre: "Construction Ltd SAC",
+    direccion: "Av. Construcción 321, Ate",
+    telefono: "+51 1 890 1234",
+    comentarios: ""
+  },
+  {
+    id: 10,
+    nombre: "Healthcare Plus SRL",
+    direccion: "Calle Salud 654, San Miguel",
+    telefono: "+51 1 901 2345",
+    comentarios: ""
+  },
+  {
+    id: 11,
+    nombre: "Construction Ltd SAC",
+    direccion: "Av. Construcción 321, Ate",
+    telefono: "+51 1 890 1234",
+    comentarios: ""
   },
 ]
 

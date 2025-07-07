@@ -1,7 +1,7 @@
 "use client";
 
 import type * as React from "react";
-import { Building2, FileText, Home, Users } from "lucide-react";
+import { Building2, DoorOpen, FileText, Home, Users } from "lucide-react";
 
 import {
   Sidebar,
@@ -81,11 +81,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenuItem>
               ))}
               <button
-                className="bg-gray-400 p-2 text-white "
+                className=" px-5 py-2 text-black flex gap-3 hover:shadow-lg "
                 type="submit"
                 onClick={() => signOut({ callbackUrl: "/auth/login" })}
               >
-                Salir
+                <DoorOpen/> Salir
               </button>
             </SidebarMenu>
           </SidebarGroupContent>
