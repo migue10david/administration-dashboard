@@ -20,14 +20,16 @@ export const ClienteSchema = z.object({
     .optional()
     .or(z.literal("")), // Permite string vacío
   createdAt: z.date().default(() => new Date()),
-  updatedAt: z.date()
+  updatedAt: z.date(),
+  cheques: z.array(z.string()).optional(),
 });
 
 // Esquema para crear un nuevo Cliente (omitiendo campos autogenerados)
 export const CreateClienteSchema = ClienteSchema.omit({ 
   id: true,
   createdAt: true,
-  updatedAt: true 
+  updatedAt: true,
+  cheques: true,
 }).extend({
   imageUrl: z.string().optional().default("")
 });

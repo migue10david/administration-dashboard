@@ -87,9 +87,6 @@ export async function GET(
     // Consulta base
     const query = {
       where,
-      include: { 
-        cheques: true
-      },
       skip: (pagination.page - 1) * pagination.limit,
       take: pagination.limit
     }

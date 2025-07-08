@@ -188,6 +188,7 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
                     className="w-full h-32 object-cover rounded border"
                   />
                 )}
+                {file && (
                 <button
                   type="button"
                   onClick={() => removeFile()}
@@ -195,6 +196,7 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
                 >
                   &times;
                 </button>
+                )}
               </div>
 
               {/* Botón para añadir más */}
