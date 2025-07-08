@@ -3,7 +3,30 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/app/lib/db";
 import { UpdateClienteSchema } from "@/app/lib/schemas/clientFormSchema";
-import { saveFile, deleteUploadedFile } from "../route";
+import { join } from 'path'
+import { writeFile,  unlink } from 'fs/promises'
+
+const UPLOADS_DIR = join(process.cwd(), 'public', 'uploads')
+
+// Función para guardar el archivo en el sistema
+async function saveFile(blob: Blob, fileName: string): Promise<string> {
+  const buffer = Buffer.from(await blob.arrayBuffer())
+  const filePath = join(process.cwd(), 'public', 'uploads', fileName)
+  await writeFile(filePath, buffer)
+  return `/uploads/${fileName}`
+}
+
+async function deleteUploadedFile(fileUrl: string) {
+  try {
+    const filename = fileUrl.split('/uploads/')[1]
+    if (filename) {
+      await unlink(join(UPLOADS_DIR, filename))
+    }
+  } catch (error) {
+    console.error('Error deleting file:', error)
+  }
+}
+
 
 // Obtener un juguete por ID
 export async function GET(

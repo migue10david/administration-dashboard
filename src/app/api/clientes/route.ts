@@ -3,17 +3,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { FilterSchema, PaginationSchema } from '@/app/lib/schemas/common';
 import { ClientWhereInput } from '@/app/lib/types/client';
 import { CreateClienteSchema } from '@/app/lib/schemas/clientFormSchema';
-
 import { promises as fs } from 'fs'
-import path from 'path'
-import { unlink } from 'fs/promises'
 import { join } from 'path'
-
-const UPLOADS_DIR = join(process.cwd(), 'public', 'uploads')
+import { writeFile } from 'fs/promises'
 
 // Función para asegurar que el directorio de uploads existe
 async function ensureUploadsDirExists() {
-  const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
+  const uploadsDir = join(process.cwd(), 'public', 'uploads')
   try {
     await fs.access(uploadsDir)
   } catch (error) {
@@ -23,24 +19,12 @@ async function ensureUploadsDirExists() {
 }
 
 // Función para guardar el archivo en el sistema
-export async function saveFile(blob: Blob, fileName: string): Promise<string> {
+async function saveFile(blob: Blob, fileName: string): Promise<string> {
   const buffer = Buffer.from(await blob.arrayBuffer())
-  const filePath = path.join(process.cwd(), 'public', 'uploads', fileName)
-  await fs.writeFile(filePath, buffer)
+  const filePath = join(process.cwd(), 'public', 'uploads', fileName)
+  await writeFile(filePath, buffer)
   return `/uploads/${fileName}`
 }
-
-export async function deleteUploadedFile(fileUrl: string) {
-  try {
-    const filename = fileUrl.split('/uploads/')[1]
-    if (filename) {
-      await unlink(join(UPLOADS_DIR, filename))
-    }
-  } catch (error) {
-    console.error('Error deleting file:', error)
-  }
-}
-
 
 // GET /api/clientes
 export async function GET(

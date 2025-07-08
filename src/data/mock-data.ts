@@ -1,5 +1,3 @@
-import { Companias } from "@/app/lib/types/modelTypes"
-
 export interface Cliente {
   id: number
   nombre: string
@@ -172,86 +170,6 @@ export const clientesMock: Cliente[] = [
     empresa: "Healthcare Plus",
     fechaRegistro: "2024-02-15",
     estado: "Activo",
-  },
-]
-
-export const companiasMock: Companias[] = [
-  {
-    id: 1,
-    nombre: "Tech Solutions SAC",
-    direccion: "Av. Javier Prado 1234, San Isidro",
-    telefono: "+51 1 234 5678",
-    comentarios: ""
-  },
-  {
-    id: 2,
-    nombre: "Innovate Corp EIRL",
-    direccion: "Jr. Las Flores 567, Miraflores",
-    telefono: "+51 1 345 6789",
-    comentarios: ""
-  },
-  {
-    id: 3,
-    nombre: "Digital Marketing Pro SAC",
-    direccion: "Av. Arequipa 890, Lince",
-    telefono: "+51 1 456 7890",
-    comentarios: ""
-  },
-  {
-    id: 4,
-    nombre: "Consulting Group SRL",
-    direccion: "Calle Los Olivos 123, San Borja",
-    telefono: "+51 1 567 8901",
-    comentarios: ""
-  },
-  {
-    id: 5,
-    nombre: "Finance Solutions SAC",
-    direccion: "Av. El Sol 456, Surco",
-    telefono: "+51 1 678 9012",
-    comentarios: ""
-  },
-  {
-    id: 6,
-    nombre: "Creative Agency EIRL",
-    direccion: "Jr. Creatividad 789, Barranco",
-    telefono: "+51 1 789 0123",
-    comentarios: ""
-  },
-  {
-    id: 7,
-    nombre: "Construction Ltd SAC",
-    direccion: "Av. Construcción 321, Ate",
-    telefono: "+51 1 890 1234",
-    comentarios: ""
-  },
-  {
-    id: 8,
-    nombre: "Healthcare Plus SRL",
-    direccion: "Calle Salud 654, San Miguel",
-    telefono: "+51 1 901 2345",
-    comentarios: ""
-  },
-  {
-    id: 9,
-    nombre: "Construction Ltd SAC",
-    direccion: "Av. Construcción 321, Ate",
-    telefono: "+51 1 890 1234",
-    comentarios: ""
-  },
-  {
-    id: 10,
-    nombre: "Healthcare Plus SRL",
-    direccion: "Calle Salud 654, San Miguel",
-    telefono: "+51 1 901 2345",
-    comentarios: ""
-  },
-  {
-    id: 11,
-    nombre: "Construction Ltd SAC",
-    direccion: "Av. Construcción 321, Ate",
-    telefono: "+51 1 890 1234",
-    comentarios: ""
   },
 ]
 
