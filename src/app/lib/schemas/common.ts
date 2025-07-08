@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Esquema para filtros
-export const ClientlFilterSchema = z.object({
+export const FilterSchema = z.object({
   search: z.string().optional()
 })
 

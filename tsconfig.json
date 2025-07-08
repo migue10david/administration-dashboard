@@ -13,11 +13,14 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "types": ["next/types"],
     "plugins": [
       {
         "name": "next"
       }
     ],
+    "sourceMap": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

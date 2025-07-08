@@ -1,15 +1,29 @@
 import { prisma } from '@/app/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
-import { ClientlFilterSchema, PaginationSchema } from '@/app/lib/schemas/common';
+import { FilterSchema, PaginationSchema } from '@/app/lib/schemas/common';
 import { ClientWhereInput } from '@/app/lib/types/client';
-import { writeFile, mkdir } from 'fs/promises'
+import { clientFormSchema } from '@/app/lib/schemas/clientFormSchema';
 
+import { promises as fs } from 'fs'
+import path from 'path'
+
+// Función para asegurar que el directorio de uploads existe
 async function ensureUploadsDirExists() {
+  const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
   try {
-    await mkdir(UPLOADS_DIR, { recursive: true })
+    await fs.access(uploadsDir)
   } catch (error) {
-    console.error('Error creating uploads directory:', error)
+    console.log(error);
+    await fs.mkdir(uploadsDir, { recursive: true })
   }
+}
+
+// Función para guardar el archivo en el sistema
+export async function saveFile(blob: Blob, fileName: string): Promise<string> {
+  const buffer = Buffer.from(await blob.arrayBuffer())
+  const filePath = path.join(process.cwd(), 'public', 'uploads', fileName)
+  await fs.writeFile(filePath, buffer)
+  return `/uploads/${fileName}`
 }
 
 // GET /api/clientes
@@ -24,7 +38,7 @@ export async function GET(
       limit: parseInt(searchParams.get('limit') || "10")
     });
 
-    const filters = ClientlFilterSchema.parse({
+    const filters = FilterSchema.parse({
       search: searchParams.get('search') || undefined
     })
 
@@ -87,29 +101,66 @@ export async function GET(
 }
 
 // POST /api/clientes
-export async function POST(req: NextRequest) {
-  const clonedRequest = req.clone();
-  let formData: FormData;
-
+export async function POST(req: Request) {
+  const clonedRequest = req.clone()
 
   try {
-    const body = await req.json()
-    const { nombre, direccion, telefono, nacionalidad, imageUrl } = body
+    await ensureUploadsDirExists()
+    const formData = await clonedRequest.formData()
 
-    const cliente = await prisma.cliente.create({
+    // Obtener archivo (asumiendo que el campo se llama 'dniImage')
+    const dniImage = formData.get('dniImage') as Blob | null
+
+    let imageUrl: string | null = null
+
+    // Procesar imagen si existe
+    if (dniImage && dniImage.size > 0) {
+      // Validar tipo de archivo
+      if (!dniImage.type.startsWith('image/')) {
+        return NextResponse.json(
+          { success: false, error: 'El archivo debe ser una imagen' },
+          { status: 400 }
+        )
+      }
+
+      // Validar tamaño del archivo (ejemplo: máximo 5MB)
+      if (dniImage.size > 5 * 1024 * 1024) {
+        return NextResponse.json(
+          { success: false, error: 'La imagen no puede exceder los 5MB' },
+          { status: 400 }
+        )
+      }
+
+      // Generar nombre único para el archivo
+      const fileExtension = dniImage.type.split('/')[1] || 'jpg'
+      const fileName = `dni-${Date.now()}.${fileExtension}`
+
+      // Guardar archivo y obtener URL
+      imageUrl = await saveFile(dniImage, fileName)
+    }
+
+    // Parsear datos del cliente
+    const clientData = clientFormSchema.parse({
+      nombre: formData.get('nombre'),
+      direccion: formData.get('direccion'),
+      telefono: formData.get('telefono'),
+      nacionalidad: formData.get('nacionalidad'),
+      imageUrl: imageUrl
+    });
+
+    // Crear cliente con tipo explícito
+    const client = await prisma.cliente.create({
       data: {
-        nombre,
-        direccion,
-        telefono,
-        nacionalidad,
-        imageUrl
-      },
-    })
+        ...clientData,
+      }
+    });
 
-    return NextResponse.json(cliente, { status: 201 })
+    return NextResponse.json(client, { status: 201 })
   } catch (error) {
-    console.log(error);
-    return NextResponse.json({ error: 'Error creating cliente' }, { status: 500 })
+    console.error('Error creando el cliente:', error)
+    return NextResponse.json(
+      { error: 'Error creando el cliente' },
+      { status: 500 }
+    )
   }
 }
-
