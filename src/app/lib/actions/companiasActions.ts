@@ -20,3 +20,15 @@ export async function getCompanias(page: number, perPage: number) {
     const data = await response.json();
     return { companias: data.data as Companias[], total: data.meta.total as number };
 }
+
+export async function deleteCompania(id: string) {
+    const response = await fetch(`http://localhost:3000/api/compania/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    const data = await response.json();
+    return data;
+}

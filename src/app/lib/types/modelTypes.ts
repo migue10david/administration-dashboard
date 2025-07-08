@@ -8,7 +8,7 @@ export type Clientes = {
 };
 
 export type Companias = {
-    id: number;
+    id: string;
     name: string;
     direccion: string;
     telefono: string;
