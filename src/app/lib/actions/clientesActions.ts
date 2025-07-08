@@ -13,5 +13,5 @@ export async function getClientes() {
     });
 
     const data = await response.json();
-    return data as Clientes[];
+    return data.data as Clientes[];
 }
