@@ -40,7 +40,7 @@ export async function PUT(
 
   const { id } = await params; // Safe to use
 
-  try {
+  try { 
     // Obtener y validar cuerpo
     const body = await req.json();
     const validatedData = companiaFormSchema.parse(body);
@@ -74,14 +74,37 @@ export async function DELETE(
   const { id } = await params; // Safe to use
 
   try {
-    await prisma.compania.delete({
+    const compania = await prisma.compania.findUnique({
       where: { id: id },
+      include: { cheques: true }
     });
 
-    return NextResponse.json(
-      { message: "Compañia eliminada" },
-      { status: 200 }
-    );
+    if (!compania) {
+      return NextResponse.json({
+        success: true,
+        message: "Compañia no encontrada",
+      });
+    }
+
+    if (compania.cheques.length === 0) {
+      await prisma.compania.delete({
+        where: { id: id },
+      });
+
+      return NextResponse.json(
+        { message: "Compañia eliminada" },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Error al eliminar compañia",
+          details: "La compañia tiene cheques asociados",
+        },
+        { status: 402 }
+      );
+    }
   } catch (error) {
     console.log(error);
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
