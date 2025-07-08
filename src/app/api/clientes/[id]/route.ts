@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { NextRequest } from 'next/server';
+import { NextRequest } from "next/server";
 import { z } from "zod";
-import { prisma } from '@/app/lib/db'
-import { UpdateClienteSchema } from '@/app/lib/schemas/clientFormSchema';
+import { prisma } from "@/app/lib/db";
+import { UpdateClienteSchema } from "@/app/lib/schemas/clientFormSchema";
 import { saveFile, deleteUploadedFile } from "../route";
 
 // Obtener un juguete por ID
@@ -21,11 +21,13 @@ export async function GET(
     });
 
     if (!client) {
-      return NextResponse.json({ error: "Cliente no Encontrado" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Cliente no Encontrado" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(client);
-
   } catch (error) {
     console.log(error);
     return NextResponse.json(
@@ -43,7 +45,7 @@ export async function PUT(
 
   try {
     const currentClient = await prisma.cliente.findUnique({
-      where: { id: id }
+      where: { id: id },
     });
 
     if (!currentClient) {
@@ -54,57 +56,56 @@ export async function PUT(
     }
 
     const formData = await req.formData();
-    
-    // Obtener archivo (asumiendo que el campo se llama 'dniImage')
-    const dniImage = formData.get('dniImage') as Blob | null
 
-    let imageUrl: string | null = null
+    // Obtener archivo (asumiendo que el campo se llama 'dniImage')
+    const dniImage = formData.get("dniImage") as Blob | null;
+
+    let imageUrl: string | null = null;
 
     // Procesar imagen si existe
     if (dniImage && dniImage.size > 0) {
       // Validar tipo de archivo
-      if (!dniImage.type.startsWith('image/')) {
+      if (!dniImage.type.startsWith("image/")) {
         return NextResponse.json(
-          { success: false, error: 'El archivo debe ser una imagen' },
+          { success: false, error: "El archivo debe ser una imagen" },
           { status: 400 }
-        )
+        );
       }
 
       // Validar tamaño del archivo (ejemplo: máximo 5MB)
       if (dniImage.size > 5 * 1024 * 1024) {
         return NextResponse.json(
-          { success: false, error: 'La imagen no puede exceder los 5MB' },
+          { success: false, error: "La imagen no puede exceder los 5MB" },
           { status: 400 }
-        )
+        );
       }
 
       // Generar nombre único para el archivo
-      const fileExtension = dniImage.type.split('/')[1] || 'jpg'
-      const fileName = `dni-${Date.now()}.${fileExtension}`
+      const fileExtension = dniImage.type.split("/")[1] || "jpg";
+      const fileName = `dni-${Date.now()}.${fileExtension}`;
 
       // Guardar archivo y obtener URL
-      imageUrl = await saveFile(dniImage, fileName)
+      imageUrl = await saveFile(dniImage, fileName);
     }
 
     // Validar con Zod
     const clientData = UpdateClienteSchema.parse({
-      nombre: formData.get('nombre'),
-      direccion: formData.get('direccion'),
-      telefono: formData.get('telefono'),
-      nacionalidad: formData.get('nacionalidad'),
-      imageUrl: imageUrl
+      nombre: formData.get("nombre"),
+      direccion: formData.get("direccion"),
+      telefono: formData.get("telefono"),
+      nacionalidad: formData.get("nacionalidad"),
+      imageUrl: imageUrl,
     });
-
 
     // 5. Transacción para actualización atómica
     const updatedCliente = await prisma.$transaction(async (tx) => {
-        // Eliminar archivos físicos
-        await deleteUploadedFile(currentClient.imageUrl)
+      // Eliminar archivos físicos
+      await deleteUploadedFile(currentClient.imageUrl);
 
-        return await tx.cliente.update({
-            where: { id: id },
-            data: {
-            ...clientData,
+      return await tx.cliente.update({
+        where: { id: id },
+        data: {
+          ...clientData,
         },
       });
     });
@@ -124,7 +125,10 @@ export async function PUT(
       );
     }
 
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -136,46 +140,42 @@ export async function DELETE(
   const { id } = await params; // Safe to use
 
   try {
-    const deleteClient = await prisma.cliente.findMany({
+    const cliente = await prisma.cliente.findUnique({
       where: { id: id },
       include: { cheques: true },
     });
 
-    if (deleteClient.length === 0) {
+    if (!cliente) {
       return NextResponse.json({
         success: true,
-        message: "No hay clientes para eliminar",
+        message: "Cliente no encontrado",
       });
     }
 
-    // 2. Eliminar archivos físicos y registros de la base de datos
-    const deletionResults = await prisma.$transaction(async (tx) => {
-      const results = [];
+    // 2. Verificar si tiene cheques
+    if (cliente.cheques.length === 0) {
+      // 2. Eliminar archivos físicos y registros de la base de datos
+      await deleteUploadedFile(cliente.imageUrl);
 
-      for (const client of deleteClient) {
-        // Eliminar archivos físicos
-        await deleteUploadedFile(client.imageUrl);
+      const deletedClient = await prisma.cliente.delete({
+        where: { id: id },
+      });
 
-        // Eliminar cliente
-        const deletedClient = await tx.cliente.delete({
-          where: { id: client.id },
-        });
-
-        results.push({
-          id: deletedClient.id,
-          description: deletedClient.nombre,
-        });
-      }
-
-      return results;
-    });
-
-    return NextResponse.json({
-      success: true,
-      deletedCount: deletionResults.length,
-      deletedClient: deletionResults,
-      message: `${deletionResults.length} cliente eliminado`,
-    });
+      return NextResponse.json({
+        success: true,
+        deletedClient: deletedClient,
+        message: `Cliente Eliminado`,
+      });
+    } else {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Error al eliminar clientes",
+          details: "El cliente tiene cheques asociados",
+        },
+        { status: 402 }
+      );
+    }
   } catch (error) {
     console.error("Error en limpieza:", error);
     return NextResponse.json(
@@ -188,4 +188,3 @@ export async function DELETE(
     );
   }
 }
-
