@@ -1,6 +1,5 @@
 import z from "zod";
 
-
 export const clientFormSchema = z.object({
     nombre: z.string().min(3).max(50),
     direccion: z.string().min(3).max(50),
@@ -8,8 +7,6 @@ export const clientFormSchema = z.object({
     nacionalidad: z.string().min(3).max(50),
     imageUrl: z.string().min(3).max(50),
 })
-
-import { z } from "zod";
 
 export const ClienteSchema = z.object({
   id: z.string().cuid(),
