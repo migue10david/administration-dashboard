@@ -8,3 +8,5 @@ export const clientFormSchema = z.object({
     nacionalidad: z.string().min(3).max(50),
     imageUrl: z.string().min(3).max(50),
 })
+
+export type ClientFormValues = z.infer<typeof clientFormSchema>

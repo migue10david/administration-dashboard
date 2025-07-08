@@ -2,29 +2,48 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ClientFormState } from "@/app/lib/types/formState";
+import { useForm } from "react-hook-form";
+import { clientFormSchema, ClientFormValues } from "@/app/lib/schemas/clientFormSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type Props = {
   onOpenChange: (open: boolean) => void;
 };
 
 const CreateClientForm = ({onOpenChange }: Props) => {
-  const [imageUrl, setImageUrl] = useState("");
 
-  console.log(imageUrl)
+  const [file, setFile] = useState<File>();
+  const {register,handleSubmit,formState: {errors}} = useForm<ClientFormValues>({
+    resolver: zodResolver(clientFormSchema),
+    defaultValues: {
+      nombre: "",
+      direccion: "",
+      telefono: "",
+      nacionalidad: "",
+      imageUrl: "",
+    }
+  });
+
+const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0];
+  setFile(file);
+};
+
+const onSubmit = async (data: ClientFormValues) => {
+};
 
   return (
-    <form  className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid gap-4 py-4">
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="nombre" className="text-right">
             Nombre
           </Label>
           <Input
-            id="nombre"
-            name="nombre"
+            type="text"
             placeholder="Nombre completo"
             className="col-span-3"
+            {...register("nombre")}
             required
           />
         </div>
@@ -33,10 +52,10 @@ const CreateClientForm = ({onOpenChange }: Props) => {
             Dirección
           </Label>
           <Input
-            id="direccion"
-            name="direccion"
+            type="text"
             placeholder="Dirección"
             className="col-span-3"
+            {...register("direccion")}
           />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
@@ -44,10 +63,11 @@ const CreateClientForm = ({onOpenChange }: Props) => {
             Teléfono
           </Label>
           <Input
-            id="telefono"
-            name="telefono"
+
+            type="text"
             placeholder="Teléfono"
             className="col-span-3"
+            {...register("telefono")}
             required
           />
         </div>
@@ -56,22 +76,18 @@ const CreateClientForm = ({onOpenChange }: Props) => {
             Nacionalidad
           </Label>
           <Input
-            id="nacionalidad"
-            name="nacionalidad"
+            type="text"
             placeholder="Nacionalidad"
             className="col-span-3"
+            {...register("nacionalidad")}
           />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="thumbnail" className="text-right">Thumbnail</Label>
+          <Label htmlFor="thumbnail" className="text-right">Dni Imagen</Label>
           <Input
             type="file"
-            name="thumbnail"
             accept="image/*"
-            onChange={(e) => {
-              if (e.target.files)
-                setImageUrl(URL.createObjectURL(e.target.files[0]));
-            }}
+            onChange={handleFileUpload}
           />
         </div>
       </div>
@@ -84,6 +100,7 @@ const CreateClientForm = ({onOpenChange }: Props) => {
           Cancelar
         </Button>
         <Button type="submit">Guardar Cliente</Button>
+        
       </div>
     </form>
   );
