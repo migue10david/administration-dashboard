@@ -6,7 +6,7 @@ import { Input } from "../ui/input";
 import CompaniaCard from "./CompaniaCard";
 import CompaniaTable from "./CompaniaTable";
 import { Companias } from "@/app/lib/types/modelTypes";
-import { Pagination } from "../common/pagination";
+import CompaniaFormModal from "./CompaniaFormModal";
 
 type Props = {
   companias: Companias[];
@@ -15,9 +15,9 @@ type Props = {
 const Companies = ({ companias }: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
-    <div>
+    <div className="">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-2xl font-bold">Compañías</h2>
         <div className="relative w-1/2 items-center gap-4">
@@ -32,7 +32,7 @@ const Companies = ({ companias }: Props) => {
 
         {/* Cambiar de grid a lista y viceversa */}
         <div className="flex items-center  gap-4">
-          <Button className="gap-2">
+          <Button className="gap-2" onClick={() => setIsModalOpen(true)}>
             <Plus className="h-4 w-4" />
             Agregar Compañía
           </Button>
@@ -62,6 +62,7 @@ const Companies = ({ companias }: Props) => {
       ) : (
         <CompaniaTable companias={companias} />
       )}
+      <CompaniaFormModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>
   );
 };

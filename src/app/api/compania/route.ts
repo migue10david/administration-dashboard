@@ -90,7 +90,7 @@ export async function POST(req: Request) {
     // 3. Crear categoría en Prisma
     const compania = await prisma.compania.create({
       data: {
-        name:validatedData.nombre,
+        name:validatedData.name,
         direccion: validatedData.direccion,
         telefono: validatedData.telefono,
         comentarios: validatedData.comentarios

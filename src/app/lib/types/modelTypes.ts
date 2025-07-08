@@ -9,8 +9,21 @@ export type Clientes = {
 
 export type Companias = {
     id: number;
-    nombre: string;
+    name: string;
     direccion: string;
     telefono: string;
     comentarios: string;
+    // cheques: Cheque[];
+}
+
+export type Cheque = {
+  id: number;
+  clienteId: number;
+  companiaId: number;
+  fechaActual: Date;
+  fechaCheque: Date;
+  cantidad: number;
+  comision: number;
+  subtotal: number;
+  estado: string;
 }

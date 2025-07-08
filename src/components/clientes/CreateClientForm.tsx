@@ -8,6 +8,7 @@ import {
   ClientFormValues,
 } from "@/app/lib/schemas/clientFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 type Props = {
   onOpenChange: (open: boolean) => void;
@@ -20,7 +21,7 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -76,11 +77,12 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
       }
 
       const result = await response.json();
-
       console.log("Success:", result);
       setSubmitSuccess(true);
       reset();
       setFile(undefined);
+      onOpenChange(false);
+      router.refresh();
     } catch (error) {
       console.error("Error:", error);
       setSubmitError(
