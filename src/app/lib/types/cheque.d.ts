@@ -11,12 +11,6 @@ export type ChequeWhereInput = {
           contains: string;
           mode: 'insensitive';
         };
-      } &
-      {
-        estado?: {
-          contains: string;
-          mode: 'insensitive';
-        };
       }
   >;
 };

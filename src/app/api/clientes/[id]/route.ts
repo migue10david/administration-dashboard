@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import { NextRequest } from 'next/server';
 import { z } from "zod";
 import { prisma } from '@/app/lib/db'
-import { clientFormSchema } from '@/app/lib/schemas/clientFormSchema';
-import { saveFile } from "../route";
-import { deleteUploadedFile } from "@/app/lib/utils";
+import { UpdateClienteSchema } from '@/app/lib/schemas/clientFormSchema';
+import { saveFile, deleteUploadedFile } from "../route";
 
 // Obtener un juguete por ID
 export async function GET(
@@ -88,7 +87,7 @@ export async function PUT(
     }
 
     // Validar con Zod
-    const clientData = clientFormSchema.parse({
+    const clientData = UpdateClienteSchema.parse({
       nombre: formData.get('nombre'),
       direccion: formData.get('direccion'),
       telefono: formData.get('telefono'),
@@ -189,3 +188,4 @@ export async function DELETE(
     );
   }
 }
+

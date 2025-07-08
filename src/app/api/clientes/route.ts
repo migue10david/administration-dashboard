@@ -2,7 +2,7 @@ import { prisma } from '@/app/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import { FilterSchema, PaginationSchema } from '@/app/lib/schemas/common';
 import { ClientWhereInput } from '@/app/lib/types/client';
-import { clientFormSchema } from '@/app/lib/schemas/clientFormSchema';
+import { CreateClienteSchema } from '@/app/lib/schemas/clientFormSchema';
 
 import { promises as fs } from 'fs'
 import path from 'path'
@@ -156,7 +156,7 @@ export async function POST(req: Request) {
     }
 
     // Parsear datos del cliente
-    const clientData = clientFormSchema.parse({
+    const clientData = CreateClienteSchema.parse({
       nombre: formData.get('nombre'),
       direccion: formData.get('direccion'),
       telefono: formData.get('telefono'),
