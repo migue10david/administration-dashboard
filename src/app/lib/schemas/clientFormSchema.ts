@@ -8,6 +8,8 @@ export const clientFormSchema = z.object({
     imageUrl: z.string().min(3).max(50),
 })
 
+export type ClientFormValues = z.infer<typeof clientFormSchema>
+
 export const ClienteSchema = z.object({
   id: z.string().cuid(),
   nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
