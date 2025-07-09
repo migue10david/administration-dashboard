@@ -2,8 +2,8 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from 'next/server';
 import { z } from "zod";
-import { prisma } from '@/app/lib/db'
 import { UpdateChequeSchema } from '@/app/lib/schemas/chequeFormSchema';
+import prisma from "@/app/lib/db";
 
 // Obtener un cheque por ID
 export async function GET(

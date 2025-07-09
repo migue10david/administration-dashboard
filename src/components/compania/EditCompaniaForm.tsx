@@ -49,6 +49,7 @@ export default function EditCompaniaForm({ compania, onOpenChange }: Props) {
       onOpenChange(false);
       router.refresh();
     } catch (error) {
+      console.log(error);
       toast.error("❌ No se pudo actualizar la compañía");
     }
   };

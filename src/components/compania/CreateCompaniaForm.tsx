@@ -43,10 +43,12 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
       },
     });
 
+    const res = await response.json();
+
     onOpenChange(false);
     router.refresh();
-    toast("Compañia creada exitosamente");
-    const res = await response.json();
+
+    toast(res.message);
   };
 
   return (
@@ -63,6 +65,9 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
             {...register("name")}
             required
           />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+          )}
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="direccion" className="text-right">

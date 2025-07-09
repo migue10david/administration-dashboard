@@ -1,4 +1,4 @@
-import { prisma } from '@/app/lib/db'
+import prisma from '@/app/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import { FilterSchema, PaginationSchema } from '@/app/lib/schemas/common';
 import { CompaniaWhereInput } from '@/app/lib/types/compania';

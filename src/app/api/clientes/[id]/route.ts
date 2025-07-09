@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/app/lib/db";
+import prisma from "@/app/lib/db";
 import { UpdateClienteSchema } from "@/app/lib/schemas/clientFormSchema";
 import { join } from 'path'
 import { writeFile,  unlink } from 'fs/promises'
+import { Prisma } from "@prisma/client";
 
 const UPLOADS_DIR = join(process.cwd(), 'public', 'uploads')
 
@@ -121,7 +122,7 @@ export async function PUT(
     });
 
     // 5. Transacción para actualización atómica
-    const updatedCliente = await prisma.$transaction(async (tx) => {
+    const updatedCliente = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Eliminar archivos físicos
       await deleteUploadedFile(currentClient.imageUrl);
 

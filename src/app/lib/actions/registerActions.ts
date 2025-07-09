@@ -3,7 +3,7 @@
 
 import bcrypt from "bcryptjs";
 import * as z from "zod";
-import { prisma } from "../db";
+import prisma from "../db";
 import { registroSchema } from "../schemas/auth";
 
 

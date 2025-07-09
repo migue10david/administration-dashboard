@@ -8,7 +8,6 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 
-import { signIn } from "next-auth/react";
 import { registroSchema } from "@/app/lib/schemas/auth";
 import { registerActions } from "@/app/lib/actions/registerActions";
 

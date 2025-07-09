@@ -4,7 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { prisma } from "../db";
+import prisma from "../db";
 import { loginSchema } from "../schemas/auth";
 
 
@@ -107,7 +107,3 @@ export const { handlers, signIn, signOut, auth} = NextAuth({
 
 
 })
-
-function GitHub(arg0: { allowDangerousEmailAccountLinking: boolean; }): import("next-auth/providers/index").Provider {
-    throw new Error("Function not implemented.");
-}

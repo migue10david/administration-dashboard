@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   eslint: {
     // 👇 Solo revisa estos directorios durante el build y `next lint`
-    dirs: ['src'], 
+    //dirs: ['src'], 
     // Opcional: Ignora ESLint en producción (útil para builds rápidos)
     ignoreDuringBuilds: false, 
   },

@@ -1,4 +1,4 @@
-import { prisma } from '@/app/lib/db'
+import prisma from '@/app/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import { FilterSchema, PaginationSchema } from '@/app/lib/schemas/common';
 import { ChequeWhereInput } from '@/app/lib/types/cheque';
@@ -60,7 +60,7 @@ export async function GET(
       meta: {
         total,
         page:pagination.page,
-        llimit:pagination.limit,
+        limit:pagination.limit,
         totalPages: Math.ceil(total / pagination.limit),
       },
     });
