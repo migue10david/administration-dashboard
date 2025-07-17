@@ -1,19 +1,13 @@
-export type CompaniaWhereInput = {
+export type CheckWhereInput = {
   OR?: Array<
     {
-      nombre?: {
+      clienteId?: {
         contains: string;
         mode: 'insensitive';
       };
     } &
       {
-        direccion?: {
-          contains: string;
-          mode: 'insensitive';
-        };
-      } &
-      {
-        telefono?: {
+        companiaId?: {
           contains: string;
           mode: 'insensitive';
         };

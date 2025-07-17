@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 // Primero definimos el enum para EstadoCheque (asumiendo los posibles valores)
-const EstadoChequeSchema = z.enum(["PENDIENTE", "PROCESADO"]);
+const statusCheckSchema = z.enum(["PENDIENTE", "PROCESADO"]);
 
 // Esquema base para Cheque
-export const ChequeSchema = z.object({
+export const CheckSchema = z.object({
   id: z.string().cuid(),
   clienteId: z.string(),
   companiaId: z.string(),
@@ -13,14 +13,14 @@ export const ChequeSchema = z.object({
   cantidad: z.number().positive(),
   comision: z.number().nonnegative(),
   subtotal: z.number().positive(),
-  estado: EstadoChequeSchema.default("PENDIENTE"),
+  estado: statusCheckSchema.default("PENDIENTE"),
   createdAt: z.date().default(() => new Date()),
   updatedAt: z.date(),
   userId: z.string().uuid()
 });
 
 // Esquema para crear un nuevo Cheque (omitiendo los campos autogenerados)
-export const CreateChequeSchema = ChequeSchema.omit({ 
+export const CreateCheckSchema = CheckSchema.omit({ 
   id: true,
   fechaActual: true,
   createdAt: true,
@@ -30,7 +30,7 @@ export const CreateChequeSchema = ChequeSchema.omit({
 });
 
 // Esquema para actualizar un Cheque
-export const UpdateChequeSchema = ChequeSchema.partial()
+export const UpdateCheckSchema = CheckSchema.partial()
   .omit({ 
     id: true,
     clienteId: true,
@@ -43,18 +43,18 @@ export const UpdateChequeSchema = ChequeSchema.partial()
   });
 
 // Esquema para filtros/búsqueda
-export const FilterChequeSchema = z.object({
+export const FilterCheckSchema = z.object({
   clienteId: z.string().optional(),
   companiaId: z.string().optional(),
-  estado: EstadoChequeSchema.optional(),
+  estado: statusCheckSchema.optional(),
   fechaDesde: z.string().datetime().optional(),
   fechaHasta: z.string().datetime().optional(),
   cantidadMin: z.number().optional(),
   cantidadMax: z.number().optional()
 }).partial();
 
-export type Cheque = z.infer<typeof ChequeSchema>;
-export type CreateChequeInput = z.infer<typeof CreateChequeSchema>;
-export type UpdateChequeInput = z.infer<typeof UpdateChequeSchema>;
-export type FilterChequeInput = z.infer<typeof FilterChequeSchema>;
-export type EstadoCheque = z.infer<typeof EstadoChequeSchema>;
+export type Check = z.infer<typeof CheckSchema>;
+export type CreateCheckInput = z.infer<typeof CreateCheckSchema>;
+export type UpdateCheckInput = z.infer<typeof UpdateCheckSchema>;
+export type FilterCheckInput = z.infer<typeof FilterCheckSchema>;
+export type StatusCheck = z.infer<typeof statusCheckSchema>;

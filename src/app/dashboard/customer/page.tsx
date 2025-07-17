@@ -1,5 +1,5 @@
-import { getClientes } from "@/app/lib/actions/clientesActions";
-import Clients from "@/components/clientes/Clients";
+import { getClientes } from "@/app/lib/actions/customerActions";
+import Clients from "@/components/customers/Clients";
 import React from "react";
 
 const ClientesPage = async () => {

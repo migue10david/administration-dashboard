@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
   },
   // Otras configuraciones de Next.js...
   reactStrictMode: true,
+
+  webpack: (config) => {
+    config.externals = [...config.externals, '@prisma/client']
+    return config
+  }
+
 };
 
 export default nextConfig;

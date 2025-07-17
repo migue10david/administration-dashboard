@@ -2,27 +2,37 @@ import { NextResponse } from "next/server";
 import { NextRequest } from 'next/server';
 import { z } from "zod";
 import prisma from '@/app/lib/db'
-import { companiaFormSchema } from '@/app/lib/schemas/companiaFormSchema';
+import { companyFormSchema } from '@/app/lib/schemas/companyFormSchema';
+import { auth } from "@/app/lib/auth-credentials/auth";
 
 
-// Obtener una categotia  por ID
+// Obtener una Compañia por ID
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
 
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return new Response("No autorizado", { status: 401 });
+  }
+
   const { id } = await params;
 
   try {
-    const compania = await prisma.compania.findUnique({
+    const company = await prisma.company.findUnique({
       where: { id: id },
+      include: {
+        wireTransfer: true,
+      },
     });
 
-    if (!compania) {
+    if (!company) {
       return NextResponse.json({ error: "Compañia no encontrada" }, { status: 404 });
     }
 
-    return NextResponse.json(compania);
+    return NextResponse.json(company);
   } catch (error) {
     console.log(error);
     return NextResponse.json(
@@ -36,21 +46,30 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return new Response("No autorizado", { status: 401 });
+  }
 
   const { id } = await params; // Safe to use
+  const createdById = session.user.id;
 
   try { 
     // Obtener y validar cuerpo
     const body = await req.json();
-    const validatedData = companiaFormSchema.parse(body);
+    const validatedData = companyFormSchema.parse(body);
 
-    // Actualizar categoría
-    const updatedCompania = await prisma.compania.update({
+    // Actualizar compañia
+    const updCompany = await prisma.company.update({
       where: { id: id },
-      data: validatedData,
+      data: {
+        ...validatedData,
+        createdById: createdById,
+      },
     });
 
-    return NextResponse.json({ data: updatedCompania }, { status: 200 });
+    return NextResponse.json({ data: updCompany }, { status: 200 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -70,36 +89,48 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return new Response("No autorizado", { status: 401 });
+  }
+
   const { id } = await params; // Safe to use
+  const createdById = session.user.id;
+
 
   try {
-    const compania = await prisma.compania.findUnique({
+    const company = await prisma.company.findUnique({
       where: { id: id },
-      include: { cheques: true }
+      include: {         
+        wireTransfer: true,
+      }
     });
 
-    if (!compania) {
+    if (!company) {
       return NextResponse.json({
         success: true,
         message: "Compañia no encontrada",
       });
     }
 
-    if (compania.cheques.length === 0) {
-      await prisma.compania.delete({
+    if (company.wireTransfer.length === 0) {
+
+      const updCompany = await prisma.company.update({
         where: { id: id },
+        data: {
+          createdById: createdById,
+          isActive: !company.isActive,
+        },
       });
 
-      return NextResponse.json(
-        { message: "Compañia eliminada" },
-        { status: 200 }
-      );
+      return NextResponse.json({ data: updCompany }, { status: 200 });
     } else {
       return NextResponse.json(
         {
           success: false,
           error: "Error al eliminar compañia",
-          details: "La compañia tiene cheques asociados",
+          details: "La compañia tiene transacciones asociadas",
         },
         { status: 402 }
       );
@@ -114,22 +145,32 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return new Response("No autorizado", { status: 401 });
+  }
+
   const { id } = await params; // Safe to use
+  const createdById = session.user.id;
 
   try {
     // 2. Parsear cuerpo
     const body = await req.json();
 
     // 3. Validación parcial (schema diferente al POST)
-    const validatedData = companiaFormSchema.parse(body);
+    const validatedData = companyFormSchema.parse(body);
 
     // 4. Actualizar solo campos proporcionados
-    const updatedCompania = await prisma.compania.update({
+    const updCompany = await prisma.company.update({
       where: { id: id },
-      data: validatedData, // Solo actualiza los campos enviados
+      data: {
+        ...validatedData,
+        createdById: createdById,
+      },
     });
 
-    return NextResponse.json(updatedCompania, { status: 200 });
+    return NextResponse.json(updCompany, { status: 200 });
   } catch (error) {
     // Manejo de errores específicos
     if (error instanceof z.ZodError) {

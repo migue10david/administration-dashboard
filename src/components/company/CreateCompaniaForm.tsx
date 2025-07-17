@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   companiaFormSchema,
   CompaniaFormValues,
-} from "@/app/lib/schemas/companiaFormSchema";
+} from "@/app/lib/schemas/companyFormSchema";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 

@@ -1,5 +1,5 @@
-import { getCompanias } from "@/app/lib/actions/companiasActions";
-import Companies from "@/components/compania/Companies";
+import { getCompanias } from "@/app/lib/actions/companyActions";
+import Companies from "@/components/company/Companies";
 import { PaginationWithLinks } from "@/components/ui/pagination-with-links";
 import React from "react";
 

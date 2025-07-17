@@ -1,19 +1,13 @@
 import { PrismaClient } from '@prisma/client'
 
-// Define un tipo para tu global extendido
-type GlobalWithPrisma = typeof globalThis & {
-  prisma?: PrismaClient
+declare global {
+  var prisma: PrismaClient | undefined
 }
 
-// Haz el cast del globalThis
-const globalWithPrisma = globalThis as GlobalWithPrisma
+const prisma = global.prisma || new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error']
+})
 
-// Crea o reusa la instancia existente
-const prisma = globalWithPrisma.prisma || new PrismaClient()
-
-// Configuración para desarrollo
-if (process.env.NODE_ENV !== 'production') {
-  globalWithPrisma.prisma = prisma
-}
+if (process.env.NODE_ENV !== 'production') global.prisma = prisma
 
 export default prisma

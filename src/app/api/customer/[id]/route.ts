@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import prisma from "@/app/lib/db";
-import { UpdateClienteSchema } from "@/app/lib/schemas/clientFormSchema";
+import { UpdateClienteSchema } from "@/app/lib/schemas/customerFormSchema";
 import { join } from 'path'
 import { writeFile,  unlink } from 'fs/promises'
 import { Prisma } from "@prisma/client";
@@ -37,21 +37,22 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const client = await prisma.cliente.findUnique({
-      where: { id: id },
+    const customer = await prisma.customer.findUnique({
+      where: { id: id, isActive: true },
       include: {
-        cheques: true,
+        checkTransaction: true,
+        WireTransfer: true,
       },
     });
 
-    if (!client) {
+    if (!customer) {
       return NextResponse.json(
         { error: "Cliente no Encontrado" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(client);
+    return NextResponse.json(customer);
   } catch (error) {
     console.log(error);
     return NextResponse.json(
@@ -68,13 +69,13 @@ export async function PUT(
   const { id } = await params;
 
   try {
-    const currentClient = await prisma.cliente.findUnique({
-      where: { id: id },
+    const currentCustomer = await prisma.customer.findUnique({
+      where: { id: id, isActive: true },
     });
 
-    if (!currentClient) {
+    if (!currentCustomer) {
       return NextResponse.json(
-        { error: "Juguete no encontrado" },
+        { error: "Cliente no encontrado" },
         { status: 404 }
       );
     }
@@ -82,14 +83,14 @@ export async function PUT(
     const formData = await req.formData();
 
     // Obtener archivo (asumiendo que el campo se llama 'dniImage')
-    const dniImage = formData.get("dniImage") as Blob | null;
+    const customerPhoto = formData.get("dniImage") as Blob | null;
 
     let imageUrl: string | null = null;
 
     // Procesar imagen si existe
-    if (dniImage && dniImage.size > 0) {
+    if (customerPhoto && customerPhoto.size > 0) {
       // Validar tipo de archivo
-      if (!dniImage.type.startsWith("image/")) {
+      if (!customerPhoto.type.startsWith("image/")) {
         return NextResponse.json(
           { success: false, error: "El archivo debe ser una imagen" },
           { status: 400 }
@@ -97,7 +98,7 @@ export async function PUT(
       }
 
       // Validar tamaño del archivo (ejemplo: máximo 5MB)
-      if (dniImage.size > 5 * 1024 * 1024) {
+      if (customerPhoto.size > 5 * 1024 * 1024) {
         return NextResponse.json(
           { success: false, error: "La imagen no puede exceder los 5MB" },
           { status: 400 }
@@ -105,38 +106,53 @@ export async function PUT(
       }
 
       // Generar nombre único para el archivo
-      const fileExtension = dniImage.type.split("/")[1] || "jpg";
-      const fileName = `dni-${Date.now()}.${fileExtension}`;
+      const fileExtension = customerPhoto.type.split("/")[1] || "jpg";
+      const fileName = `photo-${Date.now()}.${fileExtension}`;
 
       // Guardar archivo y obtener URL
-      imageUrl = await saveFile(dniImage, fileName);
+      imageUrl = await saveFile(customerPhoto, fileName);
     }
 
     // Validar con Zod
-    const clientData = UpdateClienteSchema.parse({
-      nombre: formData.get("nombre"),
-      direccion: formData.get("direccion"),
-      telefono: formData.get("telefono"),
-      nacionalidad: formData.get("nacionalidad"),
+    const customerData = UpdateClienteSchema.parse({
+      code: formData.get("code"),
+      firstName: formData.get("firstName"),
+      middleName: formData.get("middleName"),
+      lastNameOne: formData.get("lastNameOne"),
+      lastNameTwo: formData.get("lastNameTwo"),
+      address: formData.get("address"),
+      apartment: formData.get("apartment"),
+      zipCode: formData.get("zipCode"),
+      phone: formData.get("phone"),
+      dob: formData.get("dob"),
+      ssn: formData.get("ssn"),
+      dlid: formData.get("dlid"),
       imageUrl: imageUrl,
+      percentage: formData.get("percentage"),
+      type: formData.get("type"),
+      notes: formData.get("notes"),
+      countryId: formData.get("countryId"),
+      stateId: formData.get("stateId"),
+      cityId: formData.get("cityId"),
+      statusId: formData.get("statusId")
     });
 
     // 5. Transacción para actualización atómica
-    const updatedCliente = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const updatedCustomer = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Eliminar archivos físicos
-      await deleteUploadedFile(currentClient.imageUrl);
+      await deleteUploadedFile(currentCustomer.imageUrl);
 
-      return await tx.cliente.update({
-        where: { id: id },
+      return await tx.customer.update({
+        where: { id: id, isActive: true },
         data: {
-          ...clientData,
+          ...customerData,
         },
       });
     });
 
     return NextResponse.json({
       success: true,
-      data: updatedCliente,
+      data: updatedCustomer,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -164,12 +180,12 @@ export async function DELETE(
   const { id } = await params; // Safe to use
 
   try {
-    const cliente = await prisma.cliente.findUnique({
-      where: { id: id },
-      include: { cheques: true },
+    const customer = await prisma.customer.findUnique({
+      where: { id: id, isActive: true },
+      include: { checkTransaction: true, WireTransfer: true },
     });
 
-    if (!cliente) {
+    if (!customer) {
       return NextResponse.json({
         success: true,
         message: "Cliente no encontrado",
@@ -177,17 +193,17 @@ export async function DELETE(
     }
 
     // 2. Verificar si tiene cheques
-    if (cliente.cheques.length === 0) {
+    if (customer.checkTransaction.length === 0 && customer.WireTransfer.length === 0) {
       // 2. Eliminar archivos físicos y registros de la base de datos
-      await deleteUploadedFile(cliente.imageUrl);
+      await deleteUploadedFile(customer.imageUrl);
 
-      const deletedClient = await prisma.cliente.delete({
-        where: { id: id },
+      const deletedCustomer = await prisma.customer.delete({
+        where: { id: id, isActive: true },
       });
 
       return NextResponse.json({
         success: true,
-        deletedClient: deletedClient,
+        deletedClient: deletedCustomer,
         message: `Cliente Eliminado`,
       });
     } else {

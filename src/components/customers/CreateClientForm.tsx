@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import {
   clientFormSchema,
   ClientFormValues,
-} from "@/app/lib/schemas/clientFormSchema";
+} from "@/app/lib/schemas/customerFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 

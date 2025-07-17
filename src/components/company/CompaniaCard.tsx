@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Edit, Trash2 } from "lucide-react";
-import { deleteCompania } from "@/app/lib/actions/companiasActions";
+import { deleteCompania } from "@/app/lib/actions/companyActions";
 import { useRouter } from "next/navigation";
 import {
   Dialog,

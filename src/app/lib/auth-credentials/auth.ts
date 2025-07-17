@@ -62,6 +62,7 @@ export const { handlers, signIn, signOut, auth} = NextAuth({
         async session({ session, user }) {
             if (session.user) {
                 session.user.email = user.email; // <- Aquí agregamos el id en la sesión
+                session.user.role = user.role; // 👈 Añadimos el rol
             }
             return session;
         },

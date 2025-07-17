@@ -3,7 +3,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { companiaFormSchema, CompaniaFormValues } from "@/app/lib/schemas/companiaFormSchema";
+import { companiaFormSchema, CompaniaFormValues } from "@/app/lib/schemas/companyFormSchema";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";

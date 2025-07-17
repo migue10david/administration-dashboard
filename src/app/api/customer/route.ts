@@ -1,8 +1,8 @@
 import prisma from '@/app/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import { FilterSchema, PaginationSchema } from '@/app/lib/schemas/common';
-import { ClientWhereInput } from '@/app/lib/types/client';
-import { CreateClienteSchema } from '@/app/lib/schemas/clientFormSchema';
+import { CustomerWhereInput } from '@/app/lib/types/customer';
+import { CreateCustomerSchema } from '@/app/lib/schemas/customerFormSchema';
 import { promises as fs } from 'fs'
 import { join } from 'path'
 import { writeFile } from 'fs/promises'
@@ -26,7 +26,7 @@ async function saveFile(blob: Blob, fileName: string): Promise<string> {
   return `/uploads/${fileName}`
 }
 
-// GET /api/clientes
+// GET /api/customer
 export async function GET(
   request: NextRequest
 ) {
@@ -42,29 +42,47 @@ export async function GET(
       search: searchParams.get('search') || undefined
     })
 
-    const where: ClientWhereInput = {}
+    const where: CustomerWhereInput = {}
 
     // Filtro por texto (búsqueda)
     if (filters.search) {
       where.OR = [
         {
-          nombre: {
+          code: {
             contains: filters.search as string,
             mode: 'insensitive',
           },
         },
         {
-          direccion: {
+          firstName: {
             contains: filters.search as string,
             mode: 'insensitive',
           },
         },
         {
-          telefono: {
+          middleName: {
             contains: filters.search as string,
             mode: 'insensitive',
           },
         },
+        {
+          lastNameOne: {
+            contains: filters.search as string,
+            mode: 'insensitive',
+          },
+        },
+        {
+          lastNameTwo: {
+            contains: filters.search as string,
+            mode: 'insensitive',
+          },
+        },        
+        {
+          phone: {
+            contains: filters.search as string,
+            mode: 'insensitive',
+          },
+        }
       ];
     }
 
@@ -76,14 +94,14 @@ export async function GET(
     }
 
     // Ejecutar consulta
-    const [clients, total] = await Promise.all([
-      prisma.cliente.findMany(query),
-      prisma.cliente.count({ where })
+    const [customers, total] = await Promise.all([
+      prisma.customer.findMany(query),
+      prisma.customer.count({ where })
     ])    
 
     return NextResponse.json({
       status: 200,
-      data: clients,
+      data: customers,
       meta: {
         total,
         page:pagination.page,
@@ -97,7 +115,7 @@ export async function GET(
   }
 }
 
-// POST /api/clientes
+// POST /api/customer
 export async function POST(req: Request) {
   const clonedRequest = req.clone()
 
@@ -106,14 +124,14 @@ export async function POST(req: Request) {
     const formData = await clonedRequest.formData()
 
     // Obtener archivo (asumiendo que el campo se llama 'dniImage')
-    const dniImage = formData.get('dniImage') as Blob | null
+    const customerPhoto = formData.get('customerPhoto') as Blob | null
 
     let imageUrl: string | null = null
 
     // Procesar imagen si existe
-    if (dniImage && dniImage.size > 0) {
+    if (customerPhoto && customerPhoto.size > 0) {
       // Validar tipo de archivo
-      if (!dniImage.type.startsWith('image/')) {
+      if (!customerPhoto.type.startsWith('image/')) {
         return NextResponse.json(
           { success: false, error: 'El archivo debe ser una imagen' },
           { status: 400 }
@@ -121,38 +139,53 @@ export async function POST(req: Request) {
       }
 
       // Validar tamaño del archivo (ejemplo: máximo 5MB)
-      if (dniImage.size > 5 * 1024 * 1024) {
+      if (customerPhoto.size > 5 * 1024 * 1024) {
         return NextResponse.json(
-          { success: false, error: 'La imagen no puede exceder los 5MB' },
+          { success: false, error: 'La foto no puede exceder los 5MB' },
           { status: 400 }
         )
       }
 
       // Generar nombre único para el archivo
-      const fileExtension = dniImage.type.split('/')[1] || 'jpg'
-      const fileName = `dni-${Date.now()}.${fileExtension}`
+      const fileExtension = customerPhoto.type.split('/')[1] || 'jpg'
+      const fileName = `photo-${Date.now()}.${fileExtension}`
 
       // Guardar archivo y obtener URL
-      imageUrl = await saveFile(dniImage, fileName)
+      imageUrl = await saveFile(customerPhoto, fileName)
     }
 
     // Parsear datos del cliente
-    const clientData = CreateClienteSchema.parse({
-      nombre: formData.get('nombre'),
-      direccion: formData.get('direccion'),
-      telefono: formData.get('telefono'),
-      nacionalidad: formData.get('nacionalidad'),
-      imageUrl: imageUrl
+    const clientData = CreateCustomerSchema.parse({
+      code: formData.get('code'),
+      firstName: formData.get('firstName'),
+      middleName: formData.get('middleName'),
+      lastNameOne: formData.get('lastNameOne'),
+      lastNameTwo: formData.get('lastNameTwo'),
+      address: formData.get('address'),
+      apartment: formData.get('apartment'),
+      zipCode: formData.get('zipCode'),
+      phone: formData.get('phone'),
+      dob: formData.get('dob'),
+      ssn: formData.get('ssn'),
+      dlid: formData.get('dlid'),
+      imageUrl: imageUrl,
+      percentage: formData.get('percentage'),
+      type: formData.get('type'),
+      notes: formData.get('notes'),
+      countryId: formData.get('countryId'),
+      stateId: formData.get('stateId'),
+      cityId: formData.get('cityId'),
+      statusId: formData.get('statusId'),
     });
 
     // Crear cliente con tipo explícito
-    const client = await prisma.cliente.create({
+    const customer = await prisma.customer.create({
       data: {
         ...clientData,
       }
     });
 
-    return NextResponse.json(client, { status: 201 })
+    return NextResponse.json(customer, { status: 201 })
   } catch (error) {
     console.error('Error creando el cliente:', error)
     return NextResponse.json(
