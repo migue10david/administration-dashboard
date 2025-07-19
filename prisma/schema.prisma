@@ -25,15 +25,14 @@ model User {
   sessions  Session[]
 
   // Relación inversa (opcional, pero útil para consultas)
-  createdCountries Country[] @relation("CreatedBy")  
-  createdStates    State[] @relation("CreatedBy")
-  createdCities    City[] @relation("CreatedBy")
-  createdStatuses  CustomerStatus[] @relation("CreatedBy")
-  createdCustomers Customer[] @relation("CreatedBy")
+  createdCountries           Country[]              @relation("CreatedBy")
+  createdStates              State[]                @relation("CreatedBy")
+  createdCities              City[]                 @relation("CreatedBy")
+  createdCustomers           Customer[]             @relation("CreatedBy")
   cretedCheckTransactionType CheckTransactionType[] @relation("CreatedBy")
-  createdCheckTransaction CheckTransaction[] @relation("CreatedBy")
-  createdCompany Company[] @relation("CreatedBy")
-  createdWireTransfer WireTransfer[] @relation("CreatedBy")
+  createdCheckTransaction    CheckTransaction[]     @relation("CreatedBy")
+  createdCompany             Company[]              @relation("CreatedBy")
+  createdWireTransfer        WireTransfer[]         @relation("CreatedBy")
 }
 
 model Account {
@@ -67,52 +66,41 @@ model Session {
 }
 
 model Country {
-  id        String     @id @default(cuid())
-  name      String     @unique
-  code      String     @unique // Ej: "US", "MX"
+  id          String     @id @default(cuid())
+  name        String     @unique
+  code        String     @unique // Ej: "US", "MX"
   createdById String     @db.Uuid // Cambiado a Uuid
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  states    State[] // Relación 1 a muchos
-  customer  Customer[] // Relación inversa
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  states      State[] // Relación 1 a muchos
+  customer    Customer[] // Relación inversa
   // Relación con el usuario creador (obligatoria)
   createdBy   User       @relation(fields: [createdById], references: [id], name: "CreatedBy")
 }
 
 model State {
-  id        String     @id @default(cuid())
-  name      String
-  code      String // Ej: "CA" (California), "JAL" (Jalisco)
-  countryId String
-  country   Country    @relation(fields: [countryId], references: [id])
-  cities    City[] // Relación 1 a muchos
+  id          String     @id @default(cuid())
+  name        String
+  code        String // Ej: "CA" (California), "JAL" (Jalisco)
+  countryId   String
+  country     Country    @relation(fields: [countryId], references: [id])
+  cities      City[] // Relación 1 a muchos
   createdById String     @db.Uuid // Cambiado a Uuid
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  customer  Customer[] // Relación inversa
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  customer    Customer[] // Relación inversa
   // Relación con el usuario creador (obligatoria)
   createdBy   User       @relation(fields: [createdById], references: [id], name: "CreatedBy")
 }
 
 model City {
-  id        String     @id @default(cuid())
-  name      String
-  stateId   String
-  state     State      @relation(fields: [stateId], references: [id])
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  customer  Customer[] // Relación inversa
-  // Relación con el usuario creador (obligatoria)
-  createdById String     @db.Uuid // Cambiado a Uuid
-  createdBy   User       @relation(fields: [createdById], references: [id], name: "CreatedBy")    
-}
-
-model CustomerStatus {
-  id        String     @id @default(cuid())
-  name      String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  customer  Customer[] // Relación inversa
+  id          String     @id @default(cuid())
+  name        String
+  stateId     String
+  state       State      @relation(fields: [stateId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  customer    Customer[] // Relación inversa
   // Relación con el usuario creador (obligatoria)
   createdById String     @db.Uuid // Cambiado a Uuid
   createdBy   User       @relation(fields: [createdById], references: [id], name: "CreatedBy")
@@ -136,7 +124,6 @@ model Customer {
   countryId        String
   stateId          String
   cityId           String
-  statusId         String
   // Datos adicionales
   zipCode          String
   phone            String
@@ -154,14 +141,12 @@ model Customer {
   country          Country            @relation(fields: [countryId], references: [id])
   state            State              @relation(fields: [stateId], references: [id])
   city             City               @relation(fields: [cityId], references: [id])
-  status           CustomerStatus     @relation(fields: [statusId], references: [id])
   checkTransaction CheckTransaction[]
   WireTransfer     WireTransfer[]
 
   // Relación con el usuario creador (obligatoria)
-  createdById String     @db.Uuid // Cambiado a Uuid
-  createdBy   User       @relation(fields: [createdById], references: [id], name: "CreatedBy")
-
+  createdById String @db.Uuid // Cambiado a Uuid
+  createdBy   User   @relation(fields: [createdById], references: [id], name: "CreatedBy")
 }
 
 model CheckTransactionType {
@@ -172,9 +157,8 @@ model CheckTransactionType {
   updatedAt         DateTime           @updatedAt
   checkTransactions CheckTransaction[] // Relación uno a muchos (inversa)
   // Relación con el usuario creador (obligatoria)
-  createdById String     @db.Uuid // Cambiado a Uuid
-  createdBy   User       @relation(fields: [createdById], references: [id], name: "CreatedBy")
-
+  createdById       String             @db.Uuid // Cambiado a Uuid
+  createdBy         User               @relation(fields: [createdById], references: [id], name: "CreatedBy")
 }
 
 model CheckTransaction {
@@ -194,9 +178,8 @@ model CheckTransaction {
   checkTransactionType   CheckTransactionType @relation(fields: [checkTransactionTypeId], references: [id])
 
   // Relación con el usuario creador (obligatoria)
-  createdById String     @db.Uuid // Cambiado a Uuid
-  createdBy   User       @relation(fields: [createdById], references: [id], name: "CreatedBy")
-
+  createdById String @db.Uuid // Cambiado a Uuid
+  createdBy   User   @relation(fields: [createdById], references: [id], name: "CreatedBy")
 }
 
 model Company {
@@ -210,9 +193,8 @@ model Company {
   wireTransfer WireTransfer[]
 
   // Relación con el usuario creador (obligatoria)
-  createdById String     @db.Uuid // Cambiado a Uuid
-  createdBy   User       @relation(fields: [createdById], references: [id], name: "CreatedBy")
-
+  createdById String @db.Uuid // Cambiado a Uuid
+  createdBy   User   @relation(fields: [createdById], references: [id], name: "CreatedBy")
 }
 
 model WireTransfer {
@@ -229,8 +211,7 @@ model WireTransfer {
   customer   Customer @relation(fields: [customerId], references: [id])
   company    Company  @relation(fields: [companyId], references: [id])
 
-    // Relación con el usuario creador (obligatoria)
-  createdById String     @db.Uuid // Cambiado a Uuid
-  createdBy   User       @relation(fields: [createdById], references: [id], name: "CreatedBy")
-
+  // Relación con el usuario creador (obligatoria)
+  createdById String @db.Uuid // Cambiado a Uuid
+  createdBy   User   @relation(fields: [createdById], references: [id], name: "CreatedBy")
 }

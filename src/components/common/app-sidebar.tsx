@@ -27,12 +27,12 @@ const navigationItems = [
   },
   {
     title: "Clientes",
-    url: "/clientes",
+    url: "/customer",
     icon: Users,
   },
   {
     title: "Compañías",
-    url: "/companias",
+    url: "/companies",
     icon: Building2,
   },
   {

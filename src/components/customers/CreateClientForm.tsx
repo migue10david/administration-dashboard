@@ -4,8 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import {
-  clientFormSchema,
-  ClientFormValues,
+  CustomerSchema,
+  CustomerFormValues,
 } from "@/app/lib/schemas/customerFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -27,14 +27,29 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<ClientFormValues>({
-    resolver: zodResolver(clientFormSchema),
+  } = useForm<CustomerFormValues>({
+    resolver: zodResolver(CustomerSchema),
     mode: "onChange",
     defaultValues: {
-      nombre: "",
-      direccion: "",
-      telefono: "",
-      nacionalidad: "",
+      firstName: "",
+      middleName: "",
+      lastNameOne: "",
+      lastNameTwo: "",
+      address: "",
+      apartment: "",
+      zipCode: "",
+      phone: "",
+      dob: new Date(),
+      ssn: "",
+      dlid: "",
+      imageUrl: "",
+      percentage: 0,
+      createdById: "",
+      type: "CUSTOMER",
+      notes: "",
+      countryId: "",
+      stateId: "",      
+      cityId: "",
     },
   });
 

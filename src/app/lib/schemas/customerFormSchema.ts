@@ -31,7 +31,6 @@ export const CustomerSchema = z.object({
   countryId: z.string(),
   stateId: z.string(),
   cityId: z.string(),
-  statusId: z.string(),
   createdById: z.string(),
   // Relaciones
   country: z.object({
@@ -113,7 +112,6 @@ export const CreateCustomerSchema = CustomerSchema.omit({
   country: true,
   state: true,
   city: true,
-  status: true,
   checkTransaction: true,
   WireTransfer: true,
 }).extend({

@@ -193,7 +193,6 @@ export async function POST(req: Request) {
       countryId: formData.get('countryId'),
       stateId: formData.get('stateId'),
       cityId: formData.get('cityId'),
-      statusId: formData.get('statusId'),
       createdById: createdById
     });
 
