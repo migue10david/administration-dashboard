@@ -112,14 +112,6 @@ export default function LoginPage() {
             >
               Iniciar Sesión
             </button>
-
-            {/* Register Link */}
-            <div className="text-center">
-              <span className="text-sm text-gray-600">¿No tienes cuenta? </span>
-              <Link href="/auth/register" className="text-sm font-medium text-blue-600 hover:underline">
-                Regístrate
-              </Link>
-            </div>
           </form>
         </section>
       </div>

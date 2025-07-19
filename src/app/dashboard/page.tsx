@@ -10,8 +10,8 @@ import { Building2, FileText, TrendingUp, Users } from "lucide-react";
 export default async function Dashboard() {
   return (
     <>
-      <div className="mx-auto max-w-7xl grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <div className="mx-auto max-w-7xl grid gap-4 md:grid-cols-2 lg:grid-cols-12">
+        <Card className="col-span-3">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total Clientes
@@ -25,7 +25,7 @@ export default async function Dashboard() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="col-span-3">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Compañías Activas
@@ -39,7 +39,7 @@ export default async function Dashboard() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="col-span-3">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Cheques Procesados
@@ -53,7 +53,7 @@ export default async function Dashboard() {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="col-span-3">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Ingresos Totales
@@ -68,8 +68,8 @@ export default async function Dashboard() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+        <Card className="col-span-3">
           <CardHeader>
             <CardTitle>Resumen de Actividad</CardTitle>
             <CardDescription>

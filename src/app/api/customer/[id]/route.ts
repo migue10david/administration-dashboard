@@ -6,6 +6,7 @@ import { UpdateClienteSchema } from "@/app/lib/schemas/customerFormSchema";
 import { join } from 'path'
 import { writeFile,  unlink } from 'fs/promises'
 import { Prisma } from "@prisma/client";
+import { auth } from "@/app/lib/auth-credentials/auth";
 
 const UPLOADS_DIR = join(process.cwd(), 'public', 'uploads')
 
@@ -34,11 +35,17 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return new Response("No autorizado", { status: 401 });
+  }
+
   const { id } = await params;
 
   try {
     const customer = await prisma.customer.findUnique({
-      where: { id: id, isActive: true },
+      where: { id: id },
       include: {
         checkTransaction: true,
         WireTransfer: true,
@@ -66,11 +73,18 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return new Response("No autorizado", { status: 401 });
+  }
+
   const { id } = await params;
+  const createdById = session.user.id;
 
   try {
     const currentCustomer = await prisma.customer.findUnique({
-      where: { id: id, isActive: true },
+      where: { id: id },
     });
 
     if (!currentCustomer) {
@@ -134,16 +148,19 @@ export async function PUT(
       countryId: formData.get("countryId"),
       stateId: formData.get("stateId"),
       cityId: formData.get("cityId"),
-      statusId: formData.get("statusId")
+      statusId: formData.get("statusId"),
+      createdById: createdById
     });
 
     // 5. Transacción para actualización atómica
     const updatedCustomer = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Eliminar archivos físicos
-      await deleteUploadedFile(currentCustomer.imageUrl);
+      if (currentCustomer.imageUrl) {
+        await deleteUploadedFile(currentCustomer.imageUrl);
+      }
 
       return await tx.customer.update({
-        where: { id: id, isActive: true },
+        where: { id: id },
         data: {
           ...customerData,
         },
@@ -177,11 +194,18 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params; // Safe to use
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return new Response("No autorizado", { status: 401 });
+  }
+
+  const { id } = await params;
+  const createdById = session.user.id;
 
   try {
     const customer = await prisma.customer.findUnique({
-      where: { id: id, isActive: true },
+      where: { id: id },
       include: { checkTransaction: true, WireTransfer: true },
     });
 
@@ -192,31 +216,21 @@ export async function DELETE(
       });
     }
 
-    // 2. Verificar si tiene cheques
-    if (customer.checkTransaction.length === 0 && customer.WireTransfer.length === 0) {
-      // 2. Eliminar archivos físicos y registros de la base de datos
-      await deleteUploadedFile(customer.imageUrl);
-
-      const deletedCustomer = await prisma.customer.delete({
-        where: { id: id, isActive: true },
+      const updCustomer = await prisma.customer.update({
+        where: { id: id },
+        data: {
+          createdById: createdById,
+          isActive: !customer.isActive,
+        },
       });
 
       return NextResponse.json({
         success: true,
-        deletedClient: deletedCustomer,
-        message: `Cliente Eliminado`,
+        deletedClient: updCustomer,
+        message: `Cliente inhabilitado`,
       });
-    } else {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Error al eliminar clientes",
-          details: "El cliente tiene cheques asociados",
-        },
-        { status: 402 }
-      );
-    }
-  } catch (error) {
+
+    } catch (error) {
     console.error("Error en limpieza:", error);
     return NextResponse.json(
       {

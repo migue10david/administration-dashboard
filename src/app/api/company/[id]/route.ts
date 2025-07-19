@@ -1,17 +1,15 @@
 import { NextResponse } from "next/server";
-import { NextRequest } from 'next/server';
+import { NextRequest } from "next/server";
 import { z } from "zod";
-import prisma from '@/app/lib/db'
-import { companyFormSchema } from '@/app/lib/schemas/companyFormSchema';
+import prisma from "@/app/lib/db";
+import { companyFormSchema } from "@/app/lib/schemas/companyFormSchema";
 import { auth } from "@/app/lib/auth-credentials/auth";
-
 
 // Obtener una Compañia por ID
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -29,7 +27,10 @@ export async function GET(
     });
 
     if (!company) {
-      return NextResponse.json({ error: "Compañia no encontrada" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Compañia no encontrada" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(company);
@@ -55,7 +56,7 @@ export async function PUT(
   const { id } = await params; // Safe to use
   const createdById = session.user.id;
 
-  try { 
+  try {
     // Obtener y validar cuerpo
     const body = await req.json();
     const validatedData = companyFormSchema.parse(body);
@@ -81,7 +82,10 @@ export async function PUT(
       );
     }
 
-    return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error interno del servidor" },
+      { status: 500 }
+    );
   }
 }
 
@@ -98,13 +102,12 @@ export async function DELETE(
   const { id } = await params; // Safe to use
   const createdById = session.user.id;
 
-
   try {
     const company = await prisma.company.findUnique({
       where: { id: id },
-      include: {         
+      include: {
         wireTransfer: true,
-      }
+      },
     });
 
     if (!company) {
@@ -114,30 +117,21 @@ export async function DELETE(
       });
     }
 
-    if (company.wireTransfer.length === 0) {
+    const updCompany = await prisma.company.update({
+      where: { id: id },
+      data: {
+        createdById: createdById,
+        isActive: !company.isActive,
+      },
+    });
 
-      const updCompany = await prisma.company.update({
-        where: { id: id },
-        data: {
-          createdById: createdById,
-          isActive: !company.isActive,
-        },
-      });
-
-      return NextResponse.json({ data: updCompany }, { status: 200 });
-    } else {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Error al eliminar compañia",
-          details: "La compañia tiene transacciones asociadas",
-        },
-        { status: 402 }
-      );
-    }
+    return NextResponse.json({ data: updCompany }, { status: 200 });
   } catch (error) {
     console.log(error);
-    return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error interno del servidor" },
+      { status: 500 }
+    );
   }
 }
 

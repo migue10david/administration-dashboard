@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: Props) {
       <SidebarInset>
         <SidebarTrigger className="-ml-1" />
       </SidebarInset>
-      <main className=" w-full flex flex-col px-4 md:px-6 py-4" >{children}</main>
+      <main className=" w-full flex flex-col gap-6 px-4 md:px-6 py-4" >{children}</main>
       <Toaster/>
     </SidebarProvider>
   );

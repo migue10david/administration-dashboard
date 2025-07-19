@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
 
   const isAdmin = session.user.role;
 
-
   try {
     const { searchParams } = new URL(request.url!);
 

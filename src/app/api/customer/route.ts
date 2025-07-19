@@ -6,6 +6,7 @@ import { CreateCustomerSchema } from '@/app/lib/schemas/customerFormSchema';
 import { promises as fs } from 'fs'
 import { join } from 'path'
 import { writeFile } from 'fs/promises'
+import { auth } from "@/app/lib/auth-credentials/auth";
 
 // Función para asegurar que el directorio de uploads existe
 async function ensureUploadsDirExists() {
@@ -30,6 +31,14 @@ async function saveFile(blob: Blob, fileName: string): Promise<string> {
 export async function GET(
   request: NextRequest
 ) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return new Response("No autorizado", { status: 401 });
+  }
+
+  const isAdmin = session.user.role;
+
   try {
     const { searchParams } = new URL(request.url!)
 
@@ -42,7 +51,9 @@ export async function GET(
       search: searchParams.get('search') || undefined
     })
 
-    const where: CustomerWhereInput = {}
+    const where: CustomerWhereInput = {
+      AND: [ ...(isAdmin === "ADMIN" ? [] : [{ isActive: true }])],
+    }
 
     // Filtro por texto (búsqueda)
     if (filters.search) {
@@ -117,7 +128,14 @@ export async function GET(
 
 // POST /api/customer
 export async function POST(req: Request) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return new Response("No autorizado", { status: 401 });
+  }
+
   const clonedRequest = req.clone()
+  const createdById = session.user.id;
 
   try {
     await ensureUploadsDirExists()
@@ -176,6 +194,7 @@ export async function POST(req: Request) {
       stateId: formData.get('stateId'),
       cityId: formData.get('cityId'),
       statusId: formData.get('statusId'),
+      createdById: createdById
     });
 
     // Crear cliente con tipo explícito
