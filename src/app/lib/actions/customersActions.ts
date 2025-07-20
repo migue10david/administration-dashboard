@@ -1,12 +1,20 @@
 import { headers } from 'next/headers'
 import { Customer } from '../types/modelTypes'
 
+export type filters = {
+  search?: string
+}
 
-export const getCustomers = async () => {
+export const getCustomers = async (filters: filters) => {
       const cookie = (await headers()).get('cookie')
 
-  // Llama a tu API pasando la cookie
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/customer`, {
+  const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/customer`)
+
+    if (typeof filters.search === 'string' && filters.search.trim()) {
+    url.searchParams.set('search', encodeURIComponent(filters.search.trim()));
+  }
+  
+  const res = await fetch(`${url}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

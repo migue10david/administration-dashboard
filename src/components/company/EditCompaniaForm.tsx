@@ -3,38 +3,37 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { companiaFormSchema, CompaniaFormValues } from "@/app/lib/schemas/companyFormSchema";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { companyFormSchema, CompanyFormValues } from "@/app/lib/schemas/companyFormSchema";
 
 type Props = {
-  compania: CompaniaFormValues & { id: string };
+  company: CompanyFormValues & { id: string };
   onOpenChange: (open: boolean) => void;
 };
 
-export default function EditCompaniaForm({ compania, onOpenChange }: Props) {
+export default function EditCompaniaForm({ company, onOpenChange }: Props) {
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CompaniaFormValues>({
-    resolver: zodResolver(companiaFormSchema),
+  } = useForm<CompanyFormValues>({
+    resolver: zodResolver(companyFormSchema),
     defaultValues: {
-      name: compania.name || "",
-      direccion: compania.direccion || "",
-      telefono: compania.telefono || "",
-      comentarios: compania.comentarios || "",
+      name: company.name || "",
+      description: company.description || "",
+      
     },
   });
 
-  const onSubmit = async (data: CompaniaFormValues) => {
+  const onSubmit = async (data: CompanyFormValues) => {
     try {
-      const response = await fetch(`/api/compania/${compania.id}`, {
+      const response = await fetch(`/api/company/${company.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -74,26 +73,10 @@ export default function EditCompaniaForm({ compania, onOpenChange }: Props) {
 
         {/* Dirección */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="direccion" className="text-right">
-            Dirección
+          <Label htmlFor="description" className="text-right">
+            Descripcion
           </Label>
-          <Input id="direccion" type="text" placeholder="Dirección" className="col-span-3" {...register("direccion")} />
-        </div>
-
-        {/* Teléfono */}
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="telefono" className="text-right">
-            Teléfono
-          </Label>
-          <Input id="telefono" type="text" placeholder="Teléfono" className="col-span-3" {...register("telefono")} required />
-        </div>
-
-        {/* Comentarios */}
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="comentarios" className="text-right">
-            Comentarios
-          </Label>
-          <Input id="comentarios" type="text" placeholder="Comentarios" className="col-span-3" {...register("comentarios")} />
+          <Input id="description" type="text" placeholder="Dirección" className="col-span-3" {...register("description")} />
         </div>
       </div>
 

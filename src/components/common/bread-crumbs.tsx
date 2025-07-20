@@ -10,7 +10,10 @@ import {
 import React from "react";
 
 type Props = {
-    pages: string[]
+    pages: {
+      name: string;
+      url: string;
+    }[];
 };
 
 const BreadCrumbs = ({ pages }: Props) => {
@@ -21,11 +24,13 @@ const BreadCrumbs = ({ pages }: Props) => {
           <BreadcrumbLink href="/dashboard">Inicio</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
-          {pages.map((page, index) => (
-            <BreadcrumbItem key={index}>
-              <BreadcrumbLink href={`/dashboard/${page.toLowerCase()}`}>{page}</BreadcrumbLink>
-            </BreadcrumbItem>
-          ))}
+          {
+            pages.map((page)=> (
+              <BreadcrumbItem key={page.name}>
+                <BreadcrumbLink href={page.url}>{page.name}</BreadcrumbLink>
+              </BreadcrumbItem>
+            ))
+          }
         <BreadcrumbSeparator />
       </BreadcrumbList>
     </Breadcrumb>

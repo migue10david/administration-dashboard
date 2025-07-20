@@ -1,4 +1,5 @@
-import { getCompanias } from "@/app/lib/actions/companyActions";
+
+import { getCompanies } from "@/app/lib/actions/companyActions";
 import Companies from "@/components/company/Companies";
 import { PaginationWithLinks } from "@/components/ui/pagination-with-links";
 import React from "react";
@@ -14,13 +15,13 @@ const CompaniasPage = async ({ searchParams }: Props) => {
     (resolvedSearchParams.pageSize as string) || "12"
   );
 
-  const { companias, total } = await getCompanias(currentPage, postsPerPage);
+  const { data, totalPages } = await getCompanies();
 
   return (
     <div className="space-y-4 min-h-screen relative">
-      <Companies companias={companias} />
+      <Companies companies={data} />
       <div className="absolute bottom-8 left-0 right-0 flex justify-center">
-        <PaginationWithLinks page={currentPage} pageSize={postsPerPage} totalCount={total} />
+        <PaginationWithLinks page={currentPage} pageSize={postsPerPage} totalCount={totalPages} />
       </div>
     </div>
   );

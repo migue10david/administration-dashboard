@@ -15,13 +15,14 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import EditCompaniaForm from "./EditCompaniaForm"; // Importa el formulario de edición
-import { Companias } from "@/app/lib/types/modelTypes";
+import { Company } from "@/app/lib/types/modelTypes";
+
 
 type Props = {
-  companias: Companias[];
+  companies: Company[];
 };
 
-export default function CompaniaCard({ companias }: Props) {
+export default function CompaniaCard({ companies }: Props) {
   const router = useRouter();
   const [editingCompaniaId, setEditingCompaniaId] = useState<string | null>(null); // Estado para el modal de edición
   const [deletingCompaniaId, setDeletingCompaniaId] = useState<string | null>(null);
@@ -39,7 +40,7 @@ export default function CompaniaCard({ companias }: Props) {
 
   return (
     <div className="pt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {companias.map((compania) => (
+      {companies.map((compania) => (
         <div key={compania.id}>
           <Card className="group hover:shadow-md transition-shadow">
             <CardHeader>
@@ -49,13 +50,13 @@ export default function CompaniaCard({ companias }: Props) {
             </CardHeader>
             <CardContent className="space-y-2 relative">
               <div className="text-sm">
-                <span className="font-medium">Dirección:</span> {compania.direccion}
+                <span className="font-medium">Descripcion:</span> {compania.description}
               </div>
               <div className="text-sm">
-                <span className="font-medium">Teléfono:</span> {compania.telefono}
+                <span className="font-medium">Nombre:</span> {compania.name}
               </div>
               <div className="text-sm">
-                <span className="font-medium">Comentario:</span> {compania.comentarios}
+                <span className="font-medium">Activa:</span> {compania.isActive === true ? "Si" : "No"}
               </div>
 
               {/* Botones de acción */}
@@ -126,7 +127,7 @@ export default function CompaniaCard({ companias }: Props) {
               </DialogHeader>
               <DialogContent>
                 <EditCompaniaForm
-                  compania={compania}
+                  company={compania}
                   onOpenChange={(open) => {
                     if (!open) setEditingCompaniaId(null);
                   }}

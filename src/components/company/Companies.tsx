@@ -5,19 +5,20 @@ import { Grid, List, Plus, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import CompaniaCard from "./CompaniaCard";
 import CompaniaTable from "./CompaniaTable";
-import { Companias } from "@/app/lib/types/modelTypes";
 import CompaniaFormModal from "./CompaniaFormModal";
+import { Company } from "@/app/lib/types/modelTypes";
+
 
 type Props = {
-  companias: Companias[];
+  companies: Company[];
 };
 
-const Companies = ({ companias }: Props) => {
+const Companies = ({ companies }: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
-    <div className="">
+    <div className="px-4 py-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-2xl font-bold">Compañías</h2>
         <div className="relative w-1/2 items-center gap-4">
@@ -58,9 +59,9 @@ const Companies = ({ companias }: Props) => {
         {/* Cambiar de grid a lista y viceversa */}
       </div>
       {viewMode === "cards" ? (
-        <CompaniaCard companias={companias} />
+        <CompaniaCard companies={companies} />
       ) : (
-        <CompaniaTable companias={companias} />
+        <CompaniaTable companies={companies} />
       )}
       <CompaniaFormModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>

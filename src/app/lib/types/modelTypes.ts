@@ -21,13 +21,11 @@ export type Customer = {
   notes?: string
 };
 
-export type Companias = {
+export type Company = {
     id: string;
     name: string;
-    direccion: string;
-    telefono: string;
-    comentarios: string;
-    // cheques: Cheque[];
+    description: string;
+    isActive: boolean;
 }
 
 export type Cheque = {

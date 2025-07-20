@@ -4,38 +4,33 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  companiaFormSchema,
-  CompaniaFormValues,
-} from "@/app/lib/schemas/companyFormSchema";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { companyFormSchema, CompanyFormValues } from "@/app/lib/schemas/companyFormSchema";
 
 type Props = {
   onOpenChange: (open: boolean) => void;
 };
 
-const CreateClientForm = ({ onOpenChange }: Props) => {
+const CreateCompanyForm = ({ onOpenChange }: Props) => {
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CompaniaFormValues>({
-    resolver: zodResolver(companiaFormSchema),
+  } = useForm<CompanyFormValues>({
+    resolver: zodResolver(companyFormSchema),
     defaultValues: {
       name: "",
-      direccion: "",
-      telefono: "",
-      comentarios: "",
+      description: "",
     },
   });
 
-  const onSubmit = async (data: CompaniaFormValues) => {
+  const onSubmit = async (data: CompanyFormValues) => {
     console.log("✅ Formulario enviado:", data);
 
-    const response = await fetch("http://localhost:3000/api/compania", {
+    const response = await fetch("http://localhost:3000/api/company", {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
@@ -71,36 +66,13 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="direccion" className="text-right">
-            Dirección
+            Descripcion
           </Label>
           <Input
             type="text"
             placeholder="Dirección"
             className="col-span-3"
-            {...register("direccion")}
-          />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="telefono" className="text-right">
-            Teléfono
-          </Label>
-          <Input
-            type="text"
-            placeholder="Teléfono"
-            className="col-span-3"
-            {...register("telefono")}
-            required
-          />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="comentarios" className="text-right">
-            Comentarios
-          </Label>
-          <Input
-            type="text"
-            placeholder="Comentarios"
-            className="col-span-3"
-            {...register("comentarios")}
+            {...register("description")}
           />
         </div>
       </div>
@@ -112,10 +84,10 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
         >
           Cancelar
         </Button>
-        <Button type="submit">Guardar Cliente</Button>
+        <Button type="submit">Guardar Compañía</Button>
       </div>
     </form>
   );
 };
 
-export default CreateClientForm;
+export default CreateCompanyForm;
