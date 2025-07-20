@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Edit, Trash2 } from "lucide-react";
-import { deleteCompania } from "@/app/lib/actions/companyActions";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -16,6 +15,7 @@ import {
 } from "../ui/dialog";
 import EditCompaniaForm from "./EditCompaniaForm"; // Importa el formulario de edición
 import { Company } from "@/app/lib/types/modelTypes";
+import { deleteCompany } from "@/app/lib/actions/companyActions";
 
 
 type Props = {
@@ -29,7 +29,7 @@ export default function CompaniaCard({ companies }: Props) {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteCompania(id);
+      await deleteCompany(id);
       router.refresh();
     } catch (error) {
       console.error("Error al eliminar compañía:", error);
@@ -93,7 +93,7 @@ export default function CompaniaCard({ companies }: Props) {
               <DialogHeader>
                 <DialogTitle>¿Estás seguro?</DialogTitle>
                 <DialogDescription>
-                  Esta acción no se puede deshacer. Esto eliminará permanentemente la compañía{" "}
+                  Esta acción deshabilitara/habilitara la compania{" "}
                   <span className="font-semibold">{compania.name}</span> de la base de datos.
                 </DialogDescription>
               </DialogHeader>

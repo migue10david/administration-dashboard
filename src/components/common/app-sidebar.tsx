@@ -1,7 +1,7 @@
 "use client";
 
 import type * as React from "react";
-import { Building2, DoorOpen, FileText, Home, Users } from "lucide-react";
+import { Building2, DoorOpen, FileText, Flag, Home, Star, Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -38,6 +38,16 @@ const navigationItems = [
     url: "/cheques",
     icon: FileText,
   },
+  {
+    title: "Paises",
+    url: "/country",
+    icon: Flag
+  },
+  {
+    title: "Estados",
+    url: "/state",
+    icon: Star
+  }
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
