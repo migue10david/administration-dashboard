@@ -34,7 +34,10 @@ export async function GET(
   const session = await auth();
 
   if (!session?.user?.id) {
-    return new Response("No autorizado", { status: 401 });
+    return NextResponse.json(
+        { success: false, error: "No autorizado" },
+        { status: 401 }
+      )    
   }
 
   const isAdmin = session.user.role;
