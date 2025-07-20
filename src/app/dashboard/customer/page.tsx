@@ -1,13 +1,12 @@
-import { getClientes } from "@/app/lib/actions/customerActions";
-import Clients from "@/components/customers/Clients";
 import React from "react";
+import { mockCustomers } from "@/data/mock-data";
+import Customers from "@/components/customers/Customers";
 
 const ClientesPage = async () => {
-  const clientes = await getClientes();
 
   return (
     <div className="space-y-4">
-      <Clients clientes={clientes} />
+      <Customers customers={mockCustomers} />
     </div>
   );
 };

@@ -13,10 +13,10 @@ export default function DashboardLayout({ children }: Props) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      {/* <SidebarInset className="bg-white">
         <SidebarTrigger className="-ml-1" />
-      </SidebarInset>
-      <main className=" w-full flex flex-col gap-6 px-4 md:px-6 py-4" >{children}</main>
+      </SidebarInset> */}
+      <main className=" w-full flex flex-col gap-6" >{children}</main>
       <Toaster/>
     </SidebarProvider>
   );

@@ -1,5 +1,4 @@
 "use client";
-import { Clientes } from "@/app/lib/types/modelTypes";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Grid, List, Plus, Search } from "lucide-react";
@@ -7,24 +6,20 @@ import { Input } from "../ui/input";
 import ClientCard from "./ClientCard";
 import ClientTable from "./ClientTable";
 import ClientFormModal from "./ClientFormModal";
+import { Customer } from "@/app/lib/types/modelTypes";
 
 type Props = {
-  clientes: Clientes[];
+  customers: Customer[];
 };
 
-const Clients = ({ clientes }: Props) => {
+const Customers = ({ customers }: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const filteredClientes = clientes.filter(
-    (cliente) =>
-      cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cliente.telefono.includes(searchTerm)
-  );
 
   return (
-    <div>
+    <div className="px-4 py-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-2xl font-bold">Clientes</h2>
 
@@ -70,9 +65,9 @@ const Clients = ({ clientes }: Props) => {
 
       {/* Vista condicional */}
       {viewMode === "cards" ? (
-        <ClientCard clientes={filteredClientes} />
+        <ClientCard customers={customers} />
       ) : (
-        <ClientTable clientes={filteredClientes} />
+        <ClientTable customers={customers} />
       )}
 
       {/* Modal del formulario */}
@@ -81,4 +76,4 @@ const Clients = ({ clientes }: Props) => {
   );
 };
 
-export default Clients;
+export default Customers;

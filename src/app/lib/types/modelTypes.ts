@@ -1,10 +1,24 @@
-export type Clientes = {
-  id: number;
-  nombre: string;
-  direccion: string;
-  telefono: string;
-  nacionalidad: string;
-  imageUrl: string;
+export type Customer = {
+  id: number
+  code: string
+  firstName: string
+  middleName?: string
+  lastNameOne: string
+  lastNameTwo?: string
+  address: string
+  apartment?: string
+  countryId: number
+  stateId: number
+  cityId: number
+  zipCode: string
+  phone: string
+  dob: Date
+  ssn: string
+  dlid: string
+  imageUrl?: string
+  percentage: number
+  isActive: boolean
+  notes?: string
 };
 
 export type Companias = {

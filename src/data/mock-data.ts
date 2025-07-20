@@ -1,177 +1,179 @@
-export interface Cliente {
+export interface Customer {
   id: number
-  nombre: string
-  email: string
-  telefono: string
-  empresa: string
-  fechaRegistro: string
-  estado: "Activo" | "Inactivo"
+  code: string
+  firstName: string
+  middleName?: string
+  lastNameOne: string
+  lastNameTwo?: string
+  address: string
+  apartment?: string
+  countryId: number
+  stateId: number
+  cityId: number
+  zipCode: string
+  phone: string
+  dob: Date
+  ssn: string
+  dlid: string
+  imageUrl?: string
+  percentage: number
+  isActive: boolean
+  notes?: string
 }
 
-export const clientesMock: Cliente[] = [
+export const mockCustomers: Customer[] = [
   {
     id: 1,
-    nombre: "Juan Pérez",
-    email: "juan.perez@email.com",
-    telefono: "+51 999 123 456",
-    empresa: "Tech Solutions SAC",
-    fechaRegistro: "2024-01-15",
-    estado: "Activo",
+    code: 'CUST-001',
+    firstName: 'John',
+    middleName: 'Michael',
+    lastNameOne: 'Smith',
+    lastNameTwo: 'Johnson',
+    address: '123 Main St',
+    apartment: 'Apt 4B',
+    countryId: 1,  // US
+    stateId: 33,   // New York
+    cityId: 501,   // New York City
+    zipCode: '10001',
+    phone: '+1 555-123-4567',
+    dob: new Date('1985-05-15'),
+    ssn: '123-45-6789',
+    dlid: 'DL12345678',
+    imageUrl: '/image1.jpeg',
+    percentage: 15.5,
+    isActive: true,
+    notes: 'Preferred customer, VIP status'
   },
   {
     id: 2,
-    nombre: "María García",
-    email: "maria.garcia@email.com",
-    telefono: "+51 999 234 567",
-    empresa: "Innovate Corp",
-    fechaRegistro: "2024-02-20",
-    estado: "Activo",
+    code: 'CUST-002',
+    firstName: 'Maria',
+    lastNameOne: 'Garcia',
+    address: '456 Oak Ave',
+    countryId: 1,  // US
+    stateId: 5,    // California
+    cityId: 502,   // Los Angeles
+    zipCode: '90001',
+    phone: '+1 555-987-6543',
+    dob: new Date('1990-11-22'),
+    ssn: '987-65-4321',
+    dlid: 'DL87654321',
+    percentage: 10.0,
+    isActive: true
   },
   {
     id: 3,
-    nombre: "Carlos Rodríguez",
-    email: "carlos.rodriguez@email.com",
-    telefono: "+51 999 345 678",
-    empresa: "Digital Marketing Pro",
-    fechaRegistro: "2024-01-30",
-    estado: "Inactivo",
+    code: 'CUST-003',
+    firstName: 'Robert',
+    lastNameOne: 'Williams',
+    lastNameTwo: 'Brown',
+    address: '789 Pine Rd',
+    apartment: 'Unit 12',
+    countryId: 2,  // Canada
+    stateId: 8,    // Ontario
+    cityId: 601,   // Toronto
+    zipCode: 'M5V 2T6',
+    phone: '+1 416-555-7890',
+    dob: new Date('1978-03-30'),
+    ssn: '456-78-9012',
+    dlid: 'DL45678901',
+    percentage: 5.0,
+    isActive: false,
+    notes: 'Inactive since 2022'
   },
   {
     id: 4,
-    nombre: "Ana López",
-    email: "ana.lopez@email.com",
-    telefono: "+51 999 456 789",
-    empresa: "Consulting Group",
-    fechaRegistro: "2024-03-10",
-    estado: "Activo",
+    code: 'CUST-004',
+    firstName: 'Li',
+    middleName: 'Wei',
+    lastNameOne: 'Zhang',
+    address: '321 Elm Blvd',
+    countryId: 3,  // China
+    stateId: 22,   // Beijing
+    cityId: 701,   // Beijing
+    zipCode: '100000',
+    phone: '+86 10 5555 8888',
+    dob: new Date('1992-07-18'),
+    ssn: '789-01-2345',
+    dlid: 'DL78901234',
+    imageUrl: '/image1.jpeg',
+    percentage: 20.0,
+    isActive: true
   },
   {
     id: 5,
-    nombre: "Pedro Martínez",
-    email: "pedro.martinez@email.com",
-    telefono: "+51 999 567 890",
-    empresa: "Finance Solutions",
-    fechaRegistro: "2024-02-05",
-    estado: "Activo",
+    code: 'CUST-005',
+    firstName: 'Sophie',
+    middleName: 'Anne',
+    lastNameOne: 'Martin',
+    address: '654 Maple Ln',
+    countryId: 4,  // France
+    stateId: 11,   // Île-de-France
+    cityId: 801,   // Paris
+    zipCode: '75001',
+    phone: '+33 1 55 55 55 55',
+    dob: new Date('1988-12-05'),
+    ssn: '345-67-8901',
+    dlid: 'DL34567890',
+    percentage: 12.5,
+    isActive: true,
+    notes: 'Frequent buyer, prefers email communication'
   },
   {
     id: 6,
-    nombre: "Laura Sánchez",
-    email: "laura.sanchez@email.com",
-    telefono: "+51 999 678 901",
-    empresa: "Creative Agency",
-    fechaRegistro: "2024-01-25",
-    estado: "Activo",
+    code: 'CUST-006',
+    firstName: 'Carlos',
+    lastNameOne: 'Rodriguez',
+    address: '987 Cedar St',
+    countryId: 5,  // Mexico
+    stateId: 9,    // Ciudad de México
+    cityId: 901,   // Mexico City
+    zipCode: '06000',
+    phone: '+52 55 5555 5555',
+    dob: new Date('1980-09-14'),
+    ssn: '567-89-0123',
+    dlid: 'DL56789012',
+    percentage: 8.0,
+    isActive: true
   },
   {
     id: 7,
-    nombre: "Roberto Silva",
-    email: "roberto.silva@email.com",
-    telefono: "+51 999 789 012",
-    empresa: "Construction Ltd",
-    fechaRegistro: "2024-03-01",
-    estado: "Inactivo",
+    code: 'CUST-007',
+    firstName: 'Aisha',
+    middleName: 'Fatima',
+    lastNameOne: 'Khan',
+    address: '159 Birch Ave',
+    apartment: 'Floor 3, Apt 302',
+    countryId: 6,  // UAE
+    stateId: 7,    // Dubai
+    cityId: 1001,  // Dubai
+    zipCode: '12345',
+    phone: '+971 4 555 5555',
+    dob: new Date('1995-02-28'),
+    ssn: '678-90-1234',
+    dlid: 'DL67890123',
+    percentage: 18.0,
+    isActive: true,
+    notes: 'Corporate account'
   },
   {
     id: 8,
-    nombre: "Carmen Flores",
-    email: "carmen.flores@email.com",
-    telefono: "+51 999 890 123",
-    empresa: "Healthcare Plus",
-    fechaRegistro: "2024-02-15",
-    estado: "Activo",
-  },
-  {
-    id: 9,
-    nombre: "Carlos Hernandez",
-    email: "carlos.hernandez@email.com",
-    telefono: "+51 999 890 123",
-    empresa: "Healthcare Plus",
-    fechaRegistro: "2024-02-15",
-    estado: "Activo",
-  },
-  {
-    id: 10,
-    nombre: "Carlos Hernandez",
-    email: "carlos.hernandez@email.com",
-    telefono: "+51 999 890 123",
-    empresa: "Healthcare Plus",
-    fechaRegistro: "2024-02-15",
-    estado: "Activo",
-  },
-  {
-    id: 11,
-    nombre: "Carlos Hernandez",
-    email: "carlos.hernandez@email.com",
-    telefono: "+51 999 890 123",
-    empresa: "Healthcare Plus",
-    fechaRegistro: "2024-02-15",
-    estado: "Activo",
-  },
-  {
-    id: 12,
-    nombre: "Carlos Hernandez",
-    email: "carlos.hernandez@email.com",
-    telefono: "+51 999 890 123",
-    empresa: "Healthcare Plus",
-    fechaRegistro: "2024-02-15",
-    estado: "Activo",
-  },
-  {
-    id: 13,
-    nombre: "Carlos Hernandez",
-    email: "carlos.hernandez@email.com",
-    telefono: "+51 999 890 123",
-    empresa: "Healthcare Plus",
-    fechaRegistro: "2024-02-15",
-    estado: "Activo",
-  },
-  {
-    id: 14,
-    nombre: "Carlos Hernandez",
-    email: "carlos.hernandez@email.com",
-    telefono: "+51 999 890 123",
-    empresa: "Healthcare Plus",
-    fechaRegistro: "2024-02-15",
-    estado: "Activo",
-  },
-  {
-    id: 15,
-    nombre: "Carlos Hernandez",
-    email: "carlos.hernandez@email.com",
-    telefono: "+51 999 890 123",
-    empresa: "Healthcare Plus",
-    fechaRegistro: "2024-02-15",
-    estado: "Activo",
-  },
-  {
-    id: 16,
-    nombre: "Carlos Hernandez",
-    email: "carlos.hernandez@email.com",
-    telefono: "+51 999 890 123",
-    empresa: "Healthcare Plus",
-    fechaRegistro: "2024-02-15",
-    estado: "Activo",
-  },
-  {
-    id: 17,
-    nombre: "Carlos Hernandez",
-    email: "carlos.hernandez@email.com",
-    telefono: "+51 999 890 123",
-    empresa: "Healthcare Plus",
-    fechaRegistro: "2024-02-15",
-    estado: "Activo",
-  },
-  {
-    id: 18,
-    nombre: "Carlos Hernandez",
-    email: "carlos.hernandez@email.com",
-    telefono: "+51 999 890 123",
-    empresa: "Healthcare Plus",
-    fechaRegistro: "2024-02-15",
-    estado: "Activo",
-  },
-]
+    code: 'CUST-008',
+    firstName: 'James',
+    lastNameOne: 'Wilson',
+    address: '753 Spruce Dr',
+    countryId: 7,  // UK
+    stateId: 12,   // England
+    cityId: 1101,  // London
+    zipCode: 'SW1A 1AA',
+    phone: '+44 20 5555 5555',
+    dob: new Date('1975-08-10'),
+    ssn: '890-12-3456',
+    dlid: 'DL89012345',
+    percentage: 7.5,
+    isActive: false
+  }
+];
 
 export interface Cheque {
   id: number

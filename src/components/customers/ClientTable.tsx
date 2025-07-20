@@ -7,14 +7,14 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Clientes } from "@/app/lib/types/modelTypes";
 import Image from "next/image";
+import { Customer } from "@/app/lib/types/modelTypes";
 
 type Props = {
-  clientes: Clientes[];
+  customers: Customer[];
 };
 
-const ClientTable = ({ clientes }: Props) => {
+const ClientTable = ({ customers }: Props) => {
   return (
     <div className="pt-4">
     <div className="border rounded-lg">
@@ -29,20 +29,23 @@ const ClientTable = ({ clientes }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {clientes.map((cliente) => (
-            <TableRow key={cliente.id}>
-              <TableCell className="font-medium">{cliente.nombre}</TableCell>
-              <TableCell>{cliente.direccion}</TableCell>
-              <TableCell>{cliente.telefono}</TableCell>
-              <TableCell>{cliente.nacionalidad}</TableCell>
+          {customers.map((customer) => (
+            <TableRow key={customer.id}>
+              <TableCell className="font-medium">{customer.firstName + ' ' + customer.lastNameOne}</TableCell>
+              <TableCell>{customer.address}</TableCell>
+              <TableCell>{customer.phone}</TableCell>
+              <TableCell>{customer.countryId}</TableCell>
               <TableCell>
                 {" "}
-                <Image
-                  src={cliente.imageUrl}
-                  alt="cliente"
-                  width={100}
-                  height={100}
-                />
+                {customer.imageUrl && (
+                  <Image
+                    src={customer.imageUrl}
+                    alt={customer.firstName + " " + customer.lastNameOne}
+                    className="h-12 w-12"
+                    width={120}
+                    height={120}
+                  />
+                )}
               </TableCell>
             </TableRow>
           ))}
