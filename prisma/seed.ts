@@ -62,6 +62,26 @@ async function main() {
       },
     });
 
+    await tx.company.createMany({
+      data: [
+        {
+          name: 'Wire',
+          description: 'Wire Transfer',
+          createdById: user.id,
+        },
+        {
+          name: 'Vigo',
+          description: 'Banco Vigo',
+          createdById: user.id,
+        },
+        {
+          name: 'Westerunion',
+          description: 'Compañia WesterUnion',
+          createdById: user.id,
+        },
+      ],
+    });
+
     await tx.customer.createMany({
       data: [
         {

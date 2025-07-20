@@ -69,6 +69,7 @@ model Country {
   id          String     @id @default(cuid())
   name        String     @unique
   code        String     @unique // Ej: "US", "MX"
+  isActive    Boolean    @default(true)
   createdById String     @db.Uuid // Cambiado a Uuid
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -85,6 +86,7 @@ model State {
   countryId   String
   country     Country    @relation(fields: [countryId], references: [id])
   cities      City[] // Relación 1 a muchos
+  isActive    Boolean    @default(true)
   createdById String     @db.Uuid // Cambiado a Uuid
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -98,6 +100,7 @@ model City {
   name        String
   stateId     String
   state       State      @relation(fields: [stateId], references: [id])
+  isActive    Boolean    @default(true)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   customer    Customer[] // Relación inversa

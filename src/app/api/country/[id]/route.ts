@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import prisma from "@/app/lib/db";
-import { companyFormSchema } from "@/app/lib/schemas/commonFormSchema";
+import { countryFormSchema } from "@/app/lib/schemas/commonFormSchema";
 import { auth } from "@/app/lib/auth-credentials/auth";
 
-// Obtener una Compañia por ID
+// Obtener una Pais por ID
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -22,25 +22,22 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const company = await prisma.company.findUnique({
+    const country = await prisma.country.findUnique({
       where: { id: id },
-      include: {
-        wireTransfer: true,
-      },
     });
 
-    if (!company) {
+    if (!country) {
       return NextResponse.json(
-        { error: "Compañia no encontrada" },
+        { error: "País no encontrado" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(company);
+    return NextResponse.json(country);
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      { error: "Error al obtener la compañia" },
+      { error: "Error al obtener el país" },
       { status: 500 }
     );
   }
@@ -54,8 +51,8 @@ export async function PUT(
 
   if (!session?.user?.id) {
       return NextResponse.json(
-        { error: "Compañia no encontrada" },
-        { status: 404 }
+        { error: "No Autorizado" },
+        { status: 502 }
       );
   }
 
@@ -65,10 +62,10 @@ export async function PUT(
   try {
     // Obtener y validar cuerpo
     const body = await req.json();
-    const validatedData = companyFormSchema.parse(body);
+    const validatedData = countryFormSchema.parse(body);
 
     // Actualizar compañia
-    const updCompany = await prisma.company.update({
+    const updCountry = await prisma.country.update({
       where: { id: id },
       data: {
         ...validatedData,
@@ -76,7 +73,7 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json({ data: updCompany }, { status: 200 });
+    return NextResponse.json({ data: updCountry }, { status: 200 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -103,8 +100,8 @@ export async function DELETE(
 
   if (!session?.user?.id) {
       return NextResponse.json(
-        { error: "Compañia no encontrada" },
-        { status: 404 }
+        { error: "No Autorizado" },
+        { status: 502 }
       );
   }
 
@@ -112,29 +109,26 @@ export async function DELETE(
   const createdById = session.user.id;
 
   try {
-    const company = await prisma.company.findUnique({
+    const country = await prisma.country.findUnique({
       where: { id: id },
-      include: {
-        wireTransfer: true,
-      },
     });
 
-    if (!company) {
+    if (!country) {
       return NextResponse.json({
         success: true,
-        message: "Compañia no encontrada",
+        message: "País no encontrado",
       });
     }
 
-    const updCompany = await prisma.company.update({
+    const updCountry = await prisma.country.update({
       where: { id: id },
       data: {
         createdById: createdById,
-        isActive: !company.isActive,
+        isActive: !country.isActive,
       },
     });
 
-    return NextResponse.json({ data: updCompany }, { status: 200 });
+    return NextResponse.json({ data: updCountry }, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
@@ -152,8 +146,8 @@ export async function PATCH(
 
   if (!session?.user?.id) {
       return NextResponse.json(
-        { error: "Compañia no encontrada" },
-        { status: 404 }
+        { error: "No Autorizado" },
+        { status: 502 }
       );
   }
 
@@ -165,10 +159,10 @@ export async function PATCH(
     const body = await req.json();
 
     // 3. Validación parcial (schema diferente al POST)
-    const validatedData = companyFormSchema.parse(body);
+    const validatedData = countryFormSchema.parse(body);
 
     // 4. Actualizar solo campos proporcionados
-    const updCompany = await prisma.company.update({
+    const updCountry = await prisma.country.update({
       where: { id: id },
       data: {
         ...validatedData,
@@ -176,7 +170,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json(updCompany, { status: 200 });
+    return NextResponse.json(updCountry, { status: 200 });
   } catch (error) {
     // Manejo de errores específicos
     if (error instanceof z.ZodError) {

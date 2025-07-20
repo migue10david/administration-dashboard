@@ -1,16 +1,19 @@
 import prisma from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { FilterSchema, PaginationSchema } from "@/app/lib/schemas/common";
-import { CompanyWhereInput } from "@/app/lib/types/common";
-import { companyFormSchema } from "@/app/lib/schemas/commonFormSchema";
 import { auth } from "@/app/lib/auth-credentials/auth";
+import { CountryWhereInput } from "@/app/lib/types/common";
+import { countryFormSchema } from "@/app/lib/schemas/commonFormSchema";
 
-// GET /api/company  --> Obtener todas las compañias
+// GET /api/country  --> Obtener todos los paises
 export async function GET(request: NextRequest) {
   const session = await auth();
 
   if (!session?.user?.id) {
-    return new Response("No autorizado", { status: 401 });
+    return NextResponse.json(
+        { success: false, error: "No autorizado" },
+        { status: 401 }
+    )    
   }
 
   const isAdmin = session.user.role;
@@ -27,7 +30,7 @@ export async function GET(request: NextRequest) {
       search: searchParams.get("search") || undefined,
     });
 
-    const where: CompanyWhereInput = {
+    const where: CountryWhereInput = {
       AND: [ ...(isAdmin === "ADMIN" ? [] : [{ isActive: true }])],
     };
 
@@ -39,35 +42,30 @@ export async function GET(request: NextRequest) {
             contains: filters.search as string,
             mode: "insensitive",
           },
-        },
-        {
-          description: {
+          code: {
             contains: filters.search as string,
             mode: "insensitive",
           },
-        },
+        }
       ];
     }
 
     // Consulta base
     const query = {
       where,
-      include: {
-        wireTransfer: true,
-      },
       skip: (pagination.page - 1) * pagination.limit,
       take: pagination.limit,
     };
 
     // Ejecutar consulta
-    const [companies, total] = await Promise.all([
-      prisma.company.findMany(query),
-      prisma.company.count({ where }),
+    const [country, total] = await Promise.all([
+      prisma.country.findMany(query),
+      prisma.country.count({ where }),
     ]);
 
     return NextResponse.json({
       status: 200,
-      data: companies,
+      data: country,
       meta: {
         total,
         page: pagination.page,
@@ -84,12 +82,15 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/compania --> Crear una nueva compañia
+// POST /api/country --> Crear un nuevo pais
 export async function POST(req: Request) {
   const session = await auth();
 
   if (!session?.user?.id) {
-    return new Response("No autorizado", { status: 401 });
+    return NextResponse.json(
+        { success: false, error: "No autorizado" },
+        { status: 401 }
+    )    
   }
 
   const createdById = session.user.id;
@@ -98,22 +99,22 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     // 2. Validar con Zod
-    const validatedData = companyFormSchema.parse(body);
+    const validatedData = countryFormSchema.parse(body);
 
     // 3. Crear categoría en Prisma
-    const company = await prisma.company.create({
+    const country = await prisma.country.create({
       data: {
         name: validatedData.name,
-        description: validatedData.description,
+        code: validatedData.code,
         createdById: createdById,
       },
     });
 
-    return NextResponse.json({ data: company }, { status: 201 });
+    return NextResponse.json({ data: country }, { status: 201 });
   } catch (error) {
-    console.error("Error creando la Compañía:", error);
+    console.error("Error creando el País:", error);
     return NextResponse.json(
-      { error: "Error creando la Compañía" },
+      { error: "Error creando el País" },
       { status: 500 }
     );
   }
