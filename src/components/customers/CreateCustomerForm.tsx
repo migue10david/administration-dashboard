@@ -4,8 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import {
-  CustomerSchema,
-  CustomerFormValues,
+  CustomerFormSchema,
+  CustomerFormValues
 } from "@/app/lib/schemas/customerFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,7 @@ type Props = {
   onOpenChange: (open: boolean) => void;
 };
 
-const CreateClientForm = ({ onOpenChange }: Props) => {
+const CreateCustomerForm = ({ onOpenChange }: Props) => {
   const [file, setFile] = useState<File>();
   const [, setIsSubmitting] = useState(false);
 
@@ -22,15 +22,17 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<CustomerFormValues>({
-    resolver: zodResolver(CustomerSchema),
+    resolver: zodResolver(CustomerFormSchema),
     mode: "onChange",
     defaultValues: {
+      code: "",
       firstName: "",
       middleName: "",
       lastNameOne: "",
@@ -42,14 +44,11 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
       dob: new Date(),
       ssn: "",
       dlid: "",
-      imageUrl: "",
-      percentage: 0,
-      createdById: "",
-      type: "CUSTOMER",
+      percentage: "",
       notes: "",
       countryId: "",
-      stateId: "",      
-      cityId: "",
+      stateId: "",
+      cityId: ""
     },
   });
 
@@ -77,12 +76,12 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
 
       console.log("File:", file);
 
-      // Agregar archivos
+      // Agregar foto
       if (file) {
-        formData.append("dniImage", file);
+        formData.append("customerPhoto", file);
       }
 
-      const response = await fetch("/api/clientes", {
+      const response = await fetch("/api/customer", {
         method: "POST",
         body: formData,
       });
@@ -126,11 +125,11 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="nombre" className="text-right">
-              Nombre
+              Primer Nombre
             </Label>
             <Input
               type="text"
-              placeholder="Nombre"
+              placeholder="Primer Nombre"
               className="col-span-3"
               {...register("firstName")}
               required
@@ -142,7 +141,57 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
             )}
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="direccion" className="text-right">
+            <Label htmlFor="middleName" className="text-right">
+              Segundo Nombre
+            </Label>
+            <Input
+              type="text"
+              placeholder="Segundo Nombre"
+              className="col-span-3"
+              {...register("middleName")}
+            />
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="lastNameOne" className="text-right">
+              Primer Apellido
+            </Label>
+            <Input
+              type="text"
+              placeholder="Primer Apellido"
+              className="col-span-3"
+              {...register("lastNameOne")}
+              required
+            />
+            {errors.lastNameOne && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.lastNameOne.message}
+              </p>
+            )}
+          </div>
+
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="lastNameTwo" className="text-right">
+              Segundo Apellido
+            </Label>
+            <Input
+              type="text"
+              placeholder="Segundo Apellido"
+              className="col-span-3"
+              {...register("lastNameTwo")}
+              required
+            />
+            {errors.lastNameTwo && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.lastNameTwo.message}
+              </p>
+            )}
+          </div>
+
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="address" className="text-right">
               Dirección
             </Label>
             <Input
@@ -150,6 +199,7 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
               placeholder="Dirección"
               className="col-span-3"
               {...register("address")}
+              required
             />
             {errors.address && (
               <p className="mt-1 text-sm text-red-600">
@@ -157,6 +207,41 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
               </p>
             )}
           </div>
+
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="address" className="text-right">
+              Apartamento
+            </Label>
+            <Input
+              type="text"
+              placeholder="Apartamento"
+              className="col-span-3"
+              {...register("apartment")}
+            />
+          </div>
+
+
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="address" className="text-right">
+              Código Postal
+            </Label>
+            <Input
+              type="text"
+              placeholder="Código Postal"
+              className="col-span-3"
+              {...register("zipCode")}
+              required
+            />
+            {errors.zipCode && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.zipCode.message}
+              </p>
+            )}
+          </div>
+
+
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="telefono" className="text-right">
               Teléfono
@@ -174,35 +259,94 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
               </p>
             )}
           </div>
+
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="nacionalidad" className="text-right">
-              Nacionalidad
+            <Label htmlFor="telefono" className="text-right">
+              Fecha de Nacimiento
             </Label>
             <Input
               type="text"
-              placeholder="Nacionalidad"
+              placeholder="Fecha de Nacimiento"
               className="col-span-3"
-              {...register("countryId")}
+              {...register("dob")}
+              required
             />
-            {errors.countryId && (
+            {errors.dob && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.countryId.message}
+                {errors.dob.message}
               </p>
             )}
           </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              
-            </div>
+
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="telefono" className="text-right">
+              SSN
+            </Label>
+            <Input
+              type="text"
+              placeholder="SSN"
+              className="col-span-3"
+              {...register("ssn")}
+              required
+            />
+            {errors.ssn && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.ssn.message}
+              </p>
+            )}
+          </div>
+
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="telefono" className="text-right">
+              Licencia
+            </Label>
+            <Input
+              type="text"
+              placeholder="Licencia"
+              className="col-span-3"
+              {...register("dlid")}
+              required
+            />
+            {errors.dlid && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.dlid.message}
+              </p>
+            )}
+          </div>
+
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="telefono" className="text-right">
+              Porcentaje
+            </Label>
+            <Input
+              type="number"
+              placeholder="Porciento"
+              className="col-span-3"
+              {...register("percentage", { valueAsNumber: true })}
+              required
+            />
+            {errors.percentage && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.percentage.message}
+              </p>
+            )}
+          </div>
+
+
 
           <div className="flex flex-col gap-2 px-3 py-3 border-dashed border-2 border-gray-300 rounded-md">
-            <Label>Foto del DNI</Label>
+            <Label>Foto</Label>
             <div className="grid grid-cols-3 gap-2">
               <div className="relative group flex items-center justify-center">
                 {file?.type.startsWith("image") && (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={URL.createObjectURL(file)}
-                    alt={`Preview de la foto del DNI`}
+                    alt={`Preview de la foto`}
                     className="w-full h-32 object-cover rounded border"
                   />
                 )}
@@ -236,6 +380,8 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
             />
           </div>
         </div>
+
+        
         <div className="flex justify-end gap-4">
           <Button
             type="button"
@@ -251,4 +397,4 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
   );
 };
 
-export default CreateClientForm;
+export default CreateCustomerForm;

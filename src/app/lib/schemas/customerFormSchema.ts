@@ -89,38 +89,58 @@ export const CustomerSchema = z.object({
     createdAt: z.date(),
     updatedAt: z.date(),
   }),
-  status: z.object({
-    id: z.string(),
-    name: z.string(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-    customers: z.array(z.string()),
-    cheques: z.array(z.string()),
-  }),
   // Relaciones inversas
   checkTransaction: z.array(z.string()).optional(), // Relación uno a muchos (inversa)
   WireTransfer: z.array(z.string()).optional(), // Relación uno a muchos (inversa)
 });
 
-export type CustomerFormValues = z.infer<typeof CustomerSchema>;
+export const CustomerFormSchema = z.object({
+  code: z.string().min(1).max(8),
+  firstName: z.string().min(3).max(20),
+  middleName: z.string().optional(),
+  lastNameOne: z.string().min(3).max(30),
+  lastNameTwo: z.string().min(3).max(30),
+  address: z.string().min(3).max(50),
+  apartment: z.string().optional(),
+  zipCode: z.string().min(1).max(5),
+  phone: z
+    .string()
+    .min(10)
+    .regex(/^[0-9+]+$/),
+  dob: z.date(),
+  ssn: z.string().min(9).max(11),
+  dlid: z.string().min(9).max(11),
+
+
+  percentage: z.string().min(1).max(3),
+ 
+  
+  notes: z.string().optional(),
+  countryId: z.string(),
+  stateId: z.string(),
+  cityId: z.string(),
+});
+
+export type CustomerFormValues = z.infer<typeof CustomerFormSchema>;
 
 // Esquema para crear un nuevo Cliente (omitiendo campos autogenerados)
 export const CreateCustomerSchema = CustomerSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-  country: true,
-  state: true,
-  city: true,
+  country: true, // Omitir el objeto completo
+  state: true, // Omitir el objeto completo
+  city: true, // Omitir el objeto completo
   checkTransaction: true,
   WireTransfer: true,
 }).extend({
-  imageUrl: z.string().optional().default(""),
+  countryId: z.string(), // Añadir solo el ID
+  stateId: z.string(),
+  cityId: z.string(),
 });
 
 // Esquema para actualizar un Cliente
-export const UpdateClienteSchema = CreateCustomerSchema.partial().extend({
-});
+export const UpdateClienteSchema = CreateCustomerSchema.partial().extend({});
 
 // Esquema para filtros/búsqueda
 export const FilterClienteSchema = z

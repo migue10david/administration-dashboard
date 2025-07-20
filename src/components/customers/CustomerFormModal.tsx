@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import CreateClientForm from "./CreateClientForm"
+import CreateClientForm from "./CreateCustomerForm"
 
 interface Props {
   open: boolean
