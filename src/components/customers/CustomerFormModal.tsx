@@ -14,7 +14,7 @@ interface Props {
   onOpenChange: (open: boolean) => void
 }
 
-export default function ClientFormModal({ open, onOpenChange }: Props) {
+export default function CustomerFormModal({ open, onOpenChange }: Props) {
 
 
   return (

@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Grid, List, Plus, Search } from "lucide-react";
 import { Input } from "../ui/input";
-import ClientCard from "./ClientCard";
-import ClientTable from "./ClientTable";
-import ClientFormModal from "./ClientFormModal";
 import { Customer } from "@/app/lib/types/modelTypes";
+import CustomerCard from "./CustomerCard";
+import CustomerTable from "./CustomerTable";
+import CustomerFormModal from "./CustomerFormModal";
 
 type Props = {
   customers: Customer[];
@@ -65,13 +65,13 @@ const Customers = ({ customers }: Props) => {
 
       {/* Vista condicional */}
       {viewMode === "cards" ? (
-        <ClientCard customers={customers} />
+        <CustomerCard customers={customers} />
       ) : (
-        <ClientTable customers={customers} />
+        <CustomerTable customers={customers} />
       )}
 
       {/* Modal del formulario */}
-      <ClientFormModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+      <CustomerFormModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>
   );
 };

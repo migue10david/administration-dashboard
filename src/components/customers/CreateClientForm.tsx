@@ -62,7 +62,7 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
     setFile(undefined);
   };
 
-  const onSubmit = async (data: ClientFormValues) => {
+  const onSubmit = async (data: CustomerFormValues) => {
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -130,14 +130,14 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
             </Label>
             <Input
               type="text"
-              placeholder="Nombre completo"
+              placeholder="Nombre"
               className="col-span-3"
-              {...register("nombre")}
+              {...register("firstName")}
               required
             />
-            {errors.nombre && (
+            {errors.firstName && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.nombre.message}
+                {errors.firstName.message}
               </p>
             )}
           </div>
@@ -149,11 +149,11 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
               type="text"
               placeholder="Dirección"
               className="col-span-3"
-              {...register("direccion")}
+              {...register("address")}
             />
-            {errors.direccion && (
+            {errors.address && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.direccion.message}
+                {errors.address.message}
               </p>
             )}
           </div>
@@ -165,12 +165,12 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
               type="text"
               placeholder="Teléfono"
               className="col-span-3"
-              {...register("telefono")}
+              {...register("phone")}
               required
             />
-            {errors.telefono && (
+            {errors.phone && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.telefono.message}
+                {errors.phone.message}
               </p>
             )}
           </div>
@@ -182,21 +182,24 @@ const CreateClientForm = ({ onOpenChange }: Props) => {
               type="text"
               placeholder="Nacionalidad"
               className="col-span-3"
-              {...register("nacionalidad")}
+              {...register("countryId")}
             />
-            {errors.nacionalidad && (
+            {errors.countryId && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.nacionalidad.message}
+                {errors.countryId.message}
               </p>
             )}
           </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              
+            </div>
 
           <div className="flex flex-col gap-2 px-3 py-3 border-dashed border-2 border-gray-300 rounded-md">
             <Label>Foto del DNI</Label>
             <div className="grid grid-cols-3 gap-2">
               <div className="relative group flex items-center justify-center">
                 {file?.type.startsWith("image") && (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={URL.createObjectURL(file)}
                     alt={`Preview de la foto del DNI`}

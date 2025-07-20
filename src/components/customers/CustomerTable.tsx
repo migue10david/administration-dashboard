@@ -14,7 +14,7 @@ type Props = {
   customers: Customer[];
 };
 
-const ClientTable = ({ customers }: Props) => {
+const CustomerTable = ({ customers }: Props) => {
   return (
     <div className="pt-4">
     <div className="border rounded-lg">
@@ -25,7 +25,6 @@ const ClientTable = ({ customers }: Props) => {
             <TableHead>Direccion</TableHead>
             <TableHead>Teléfono</TableHead>
             <TableHead>Nacionalidad</TableHead>
-            <TableHead>DNI</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -35,18 +34,6 @@ const ClientTable = ({ customers }: Props) => {
               <TableCell>{customer.address}</TableCell>
               <TableCell>{customer.phone}</TableCell>
               <TableCell>{customer.countryId}</TableCell>
-              <TableCell>
-                {" "}
-                {customer.imageUrl && (
-                  <Image
-                    src={customer.imageUrl}
-                    alt={customer.firstName + " " + customer.lastNameOne}
-                    className="h-12 w-12"
-                    width={120}
-                    height={120}
-                  />
-                )}
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -56,4 +43,4 @@ const ClientTable = ({ customers }: Props) => {
   );
 };
 
-export default ClientTable;
+export default CustomerTable;

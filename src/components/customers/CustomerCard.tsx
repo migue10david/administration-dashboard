@@ -1,6 +1,5 @@
 import React from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card'
-import Image from 'next/image'
 import { Customer } from '@/app/lib/types/modelTypes'
 import Link from 'next/link'
 
@@ -8,7 +7,7 @@ type Props = {
     customers: Customer[]
 }
 
-const ClientCard = ({ customers }: Props) => {
+const CustomerCard = ({ customers }: Props) => {
   return (
     <div className="pt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {customers.map((customer) => (
@@ -29,15 +28,6 @@ const ClientCard = ({ customers }: Props) => {
                 <div className="text-sm">
                   <span className="font-medium">Empresa:</span> {customer.countryId}
                 </div>
-                {/* {customer.imageUrl && (
-                  <Image
-                    src={customer.imageUrl}
-                    alt={customer.firstName + ' ' + customer.lastNameOne}
-                    className="h-12 w-12"
-                    width={120}
-                    height={120}
-                  />
-                )} */}
               </CardContent>
             </Card>
           </Link>
@@ -46,4 +36,4 @@ const ClientCard = ({ customers }: Props) => {
   )
 }
 
-export default ClientCard
+export default CustomerCard

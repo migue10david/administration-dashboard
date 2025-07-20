@@ -1,33 +1,32 @@
+import { getCustomers } from "@/app/lib/actions/customersActions";
 import Customers from "@/components/customers/Customers";
+import { PaginationWithLinks } from "@/components/ui/pagination-with-links";
 import React from "react";
-import { headers } from 'next/headers'
 
-const ClientesPage = async () => {
-  // Obtén las cookies del cliente
-  const cookie = (await headers()).get('cookie')
+type Props = {
+  searchParams: Promise<{ [key: string]: string | undefined }>;
+};
 
-  // Llama a tu API pasando la cookie
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/customer`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(cookie ? { cookie } : {}), // ✅ Incluye la sesión del usuario
-    },
-    cache: 'no-cache', // opcional, evita cache en desarrollo
-  })
-
-  const customers = await res.json()
-
-  if (!res.ok) {
-    throw new Error(customers.error || 'No se pudieron cargar los clientes')
-  }
+const CustomersPage = async ({ searchParams }: Props) => {
+  const resolvedSearchParams = await searchParams;
+  const currentPage = parseInt((resolvedSearchParams.page as string) || "1");
+  const postsPerPage = parseInt(
+    (resolvedSearchParams.pageSize as string) || "12"
+  );
+  const { data, totalPages } = await getCustomers();
 
   return (
     <div className="space-y-4">
-      <Customers customers={customers.data} />
+      <Customers customers={data} />
+      <div className="absolute bottom-8 left-0 right-0 flex justify-center">
+        <PaginationWithLinks
+          page={currentPage}
+          pageSize={postsPerPage}
+          totalCount={totalPages}
+        />
+      </div>
     </div>
   );
 };
 
-export default ClientesPage;
-
+export default CustomersPage;
