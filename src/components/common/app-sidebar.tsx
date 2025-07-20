@@ -2,7 +2,6 @@
 
 import type * as React from "react";
 import { Building2, DoorOpen, FileText, Home, Users } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -18,7 +17,6 @@ import {
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
-// Datos de navegación del dashboard
 const navigationItems = [
   {
     title: "Inicio",
@@ -44,18 +42,18 @@ const navigationItems = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar {...props} >
-      <SidebarHeader className="bg-white">
-        <SidebarMenu >
+    <Sidebar {...props} className="bg-gray-50 border-r border-gray-200">
+      <SidebarHeader className="bg-gradient-to-r from-blue-600 to-blue-800">
+        <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <div>
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <div className="text-white hover:bg-gradient-to-r from-blue-600 to-blue-800 hover:text-white">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white/20">
                   <Building2 className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-semibold">Mi Dashboard</span>
-                  <span className="text-xs">Sistema de Gestión</span>
+                  <span className="text-xs opacity-80">Sistema de Gestión</span>
                 </div>
               </div>
             </SidebarMenuButton>
@@ -64,12 +62,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent className="bg-white">
         <SidebarGroup>
-          <SidebarGroupLabel>Navegación Principal</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Navegación Principal
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title} className="px-2">
-                  <SidebarMenuButton className="h-12 px-4 text-base hover:shadow-lg">
+                  <SidebarMenuButton className="h-12 px-4 text-base text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
                     <Link
                       href={`/dashboard/${item.url}`}
                       className="flex items-center gap-3 w-full"
@@ -80,13 +80,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              <button
-                className=" px-5 py-2 text-black flex gap-3 hover:shadow-lg "
-                type="submit"
-                onClick={() => signOut({ callbackUrl: "/auth/login" })}
-              >
-                <DoorOpen/> Salir
-              </button>
+              <SidebarMenuItem className="px-2 mt-4">
+                <button
+                  className="w-full h-12 px-4 text-base text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-3 transition-colors duration-200"
+                  onClick={() => signOut({ callbackUrl: "/auth/login" })}
+                >
+                  <DoorOpen className="h-5 w-5" />
+                  <span>Salir</span>
+                </button>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

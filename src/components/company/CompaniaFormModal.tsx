@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import CreateCompaniaForm from "./CreateCompaniaForm"
+import CreateCompaniaForm from "./CreateCompanyForm"
 
 
 interface Props {

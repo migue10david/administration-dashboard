@@ -1,4 +1,4 @@
-import { getCustomers } from "@/app/lib/actions/customersActions";
+import { filters, getCustomers } from "@/app/lib/actions/customersActions";
 import Customers from "@/components/customers/Customers";
 import { PaginationWithLinks } from "@/components/ui/pagination-with-links";
 import React from "react";
@@ -13,7 +13,10 @@ const CustomersPage = async ({ searchParams }: Props) => {
   const postsPerPage = parseInt(
     (resolvedSearchParams.pageSize as string) || "12"
   );
-  const { data, totalPages } = await getCustomers();
+  const filters: filters ={
+    search: resolvedSearchParams.search as string || ""
+  } 
+  const { data, totalPages } = await getCustomers(filters);
 
   return (
     <div className="space-y-4">

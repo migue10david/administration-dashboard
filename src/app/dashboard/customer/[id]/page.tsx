@@ -4,6 +4,8 @@ import { User } from "lucide-react";
 import Image from "next/image";
 import BreadCrumbs from "@/components/common/bread-crumbs";
 import { getCustomersById } from "@/app/lib/actions/customersActions";
+import { CustomerTab } from "@/components/customers/CustomersTab";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   params: {
@@ -18,13 +20,16 @@ const CustomersDetailsPage = async ({ params }: Props) => {
   return (
     <div className="bg-[#F3F5F9] min-h-screen">
       <div className="px-4 py-16 sm:px-6 lg:px-8">
-        <BreadCrumbs pages={["Customer"]} />
+        <BreadCrumbs pages={[{name: "Clientes", url: "/dashboard/customer"}]} />
         <div className="bg-white px-4 py-6 sm:px-6 lg:px-8 rounded-md shadow-md">
-          <div className="flex items-center gap-1">
-            <div className="w-10 h-10 bg-[#FAF8F9] rounded-md relative">
+          <div className="flex items-center justify-between gap-1">
+            <div className="flex items-center gap-1">
+              <div className="w-10 h-10 bg-[#FAF8F9] rounded-md relative">
               <User className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 rounded-md" />
             </div>
             <h1 className="text-2xl font-bold">Detalles Personales</h1>
+            </div>
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-4 py-2">Editar Perfil</Button>
           </div>
           <div className="py-2 space-y-2">
             <h1 className="text-xl font-bold">Informacion Personal</h1>
@@ -109,6 +114,7 @@ const CustomersDetailsPage = async ({ params }: Props) => {
               </div>
             </div>
           </div>
+           <CustomerTab />
         </div>
       </div>
     </div>

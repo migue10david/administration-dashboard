@@ -1,19 +1,18 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { Grid, List, Plus, Search } from "lucide-react";
-import { Input } from "../ui/input";
+import { Grid, List, Plus } from "lucide-react";
 import { Customer } from "@/app/lib/types/modelTypes";
 import CustomerCard from "./CustomerCard";
 import CustomerTable from "./CustomerTable";
 import CustomerFormModal from "./CustomerFormModal";
+import Search from "../common/search";
 
 type Props = {
   customers: Customer[];
 };
 
 const Customers = ({ customers }: Props) => {
-  const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -27,13 +26,7 @@ const Customers = ({ customers }: Props) => {
 
         {/* Campo de búsqueda */}
         <div className="relative w-1/2 items-center gap-4">
-          <Input
-            placeholder="Buscar clientes..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
-          />
-          <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search />
         </div>
 
         {/* Vista en tabla o tarjetas */}

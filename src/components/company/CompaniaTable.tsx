@@ -7,13 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Companias } from "@/app/lib/types/modelTypes";
+import { Company } from "@/app/lib/types/modelTypes";
 
 type Props = {
-  companias: Companias[];
+  companies: Company[];
 };
 
-const CompaniaTable = ({ companias }: Props) => {
+const CompaniaTable = ({ companies }: Props) => {
   return (
     <div className="pt-4 ">
       <div className="border rounded-lg">
@@ -27,12 +27,12 @@ const CompaniaTable = ({ companias }: Props) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {companias.map((compania) => (
+            {companies.map((compania) => (
               <TableRow key={compania.id}>
                 <TableCell className="font-medium h-16">{compania.name}</TableCell>
-                <TableCell className="h-16">{compania.direccion}</TableCell>
-                <TableCell className="h-16">{compania.telefono}</TableCell>
-                <TableCell className="h-16">{compania.comentarios}</TableCell>
+                <TableCell className="h-16">{compania.description}</TableCell>
+                <TableCell className="h-16">{compania.name}</TableCell>
+                <TableCell className="h-16">{compania.isActive}</TableCell>
               </TableRow>
             ))}
           </TableBody>
