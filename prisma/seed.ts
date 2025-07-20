@@ -1,6 +1,7 @@
 // prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
+import bcrypt from "bcryptjs";
 
 // Cargar variables de entorno
 dotenv.config();
@@ -31,7 +32,7 @@ async function main() {
       data: {
         name: 'Miguel',
         email: 'miguel@example.com', 
-        password: '123456',
+        password: await bcrypt.hash("123456", 10),
         role: 'ADMIN',
       },
     });

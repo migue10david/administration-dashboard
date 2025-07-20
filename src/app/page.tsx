@@ -1,10 +1,19 @@
-"use client"
+"use client";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
-  const session = useSession();
+  const { status } = useSession(); // Obtenemos el estado
+  const router = useRouter(); // Hook para navegación
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  session ? redirect("/dashboard") : redirect("/auth/login");
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/dashboard"); // Redirige autenticados
+    } else if (status === "unauthenticated") {
+      router.push("/auth/login"); // Redirige no autenticados
+    }
+  }, [status, router]);
+
+  return null; // No renderizamos nada
 }
