@@ -28,14 +28,15 @@ export type Company = {
     isActive: boolean;
 }
 
-export type Cheque = {
-  id: number;
-  clienteId: number;
-  companiaId: number;
-  fechaActual: Date;
-  fechaCheque: Date;
-  cantidad: number;
-  comision: number;
-  subtotal: number;
-  estado: string;
+export type Country = {
+  id: string
+  name: string
+  code: string
+}
+
+export type State = {
+  id: string
+  name: string
+  code: string
+  countryId: string
 }

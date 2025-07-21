@@ -5,7 +5,7 @@ export const countryFormSchema = z.object({
     code: z.string().min(1).max(3),
 })
 
-export type countryFormSchema = z.infer<typeof countryFormSchema>
+export type CountryFormValues = z.infer<typeof countryFormSchema>
 
 export const companyFormSchema = z.object({
     name: z.string().min(3).max(50),
@@ -13,3 +13,12 @@ export const companyFormSchema = z.object({
 })
 
 export type CompanyFormValues = z.infer<typeof companyFormSchema>
+
+
+export const stateFormSchema = z.object({
+    name: z.string().min(3).max(50),
+    code: z.string().min(1).max(3),
+    countryId: z.string()
+})
+
+export type StateFormValues = z.infer<typeof stateFormSchema>

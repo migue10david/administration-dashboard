@@ -1,51 +1,50 @@
-import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { countryFormSchema, CountryFormValues } from '@/app/lib/schemas/commonFormSchema';
+import React from 'react'
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { companyFormSchema, CompanyFormValues } from "@/app/lib/schemas/commonFormSchema";
 
 type Props = {
   onOpenChange: (open: boolean) => void;
 };
 
-const CreateCompanyForm = ({ onOpenChange }: Props) => {
-  const router = useRouter();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CompanyFormValues>({
-    resolver: zodResolver(companyFormSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-    },
-  });
-
-  const onSubmit = async (data: CompanyFormValues) => {
-    console.log("✅ Formulario enviado:", data);
-
-    const response = await fetch("http://localhost:3000/api/company", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const res = await response.json();
-
-    onOpenChange(false);
-    router.refresh();
-
-    toast(res.message);
-  };
-
+const CreateCountryForm = ({ onOpenChange }: Props) => {
+    const router = useRouter();
+    
+      const {
+        register,
+        handleSubmit,
+        formState: { errors },
+      } = useForm<CountryFormValues>({
+        resolver: zodResolver(countryFormSchema),
+        defaultValues: {
+          name: "",
+          code: "",
+        },
+      });
+    
+      const onSubmit = async (data: CountryFormValues) => {
+        console.log("✅ Formulario enviado:", data);
+    
+        const response = await fetch("http://localhost:3000/api/country", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+    
+        const res = await response.json();
+    
+        onOpenChange(false);
+        router.refresh();
+    
+        toast(res.message);
+      };
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid gap-4 py-4">
@@ -66,13 +65,13 @@ const CreateCompanyForm = ({ onOpenChange }: Props) => {
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="direccion" className="text-right">
-            Descripcion
+            Code
           </Label>
           <Input
             type="text"
-            placeholder="Dirección"
+            placeholder="Code"
             className="col-span-3"
-            {...register("description")}
+            {...register("code")}
           />
         </div>
       </div>
@@ -84,10 +83,10 @@ const CreateCompanyForm = ({ onOpenChange }: Props) => {
         >
           Cancelar
         </Button>
-        <Button type="submit">Guardar Compañía</Button>
+        <Button type="submit">Guardar Pais</Button>
       </div>
     </form>
-  );
-};
+  )
+}
 
-export default CreateCompanyForm;
+export default CreateCountryForm

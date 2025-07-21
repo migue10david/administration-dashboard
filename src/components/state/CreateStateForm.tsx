@@ -1,36 +1,40 @@
+import {
+  stateFormSchema,
+  StateFormValues,
+} from "@/app/lib/schemas/commonFormSchema";
+import { useRouter } from "next/navigation";
 import React from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { companyFormSchema, CompanyFormValues } from "@/app/lib/schemas/commonFormSchema";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
 type Props = {
   onOpenChange: (open: boolean) => void;
 };
 
-const CreateCompanyForm = ({ onOpenChange }: Props) => {
+const CreateStateForm = ({ onOpenChange }: Props) => {
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CompanyFormValues>({
-    resolver: zodResolver(companyFormSchema),
+  } = useForm<StateFormValues>({
+    resolver: zodResolver(stateFormSchema),
     defaultValues: {
       name: "",
-      description: "",
+      code: "",
+      countryId: "",
     },
   });
 
-  const onSubmit = async (data: CompanyFormValues) => {
+  const onSubmit = async (data: StateFormValues) => {
     console.log("✅ Formulario enviado:", data);
 
-    const response = await fetch("http://localhost:3000/api/company", {
+    const response = await fetch("http://localhost:3000/api/state", {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
@@ -45,7 +49,6 @@ const CreateCompanyForm = ({ onOpenChange }: Props) => {
 
     toast(res.message);
   };
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid gap-4 py-4">
@@ -65,14 +68,25 @@ const CreateCompanyForm = ({ onOpenChange }: Props) => {
           )}
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="direccion" className="text-right">
-            Descripcion
+          <Label htmlFor="code" className="text-right">
+            Code
           </Label>
           <Input
             type="text"
-            placeholder="Dirección"
+            placeholder="Code"
             className="col-span-3"
-            {...register("description")}
+            {...register("code")}
+          />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="countryId" className="text-right">
+            Pais
+          </Label>
+          <Input
+            type="text"
+            placeholder="Pais"
+            className="col-span-3"
+            {...register("countryId")}
           />
         </div>
       </div>
@@ -84,10 +98,10 @@ const CreateCompanyForm = ({ onOpenChange }: Props) => {
         >
           Cancelar
         </Button>
-        <Button type="submit">Guardar Compañía</Button>
+        <Button type="submit">Guardar Pais</Button>
       </div>
     </form>
   );
 };
 
-export default CreateCompanyForm;
+export default CreateStateForm;
