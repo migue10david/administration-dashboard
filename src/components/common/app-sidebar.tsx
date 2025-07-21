@@ -34,11 +34,6 @@ const navigationItems = [
     icon: Building2,
   },
   {
-    title: "Cheques",
-    url: "/cheques",
-    icon: FileText,
-  },
-  {
     title: "Paises",
     url: "/country",
     icon: Flag
@@ -47,6 +42,11 @@ const navigationItems = [
     title: "Estados",
     url: "/state",
     icon: Star
+  },
+  {
+    title: "Ciudades",
+    url: "/city",
+    icon: FileText
   }
 ];
 

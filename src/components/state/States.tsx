@@ -1,19 +1,20 @@
-"use client"
-import { State } from '@/app/lib/types/modelTypes'
-import React, { useState } from 'react'
-import Search from '../common/search'
-import { Button } from '../ui/button'
-import { Plus } from 'lucide-react'
-import StateFormModal from './StateFormModal'
+"use client";
+import {  Country, State } from "@/app/lib/types/modelTypes";
+import React, { useState } from "react";
+import Search from "../common/search";
+import { Button } from "../ui/button";
+import { Plus } from "lucide-react";
+import StateFormModal from "./StateFormModal";
 
 type Props = {
-    states: State[]
-}
+  states: State[];
+  countries: Country[];
+};
 
-const States = ({states}: Props) => {
-      const [isModalOpen, setIsModalOpen] = useState(false);
+const States = ({ states, countries }: Props) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
-   <div className="px-4 py-4">
+    <div className="px-4 py-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-2xl font-bold">Estados</h2>
 
@@ -35,7 +36,9 @@ const States = ({states}: Props) => {
             Nombre del Estado
           </div>
           <div className="col-span-3 font-medium text-gray-500">Código</div>
-          <div className="col-span-3 font-medium text-gray-500">Código del Pais</div>
+          <div className="col-span-3 font-medium text-gray-500">
+            Código del Pais
+          </div>
         </div>
 
         <div className="divide-y divide-gray-200">
@@ -45,9 +48,7 @@ const States = ({states}: Props) => {
               className="grid grid-cols-12 p-4 hover:bg-gray-50 transition-colors"
             >
               <div className="col-span-6 flex items-center">
-                <span className="font-medium text-gray-800">
-                  {state.name}
-                </span>
+                <span className="font-medium text-gray-800">{state.name}</span>
               </div>
               <div className="col-span-3 flex items-center">
                 <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
@@ -56,7 +57,7 @@ const States = ({states}: Props) => {
               </div>
               <div className="col-span-3 flex items-center">
                 <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-                  {state.countryId}
+                  {state.countryId ? countries.find(country => country.id === state.countryId)?.name : ""}
                 </span>
               </div>
             </div>
@@ -65,9 +66,9 @@ const States = ({states}: Props) => {
       </div>
 
       {/* Modal del formulario */}
-      <StateFormModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+      <StateFormModal open={isModalOpen} onOpenChange={setIsModalOpen} countries={countries} />
     </div>
-  )
-}
+  );
+};
 
-export default States
+export default States;

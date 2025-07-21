@@ -19,7 +19,24 @@ export type Customer = {
   percentage: number
   isActive: boolean
   notes?: string
+  checkTransaction: CheckTransaction[]
 };
+
+export type CheckTransaction = {
+  id: string
+  customerId: string
+  checkTransactionTypeId: string
+  number: string
+  amount: number
+  feed: number
+  createdAt: Date
+}
+
+export type TransactionType = {
+  id: string
+  name: string
+  description: string
+}
 
 export type Company = {
     id: string;

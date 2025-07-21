@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+import { headers } from 'next/headers'
 import { State } from "../types/modelTypes";
 
 export const getStates = async () => {

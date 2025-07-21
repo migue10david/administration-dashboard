@@ -7,13 +7,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import CreateStateForm from './CreateStateForm'
+import { Country } from '@/app/lib/types/modelTypes'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
+  countries: Country[]
 }
 
-const StateFormModal = ({ open, onOpenChange }: Props) => {
+const StateFormModal = ({ open, onOpenChange, countries }: Props) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="min-w-[700px]" onInteractOutside={(e: Event) => e.preventDefault()} onPointerDownOutside={(e: Event) => e.preventDefault()}>
@@ -21,7 +23,7 @@ const StateFormModal = ({ open, onOpenChange }: Props) => {
           <DialogTitle>Agregar Nuevo Estado</DialogTitle>
           <DialogDescription>Llena los campos para crear un nuevo estado.</DialogDescription>
         </DialogHeader>
-        <CreateStateForm onOpenChange={onOpenChange} />
+        <CreateStateForm onOpenChange={onOpenChange} countries={countries} />
       </DialogContent>
     </Dialog>
   )
