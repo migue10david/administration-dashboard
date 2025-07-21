@@ -6,3 +6,4 @@ export type StateWhereInput = Prisma.StateWhereInput;
 export type CityWhereInput = Prisma.CityWhereInput;
 export type CheckTransactionTypeWhereInput = Prisma.CheckTransactionTypeWhereInput
 export type CheckTransactionWhereInput = Prisma.CheckTransactionWhereInput
+export type WireTransferWhereInput = Prisma.WireTransferWhereInput

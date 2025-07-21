@@ -48,3 +48,28 @@ export const CheckTransactionFormSchema = z.object({
 })
 
 export type CheckTransactionFormValues = z.infer<typeof CheckTransactionFormSchema>
+
+export const WireTransferFormSchema = z.object({
+    customerId: z.string(),
+    recipientId: z.string(),
+    companyId: z.string(),
+    amount: z.number(),
+    feed: z.number()
+})
+
+export type WireTransferFormValues = z.infer<typeof WireTransferFormSchema>
+
+export const SettingFormSchema = z.object({
+  name: z.string().min(3).max(50),       
+  code: z.string().min(1).max(3),     
+  zipCode: z.string().min(3).max(5),    
+  cityId: z.string(),
+  stateId: z.string(),
+  numCustomerRate: z.number(),
+  customerPercentRate: z.number(),
+  moneyOrderFeed: z.number(),
+  maxBankDepositLimit: z.number(),
+  minimunAge: z.number()
+})
+
+export type SettingFormValues = z.infer<typeof SettingFormSchema>
