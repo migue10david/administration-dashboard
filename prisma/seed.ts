@@ -11,6 +11,7 @@ const prisma = new PrismaClient();
 async function main() {
   // Transacción para eliminar usuarios
   await prisma.$transaction(async (tx) => {
+    await tx.systemSetting.deleteMany();
     await tx.user.deleteMany();
     await tx.account.deleteMany();
     await tx.session.deleteMany();
@@ -28,6 +29,7 @@ async function main() {
   // Por ejemplo:
   await prisma.$transaction(async (tx) => {
     // Operaciones dentro de la transacción
+   
     const user = await tx.user.create({
       data: {
         name: 'Miguel',
@@ -60,6 +62,21 @@ async function main() {
         code: 'GUA',
         stateId: state.id,
         createdById: user.id,
+      },
+    });
+
+    await tx.systemSetting.create({
+      data: {
+        name: 'My Company',
+        code: '1001',
+        zipCode: '10300',
+        numCustomerPercentRate: 0.5,
+        customerPercentRate: 1.00,
+        moneyOrderFeed: 0.49,
+        maxBankDepositLimit: 100,
+        minimunAge: 5,
+        cityId: city.id,
+        stateId: state.id,
       },
     });
 
