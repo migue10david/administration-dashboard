@@ -76,7 +76,7 @@ async function main() {
           createdById: user.id,
         },
         {
-          name: 'Westerunion',
+          name: 'WesterUnion',
           description: 'Compañia WesterUnion',
           createdById: user.id,
         },
@@ -182,25 +182,27 @@ async function main() {
         {
           name: "Cash Check",
           description: "Cash Check",
-          createdById: user.id
+          createdById: user.id,
+          percentage: 0.5    //5%
         },
         {
-          name: "Other",
-          description: "Other",
-          createdById: user.id
+          name: "Money Order",
+          description: "Money Order",
+          createdById: user.id,
+          percentage: 0.49    //0.49
         }
       ]
     })
 
-    const customer = await tx.customer.findFirst();
+    const customer = await tx.customer.findMany();
     const checkTransactionType = await tx.checkTransactionType.findFirst();
 
-    if (customer && checkTransactionType) {
+    if (customer.length && checkTransactionType) {
 
       await tx.checkTransaction.createMany({
         data: [
           {
-            customerId: customer.id,
+            customerId: customer[0].id,
             checkTransactionTypeId: checkTransactionType.id,
             number: "10001",
             amount: 1000,
@@ -208,7 +210,7 @@ async function main() {
             createdById: user.id
           },
           {
-            customerId: customer.id,
+            customerId: customer[0].id,
             checkTransactionTypeId: checkTransactionType.id,
             number: "10002",
             amount: 2000,
@@ -216,7 +218,7 @@ async function main() {
             createdById: user.id
           },
           {
-            customerId: customer.id,
+            customerId: customer[0].id,
             checkTransactionTypeId: checkTransactionType.id,
             number: "10003",
             amount: 3000,
@@ -228,6 +230,30 @@ async function main() {
 
     }
 
+    const company = await tx.company.findFirst();
+
+    if (company && customer) {
+      await tx.wireTransfer.createMany({
+        data: [
+          {
+            customerId: customer[0].id,
+            recipientId: customer[3].id,
+            companyId: company.id,
+            amount: 1000,
+            feed: 100,
+            createdById: user.id
+          },
+          {
+            customerId: customer[0].id,
+            recipientId: customer[3].id,
+            companyId: company.id,
+            amount: 500,
+            feed: 50,
+            createdById: user.id
+          }
+        ]
+      });
+    }
   });
 }
 

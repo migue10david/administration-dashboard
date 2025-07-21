@@ -30,7 +30,7 @@ async function deleteUploadedFile(fileUrl: string) {
 }
 
 
-// Obtener un juguete por ID
+// Obtener un Cliente por ID
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -48,7 +48,7 @@ export async function GET(
       where: { id: id },
       include: {
         checkTransaction: true,
-        WireTransfer: true,
+        sentTransfers: true,
       },
     });
 
@@ -206,7 +206,10 @@ export async function DELETE(
   try {
     const customer = await prisma.customer.findUnique({
       where: { id: id },
-      include: { checkTransaction: true, WireTransfer: true },
+      include: { 
+        checkTransaction: true, 
+        sentTransfers: true 
+      },
     });
 
     if (!customer) {

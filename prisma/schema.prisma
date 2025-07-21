@@ -145,8 +145,10 @@ model Customer {
   country          Country            @relation(fields: [countryId], references: [id])
   state            State              @relation(fields: [stateId], references: [id])
   city             City               @relation(fields: [cityId], references: [id])
-  checkTransaction CheckTransaction[]
-  WireTransfer     WireTransfer[]
+
+  sentTransfers     WireTransfer[]    @relation("CustomerSentTransfers")
+  receivedTransfers WireTransfer[]    @relation("CustomerReceivedTransfers")
+  checkTransaction  CheckTransaction[]
 
   // Relación con el usuario creador (obligatoria)
   createdById String @db.Uuid // Cambiado a Uuid
@@ -157,6 +159,7 @@ model CheckTransactionType {
   id                String             @id @default(cuid())
   name              String
   description       String?
+  percentage        Float              @default(0)
   isActive          Boolean            @default(true)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
@@ -172,7 +175,7 @@ model CheckTransaction {
   customerId             String
   checkTransactionTypeId String
   // Datos adicionales
-  number                 String              @unique
+  number                 String               @unique
   amount                 Float
   feed                   Float
   createdAt              DateTime             @default(now())
@@ -202,18 +205,20 @@ model Company {
 }
 
 model WireTransfer {
-  id         String   @id @default(cuid())
+  id          String   @id @default(cuid())
+  customerId  String
   // Claves foráneas
-  customerId String
-  companyId  String
+  recipientId String
+  companyId   String
   // Datos adicionales
-  amount     Float
-  userId     String   @db.Uuid
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  // Relaciones 
-  customer   Customer @relation(fields: [customerId], references: [id])
-  company    Company  @relation(fields: [companyId], references: [id])
+  amount      Float
+  feed        Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  // Relaciones con nombres explícitos
+  customer    Customer @relation(fields: [customerId], references: [id], name: "CustomerSentTransfers")
+  recipient   Customer @relation(fields: [recipientId], references: [id], name: "CustomerReceivedTransfers")
+  company     Company  @relation(fields: [companyId], references: [id])
 
   // Relación con el usuario creador (obligatoria)
   createdById String @db.Uuid // Cambiado a Uuid
