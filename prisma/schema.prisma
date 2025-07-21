@@ -172,7 +172,7 @@ model CheckTransaction {
   customerId             String
   checkTransactionTypeId String
   // Datos adicionales
-  number                 String
+  number                 String              @unique
   amount                 Float
   feed                   Float
   createdAt              DateTime             @default(now())

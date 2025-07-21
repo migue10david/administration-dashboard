@@ -176,6 +176,58 @@ async function main() {
 
       ],
     });
+
+    await tx.checkTransactionType.createMany({
+      data: [
+        {
+          name: "Cash Check",
+          description: "Cash Check",
+          createdById: user.id
+        },
+        {
+          name: "Other",
+          description: "Other",
+          createdById: user.id
+        }
+      ]
+    })
+
+    const customer = await tx.customer.findFirst();
+    const checkTransactionType = await tx.checkTransactionType.findFirst();
+
+    if (customer && checkTransactionType) {
+
+      await tx.checkTransaction.createMany({
+        data: [
+          {
+            customerId: customer.id,
+            checkTransactionTypeId: checkTransactionType.id,
+            number: "10001",
+            amount: 1000,
+            feed: 100,
+            createdById: user.id
+          },
+          {
+            customerId: customer.id,
+            checkTransactionTypeId: checkTransactionType.id,
+            number: "10002",
+            amount: 2000,
+            feed: 200,
+            createdById: user.id
+          },
+          {
+            customerId: customer.id,
+            checkTransactionTypeId: checkTransactionType.id,
+            number: "10003",
+            amount: 3000,
+            feed: 300,
+            createdById: user.id
+          }
+        ]
+      })
+
+    }
+
   });
 }
 
