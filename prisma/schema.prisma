@@ -98,6 +98,7 @@ model State {
 model City {
   id          String     @id @default(cuid())
   name        String
+  code        String
   stateId     String
   state       State      @relation(fields: [stateId], references: [id])
   isActive    Boolean    @default(true)
@@ -156,6 +157,7 @@ model CheckTransactionType {
   id                String             @id @default(cuid())
   name              String
   description       String?
+  isActive          Boolean            @default(true)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   checkTransactions CheckTransaction[] // Relación uno a muchos (inversa)
@@ -170,10 +172,9 @@ model CheckTransaction {
   customerId             String
   checkTransactionTypeId String
   // Datos adicionales
-  numero                 String
+  number                 String
   amount                 Float
-  comision               Float
-  userId                 String               @db.Uuid
+  feed                   Float
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
   // Relaciones

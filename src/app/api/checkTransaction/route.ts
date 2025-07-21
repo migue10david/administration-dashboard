@@ -1,22 +1,20 @@
 import prisma from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { FilterSchema, PaginationSchema } from "@/app/lib/schemas/common";
+import { CheckTransactionWhereInput } from "@/app/lib/types/common";
+import { CheckTransactionFormSchema } from "@/app/lib/schemas/commonFormSchema";
 import { auth } from "@/app/lib/auth-credentials/auth";
-import { StateWhereInput } from "@/app/lib/types/common";
-import { stateFormSchema } from "@/app/lib/schemas/commonFormSchema";
 
-// GET /api/state  --> Obtener todos los estados
+// GET /api/checkTransaction  --> Obtener todas las transacciones de cheques
 export async function GET(request: NextRequest) {
   const session = await auth();
 
   if (!session?.user?.id) {
     return NextResponse.json(
-        { success: false, error: "No autorizado" },
-        { status: 401 }
-    )    
+      { success: false, error: "No autorizado" },
+      { status: 401 }
+    );
   }
-
-  const isAdmin = session.user.role;
 
   try {
     const { searchParams } = new URL(request.url!);
@@ -30,23 +28,17 @@ export async function GET(request: NextRequest) {
       search: searchParams.get("search") || undefined,
     });
 
-    const where: StateWhereInput = {
-      AND: [ ...(isAdmin === "ADMIN" ? [] : [{ isActive: true }])],
-    };
+    const where: CheckTransactionWhereInput = {};
 
     // Filtro por texto (búsqueda)
     if (filters.search) {
       where.OR = [
         {
-          name: {
+          number: {
             contains: filters.search as string,
             mode: "insensitive",
           },
-          code: {
-            contains: filters.search as string,
-            mode: "insensitive",
-          },
-        }
+        },
       ];
     }
 
@@ -58,14 +50,14 @@ export async function GET(request: NextRequest) {
     };
 
     // Ejecutar consulta
-    const [state, total] = await Promise.all([
-      prisma.state.findMany(query),
-      prisma.state.count({ where }),
+    const [checks, total] = await Promise.all([
+      prisma.checkTransaction.findMany(query),
+      prisma.checkTransaction.count({ where }),
     ]);
 
     return NextResponse.json({
       status: 200,
-      data: state,
+      data: checks,
       meta: {
         total,
         page: pagination.page,
@@ -76,21 +68,21 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      { error: "Error obteniendo estados" },
+      { error: "Error obteniendo pagos de cheques" },
       { status: 401 }
     );
   }
 }
 
-// POST /api/state --> Crear un nuevo estado
+// POST /api/checkTransaction --> Crear un nuevo pago por cheque
 export async function POST(req: Request) {
   const session = await auth();
 
   if (!session?.user?.id) {
     return NextResponse.json(
-        { success: false, error: "No autorizado" },
-        { status: 401 }
-    )    
+      { success: false, error: "No autorizado" },
+      { status: 401 }
+    );
   }
 
   const createdById = session.user.id;
@@ -99,23 +91,25 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     // 2. Validar con Zod
-    const validatedData = stateFormSchema.parse(body);
+    const validatedData = CheckTransactionFormSchema.parse(body);
 
     // 3. Crear categoría en Prisma
-    const state = await prisma.state.create({
+    const check = await prisma.checkTransaction.create({
       data: {
-        name: validatedData.name,
-        code: validatedData.code,
-        countryId: validatedData.countryId,
+        customerId: validatedData.customerId,
+        checkTransactionTypeId: validatedData.checkTransactionTypeId,
+        number: validatedData.number,
+        amount: validatedData.amount,
+        feed: validatedData.feed,
         createdById: createdById,
       },
     });
 
-    return NextResponse.json({ data: state }, { status: 201 });
+    return NextResponse.json({ data: check }, { status: 201 });
   } catch (error) {
-    console.error("Error creando el Estado:", error);
+    console.error("Error creando el pago del cheque:", error);
     return NextResponse.json(
-      { error: "Error creando el Estado" },
+      { error: "Error creando el pago del cheque" },
       { status: 500 }
     );
   }

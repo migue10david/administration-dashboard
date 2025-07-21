@@ -57,6 +57,7 @@ async function main() {
     const city = await tx.city.create({
       data: {
         name: 'Guadalajara',
+        code: 'GUA',
         stateId: state.id,
         createdById: user.id,
       },
