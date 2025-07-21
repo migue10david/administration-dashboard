@@ -2,10 +2,10 @@ import prisma from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { FilterSchema, PaginationSchema } from "@/app/lib/schemas/common";
 import { auth } from "@/app/lib/auth-credentials/auth";
-import { StateWhereInput } from "@/app/lib/types/common";
-import { stateFormSchema } from "@/app/lib/schemas/commonFormSchema";
+import { CheckTransactionTypeWhereInput } from "@/app/lib/types/common";
+import { checkTransactionTypeFormSchema } from "@/app/lib/schemas/commonFormSchema";
 
-// GET /api/state  --> Obtener todos los estados
+// GET /api/checkTransaction  --> Obtener todas los tipos de Transacciones
 export async function GET(request: NextRequest) {
   const session = await auth();
 
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       search: searchParams.get("search") || undefined,
     });
 
-    const where: StateWhereInput = {
+    const where: CheckTransactionTypeWhereInput = {
       AND: [ ...(isAdmin === "ADMIN" ? [] : [{ isActive: true }])],
     };
 
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
             contains: filters.search as string,
             mode: "insensitive",
           },
-          code: {
+          description: {
             contains: filters.search as string,
             mode: "insensitive",
           },
@@ -58,14 +58,14 @@ export async function GET(request: NextRequest) {
     };
 
     // Ejecutar consulta
-    const [state, total] = await Promise.all([
-      prisma.state.findMany(query),
-      prisma.state.count({ where }),
+    const [checkTransactionType, total] = await Promise.all([
+      prisma.checkTransactionType.findMany(query),
+      prisma.checkTransactionType.count({ where }),
     ]);
 
     return NextResponse.json({
       status: 200,
-      data: state,
+      data: checkTransactionType,
       meta: {
         total,
         page: pagination.page,
@@ -76,13 +76,13 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      { error: "Error obteniendo estados" },
+      { error: "Error obteniendo los tipos de trnsacciones" },
       { status: 401 }
     );
   }
 }
 
-// POST /api/state --> Crear un nuevo estado
+// POST /api/checkTransaction --> Crear un nuevo tipo de transaccion
 export async function POST(req: Request) {
   const session = await auth();
 
@@ -99,23 +99,22 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     // 2. Validar con Zod
-    const validatedData = stateFormSchema.parse(body);
+    const validatedData = checkTransactionTypeFormSchema.parse(body);
 
     // 3. Crear categoría en Prisma
-    const state = await prisma.state.create({
+    const checkTransactionType = await prisma.checkTransactionType.create({
       data: {
         name: validatedData.name,
-        code: validatedData.code,
-        countryId: validatedData.countryId,
+        description: validatedData.description,
         createdById: createdById,
       },
     });
 
-    return NextResponse.json({ data: state }, { status: 201 });
+    return NextResponse.json({ data: checkTransactionType }, { status: 201 });
   } catch (error) {
-    console.error("Error creando el Estado:", error);
+    console.error("Error creando el tipo de transaccion:", error);
     return NextResponse.json(
-      { error: "Error creando el Estado" },
+      { error: "Error creando el tipo de transaccion" },
       { status: 500 }
     );
   }

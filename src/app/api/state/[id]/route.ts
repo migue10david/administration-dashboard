@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import prisma from "@/app/lib/db";
-import { countryFormSchema } from "@/app/lib/schemas/commonFormSchema";
+import { stateFormSchema } from "@/app/lib/schemas/commonFormSchema";
 import { auth } from "@/app/lib/auth-credentials/auth";
 
-// Obtener una Pais por ID
+// Obtener un Estado por ID
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -22,22 +22,22 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const country = await prisma.country.findUnique({
+    const state = await prisma.state.findUnique({
       where: { id: id },
     });
 
-    if (!country) {
+    if (!state) {
       return NextResponse.json(
-        { error: "País no encontrado" },
+        { error: "Estado no encontrado" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(country);
+    return NextResponse.json(state);
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      { error: "Error al obtener el país" },
+      { error: "Error al obtener el estado" },
       { status: 500 }
     );
   }
@@ -52,7 +52,7 @@ export async function PUT(
   if (!session?.user?.id) {
       return NextResponse.json(
         { error: "No Autorizado" },
-        { status: 502 }
+        { status: 401 }
       );
   }
 
@@ -62,10 +62,10 @@ export async function PUT(
   try {
     // Obtener y validar cuerpo
     const body = await req.json();
-    const validatedData = countryFormSchema.parse(body);
+    const validatedData = stateFormSchema.parse(body);
 
     // Actualizar compañia
-    const updCountry = await prisma.country.update({
+    const updState = await prisma.state.update({
       where: { id: id },
       data: {
         ...validatedData,
@@ -73,7 +73,7 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json({ data: updCountry }, { status: 200 });
+    return NextResponse.json({ data: updState }, { status: 200 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -101,7 +101,7 @@ export async function DELETE(
   if (!session?.user?.id) {
       return NextResponse.json(
         { error: "No Autorizado" },
-        { status: 502 }
+        { status: 401 }
       );
   }
 
@@ -109,26 +109,26 @@ export async function DELETE(
   const createdById = session.user.id;
 
   try {
-    const country = await prisma.country.findUnique({
+    const state = await prisma.state.findUnique({
       where: { id: id },
     });
 
-    if (!country) {
+    if (!state) {
       return NextResponse.json({
         success: true,
-        message: "País no encontrado",
+        message: "Estado no encontrado",
       });
     }
 
-    const updCountry = await prisma.country.update({
+    const updState = await prisma.state.update({
       where: { id: id },
       data: {
         createdById: createdById,
-        isActive: !country.isActive,
+        isActive: !state.isActive,
       },
     });
 
-    return NextResponse.json({ data: updCountry }, { status: 200 });
+    return NextResponse.json({ data: updState }, { status: 200 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
@@ -159,10 +159,10 @@ export async function PATCH(
     const body = await req.json();
 
     // 3. Validación parcial (schema diferente al POST)
-    const validatedData = countryFormSchema.parse(body);
+    const validatedData = stateFormSchema.parse(body);
 
     // 4. Actualizar solo campos proporcionados
-    const updCountry = await prisma.country.update({
+    const updState = await prisma.state.update({
       where: { id: id },
       data: {
         ...validatedData,
@@ -170,7 +170,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json(updCountry, { status: 200 });
+    return NextResponse.json(updState, { status: 200 });
   } catch (error) {
     // Manejo de errores específicos
     if (error instanceof z.ZodError) {

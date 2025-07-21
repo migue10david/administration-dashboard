@@ -10,7 +10,10 @@ export async function GET(request: NextRequest) {
   const session = await auth();
 
   if (!session?.user?.id) {
-    return new Response("No autorizado", { status: 401 });
+    return NextResponse.json(
+      { success: false, error: "No autorizado" },
+      { status: 401 }
+    );
   }
 
   const isAdmin = session.user.role;
@@ -89,7 +92,10 @@ export async function POST(req: Request) {
   const session = await auth();
 
   if (!session?.user?.id) {
-    return new Response("No autorizado", { status: 401 });
+    return NextResponse.json(
+      { success: false, error: "No autorizado" },
+      { status: 401 }
+    );
   }
 
   const createdById = session.user.id;
