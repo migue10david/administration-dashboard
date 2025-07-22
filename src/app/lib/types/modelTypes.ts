@@ -13,6 +13,7 @@ export type Customer = {
   zipCode: string
   phone: string
   dob: Date
+  type: "CUSTOMER" | "RECIPIENT"
   ssn: string
   dlid: string
   imageUrl?: string
@@ -20,7 +21,25 @@ export type Customer = {
   isActive: boolean
   notes?: string
   checkTransaction: CheckTransaction[]
+  sentTransfers: SentTransfers[]
 };
+
+export type Recipient = Customer;
+
+export type SentTransfers = {
+  id: string
+  companyId: string
+  recipientId: string
+  amount: number
+  feed: number
+}
+
+export type City = {
+  id: string
+  name: string
+  code: string
+  stateId: string
+}
 
 export type CheckTransaction = {
   id: string

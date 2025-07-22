@@ -5,12 +5,12 @@ export type filters = {
   search?: string
 }
 
-export const getCustomers = async (filters: filters) => {
+export const getCustomers = async (filters?: filters) => {
       const cookie = (await headers()).get('cookie')
 
   const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/customer`)
 
-    if (typeof filters.search === 'string' && filters.search.trim()) {
+    if (typeof filters?.search === 'string' && filters.search.trim()) {
     url.searchParams.set('search', encodeURIComponent(filters.search.trim()));
   }
   

@@ -1,15 +1,11 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import {
-  checkFormSchema,
-  CheckFormValues,
-} from "@/app/lib/schemas/checkFormSchema";
-import { Customer, TransactionType } from "@/app/lib/types/modelTypes";
+import { Company, Customer } from "@/app/lib/types/modelTypes";
 import {
   Select,
   SelectContent,
@@ -20,103 +16,90 @@ import {
 } from "../ui/select";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import {
+  wireTransferFormSchema,
+  WireTransferFormValues,
+} from "@/app/lib/schemas/commonFormSchema";
+import { RecipientSearch } from "../recipient/Serch";
 
 type Props = {
   onOpenChange: (open: boolean) => void;
   customer: Customer;
-  transactionTypes: TransactionType[];
+  companies: Company[];
 };
 
-const CreateCustomerCheckForm = ({
+const CreateCustomerTransferForm = ({
   onOpenChange,
   customer,
-  transactionTypes,
+  companies,
 }: Props) => {
   const router = useRouter();
-  const moneyOrderFeed = 5;
-  const [selectedTransactionTypeId, setSelectedTransactionTypeId] =
-    useState<string>("");
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string>("");
   const [isCustomFeed, setIsCustomFeed] = useState(false);
+  const [recipientName, setRecipientName] = useState(""); // Estado para el nombre mostrado
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
-  } = useForm<CheckFormValues>({
-    resolver: zodResolver(checkFormSchema),
+    trigger,
+    formState: { errors, isValid },
+  } = useForm<WireTransferFormValues>({
+    resolver: zodResolver(wireTransferFormSchema),
     defaultValues: {
+      customerId: customer.id,
+      recipientId: "",
+      companyId: "",
       amount: 0,
       feed: 0,
-      number: "",
-      customerId: "",
-      checkTransactionTypeId: "",
     },
+    mode: "onChange",
   });
-
-  useEffect(() => {
-    if (customer?.id) {
-      setValue("customerId", customer.id);
-    }
-  }, [customer, setValue]);
 
   // Observa los valores relevantes
   const amount = watch("amount", 0);
   const feed = watch("feed", 0);
-  const transactionType = watch("checkTransactionTypeId");
+  const recipientId = watch("recipientId");
 
   // Calcula "A pagar"
   const totalToPay = Number(amount) + Number(feed);
 
-  // Efecto para actualizar la comisión según el tipo de transacción
-  useEffect(() => {
-    if (!isCustomFeed && transactionType) {
-      const selectedType = transactionTypes.find(
-        (t) => t.id === transactionType
-      );
-      console.log(selectedType);
+  const onSubmit = async (data: WireTransferFormValues) => {
+    try {
 
-      if (
-        selectedType?.name.toLowerCase() === "cash check" &&
-        customer?.percentage
-      ) {
-        const calculatedFeed = (amount * customer.percentage) / 100;
-        setValue("feed", parseFloat(calculatedFeed.toFixed(2)));
-      } else if (selectedType?.name.toLowerCase() === "money order") {
-        const calculatedMoneyFeed = (amount * moneyOrderFeed)/ 100;
-        setValue("feed", parseFloat(calculatedMoneyFeed.toFixed(2)));
+      const response = await fetch("http://localhost:3000/api/wireTransfer", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Datos a enviar:", data); // Para depuración
+      if (!response.ok) {
+        throw new Error("Error al procesar la transferencia");
       }
+
+      const res = await response.json();
+      onOpenChange(false);
+      router.refresh();
+      toast.success(res.message || "Transferencia realizada con éxito");
+    } catch (error) {
+      toast.error("Ocurrió un error al procesar la transferencia");
+      console.error(error);
     }
-  }, [
-    transactionType,
-    amount,
-    customer?.percentage,
-    setValue,
-    transactionTypes,
-    isCustomFeed,
-  ]);
-
-  const onSubmit = async (data: CheckFormValues) => {
-    const response = await fetch("http://localhost:3000/api/checkTransaction", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const res = await response.json();
-
-    onOpenChange(false);
-    router.refresh();
-    toast(res.message);
   };
 
   const handleFeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
-    setValue("feed", isNaN(value) ? 0 : value);
+    setValue("feed", isNaN(value) ? 0 : value, { shouldValidate: true });
     setIsCustomFeed(true);
+  };
+
+  const handleRecipientSelect = (recipient: Customer) => {
+    setValue("recipientId", recipient.id, { shouldValidate: true });
+    setRecipientName(`${recipient.firstName} ${recipient.lastNameOne}`);
+    trigger("recipientId"); // Dispara validación inmediata
   };
 
   return (
@@ -128,9 +111,7 @@ const CreateCustomerCheckForm = ({
             <Label className="text-gray-600">Nombre del Cliente</Label>
             <Input
               type="text"
-              value={`${customer.firstName} ${
-                customer.middleName || ""
-              }`.trim()}
+              value={`${customer.firstName} ${customer.middleName || ""}`.trim()}
               disabled
               className="bg-white"
             />
@@ -139,35 +120,16 @@ const CreateCustomerCheckForm = ({
             <Label className="text-gray-600">Apellidos</Label>
             <Input
               type="text"
-              value={`${customer.lastNameOne} ${
-                customer.lastNameTwo || ""
-              }`.trim()}
+              value={`${customer.lastNameOne} ${customer.lastNameTwo || ""}`.trim()}
               disabled
               className="bg-white"
             />
           </div>
         </div>
 
-        {/* Sección de datos del cheque */}
+        {/* Sección de datos de la transferencia */}
         <div className="space-y-4 p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="number" className="text-gray-600">
-                No. Cheque *
-              </Label>
-              <Input
-                type="text"
-                placeholder="Ingrese el número de cheque"
-                {...register("number")}
-                className={errors.number ? "border-red-500" : ""}
-              />
-              {errors.number && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.number.message}
-                </p>
-              )}
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="amount" className="text-gray-600">
                 Cantidad ($) *
@@ -176,7 +138,13 @@ const CreateCustomerCheckForm = ({
                 type="number"
                 step="0.01"
                 placeholder="0.00"
-                {...register("amount", { valueAsNumber: true })}
+                {...register("amount", { 
+                  valueAsNumber: true,
+                  onChange: (e) => {
+                    const value = parseFloat(e.target.value);
+                    setValue("amount", isNaN(value) ? 0 : value, { shouldValidate: true });
+                  }
+                })}
                 className={errors.amount ? "border-red-500" : ""}
               />
               {errors.amount && (
@@ -185,39 +153,53 @@ const CreateCustomerCheckForm = ({
                 </p>
               )}
             </div>
+            
+            {/* Campo de búsqueda de destinatario */}
+            <div className="space-y-2">
+              <Label htmlFor="recipient" className="text-gray-600">
+                Destinatario *
+              </Label>
+             <RecipientSearch 
+                onSelect={handleRecipientSelect}
+                error={!!errors.recipientId}
+                onBlur={() => trigger("recipientId")}
+              />
+              {errors.recipientId && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.recipientId.message || "Debe seleccionar un destinatario"}
+                </p>
+              )}
+              {/* Input oculto para el ID del destinatario (manejado por react-hook-form) */}
+               <input type="hidden" {...register("recipientId")} />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="text-gray-600">Tipo de Transacción *</Label>
+              <Label className="text-gray-600">Compañía *</Label>
               <Select
                 onValueChange={(value) => {
-                  setValue("checkTransactionTypeId", value);
-                  setSelectedTransactionTypeId(value);
-                  setIsCustomFeed(false);
+                  setValue("companyId", value, { shouldValidate: true });
+                  setSelectedCompanyId(value);
                 }}
-                value={selectedTransactionTypeId}
+                value={selectedCompanyId}
               >
-                <SelectTrigger
-                  className={
-                    errors.checkTransactionTypeId ? "border-red-500" : ""
-                  }
-                >
-                  <SelectValue placeholder="Seleccione un tipo" />
+                <SelectTrigger className={errors.companyId ? "border-red-500" : ""}>
+                  <SelectValue placeholder="Seleccione una compañía" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {transactionTypes.map((transaction) => (
-                      <SelectItem key={transaction.id} value={transaction.id}>
-                        {transaction.name}
+                    {companies.map((company) => (
+                      <SelectItem key={company.id} value={company.id}>
+                        {company.name}
                       </SelectItem>
                     ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              {errors.checkTransactionTypeId && (
+              {errors.companyId && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.checkTransactionTypeId?.message}
+                  {errors.companyId.message}
                 </p>
               )}
             </div>
@@ -235,15 +217,6 @@ const CreateCustomerCheckForm = ({
                   onChange={handleFeedChange}
                   className={`flex-1 ${errors.feed ? "border-red-500" : ""}`}
                 />
-                {!isCustomFeed && selectedTransactionTypeId && (
-                  <span className="text-sm text-gray-500 whitespace-nowrap">
-                    {transactionTypes
-                      .find((t) => t.id === selectedTransactionTypeId)
-                      ?.name.toLowerCase() === "cash check"
-                      ? `${customer?.percentage}%`
-                      : "Fijo"}
-                  </span>
-                )}
               </div>
               {errors.feed && (
                 <p className="mt-1 text-sm text-red-600">
@@ -283,7 +256,11 @@ const CreateCustomerCheckForm = ({
         >
           Cancelar
         </Button>
-        <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+        <Button 
+          type="submit" 
+          className="bg-blue-600 hover:bg-blue-700"
+          disabled={!isValid}
+        >
           Guardar Transacción
         </Button>
       </div>
@@ -291,4 +268,4 @@ const CreateCustomerCheckForm = ({
   );
 };
 
-export default CreateCustomerCheckForm;
+export default CreateCustomerTransferForm;

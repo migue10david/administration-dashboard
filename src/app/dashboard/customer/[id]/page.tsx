@@ -2,10 +2,12 @@ import React from "react";
 import { User } from "lucide-react";
 import Image from "next/image";
 import BreadCrumbs from "@/components/common/bread-crumbs";
-import { getCustomersById } from "@/app/lib/actions/customersActions";
+import { getCustomers, getCustomersById } from "@/app/lib/actions/customersActions";
 import { CustomerTab } from "@/components/customers/CustomersTab";
 import { Button } from "@/components/ui/button";
 import { getTransactionTypes } from "@/app/lib/actions/transactionTypeActions";
+import { getCompanies } from "@/app/lib/actions/companyActions";
+import { getRecipients } from "@/app/lib/actions/recipientActions";
 
 type Props = {
   params: {
@@ -18,6 +20,8 @@ const CustomersDetailsPage = async ({ params }: Props) => {
   const { id } = await params;
   const customer = await getCustomersById(id);
   const transactionTypes = await getTransactionTypes();
+  const {data} = await getCompanies();
+  const recipients = await getRecipients();
   return (
     <div className="bg-[#F3F5F9] min-h-screen">
       <div className="px-4 py-16 sm:px-6 lg:px-8">
@@ -115,7 +119,7 @@ const CustomersDetailsPage = async ({ params }: Props) => {
               </div>
             </div>
           </div>
-           <CustomerTab customer={customer} transactionTypes={transactionTypes} />
+           <CustomerTab customer={customer} transactionTypes={transactionTypes} companies={data} recipients={recipients} />
         </div>
       </div>
     </div>
