@@ -36,24 +36,24 @@ model User {
 }
 
 model SystemSetting {
-  id          String @id @default(cuid())
-  name        String
-  code        String
-  zipCode     String
-  cityId      String
-  stateId     String
+  id      String @id @default(cuid())
+  name    String
+  code    String
+  zipCode String
+  cityId  String
+  stateId String
 
-  city     City    @relation(fields: [cityId], references: [id])
-  state    State   @relation(fields: [stateId], references: [id])
+  city  City  @relation(fields: [cityId], references: [id])
+  state State @relation(fields: [stateId], references: [id])
 
-  numCustomerPercentRate Float  @default(0)
-  customerPercentRate    Float  @default(0)
-  moneyOrderFeed         Float  @default(0)
-  maxBankDepositLimit    Int  @default(0)
-  minimunAge             Int  @default(0)
+  numCustomerPercentRate Float @default(0)
+  customerPercentRate    Float @default(0)
+  moneyOrderFeed         Float @default(0)
+  maxBankDepositLimit    Int   @default(0)
+  minimunAge             Int   @default(0)
 
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
@@ -141,38 +141,38 @@ enum CustomerType {
 }
 
 model Customer {
-  id               String             @id @default(cuid())
-  code             String             @unique
-  firstName        String
-  middleName       String?
-  lastNameOne      String
-  lastNameTwo      String
-  address          String
-  apartment        String?
+  id          String       @id @default(cuid())
+  code        String       @unique
+  firstName   String
+  middleName  String?
+  lastNameOne String
+  lastNameTwo String
+  address     String
+  apartment   String?
   // Claves foráneas
-  countryId        String
-  stateId          String
-  cityId           String
+  countryId   String
+  stateId     String
+  cityId      String
   // Datos adicionales
-  zipCode          String
-  phone            String
-  dob              DateTime
-  ssn              String
-  dlid             String
-  imageUrl         String?
-  percentage       Float              @default(0)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  isActive         Boolean            @default(true)
-  type             CustomerType       @default(CUSTOMER)
-  notes            String?
+  zipCode     String
+  phone       String
+  dob         DateTime
+  ssn         String
+  dlid        String
+  imageUrl    String?
+  percentage  Float        @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  isActive    Boolean      @default(true)
+  type        CustomerType @default(CUSTOMER)
+  notes       String?
   // Relaciones
-  country          Country            @relation(fields: [countryId], references: [id])
-  state            State              @relation(fields: [stateId], references: [id])
-  city             City               @relation(fields: [cityId], references: [id])
+  country     Country      @relation(fields: [countryId], references: [id])
+  state       State        @relation(fields: [stateId], references: [id])
+  city        City         @relation(fields: [cityId], references: [id])
 
-  sentTransfers     WireTransfer[]    @relation("CustomerSentTransfers")
-  receivedTransfers WireTransfer[]    @relation("CustomerReceivedTransfers")
+  sentTransfers     WireTransfer[]     @relation("CustomerSentTransfers")
+  receivedTransfers WireTransfer[]     @relation("CustomerReceivedTransfers")
   checkTransaction  CheckTransaction[]
 
   // Relación con el usuario creador (obligatoria)
@@ -203,6 +203,7 @@ model CheckTransaction {
   number                 String               @unique
   amount                 Float
   feed                   Float
+  isActive               Boolean              @default(true)
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
   // Relaciones
@@ -238,6 +239,7 @@ model WireTransfer {
   // Datos adicionales
   amount      Float
   feed        Float
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   // Relaciones con nombres explícitos

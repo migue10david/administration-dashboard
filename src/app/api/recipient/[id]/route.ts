@@ -7,6 +7,7 @@ import { Prisma } from "@prisma/client";
 import { auth } from "@/app/lib/auth-credentials/auth";
 import { deleteUploadedFile, saveFile } from '@/app/lib/server/utils';
 
+
 // Obtener un Cliente por ID
 export async function GET(
   req: NextRequest,
@@ -31,7 +32,7 @@ export async function GET(
 
     if (!customer) {
       return NextResponse.json(
-        { error: "Cliente no Encontrado" },
+        { error: "Beneficiario no Encontrado" },
         { status: 404 }
       );
     }
@@ -40,7 +41,7 @@ export async function GET(
   } catch (error) {
     console.log(error);
     return NextResponse.json(
-      { error: "Failed to fetch cliente" },
+      { error: "Failed to fetch beneficiario" },
       { status: 500 }
     );
   }
@@ -120,7 +121,7 @@ export async function PUT(
       dlid: formData.get("dlid"),
       imageUrl: imageUrl,
       percentage: formData.get("percentage"),
-      type: "CUSTOMER",
+      type: "RECIPIENT",
       notes: formData.get("notes"),
       countryId: formData.get("countryId"),
       stateId: formData.get("stateId"),
@@ -166,7 +167,7 @@ export async function PUT(
   }
 }
 
-// Este debe ser para cambiar el estdo del juguete... ver para cuales puede pasar.
+// Este debe ser para cambiar el estdo del cliente... 
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -192,7 +193,7 @@ export async function DELETE(
     if (!customer) {
       return NextResponse.json({
         success: true,
-        message: "Cliente no encontrado",
+        message: "Beneficirio no encontrado",
       });
     }
 
@@ -207,7 +208,7 @@ export async function DELETE(
       return NextResponse.json({
         success: true,
         deletedClient: updCustomer,
-        message: `Cliente inhabilitado`,
+        message: `Beneficirio inhabilitado`,
       });
 
     } catch (error) {
@@ -215,7 +216,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         success: false,
-        error: "Error al eliminar clientes",
+        error: "Error al eliminar Beneficiario",
         details: error instanceof Error ? error.message : undefined,
       },
       { status: 500 }

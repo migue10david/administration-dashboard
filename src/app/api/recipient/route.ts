@@ -1,114 +1,103 @@
 import prisma from '@/app/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
-import { FilterSchema, PaginationSchema } from '@/app/lib/schemas/common';
 import { CustomerWhereInput } from '@/app/lib/types/customer';
 import { CreateCustomerSchema } from '@/app/lib/schemas/customerFormSchema';
 import { auth } from "@/app/lib/auth-credentials/auth";
 import { ensureUploadsDirExists, saveFile } from '@/app/lib/server/utils';
 
-// GET /api/customer
-export async function GET(
-  request: NextRequest
-) {
+// GET /api/recipient
+export async function GET(request: NextRequest) {
   const session = await auth();
 
   if (!session?.user?.id) {
     return NextResponse.json(
-        { success: false, error: "No autorizado" },
-        { status: 401 }
-      )    
+      { success: false, error: "No autorizado" },
+      { status: 401 }
+    );
   }
 
   const isAdmin = session.user.role;
 
   try {
-    const { searchParams } = new URL(request.url!)
+    const { searchParams } = new URL(request.url!);
+    
+    // Paginación opcional
+    const pageParam = searchParams.get('page');
+    const limitParam = searchParams.get('limit');
+    
+    const pagination = {
+      page: pageParam ? parseInt(pageParam) : undefined,
+      limit: limitParam ? parseInt(limitParam) : undefined
+    };
 
-    const pagination = PaginationSchema.parse({
-      page: parseInt(searchParams.get('page') || "1"),
-      limit: parseInt(searchParams.get('limit') || "10")
-    });
-
-    const filters = FilterSchema.parse({
+    const filters = {
       search: searchParams.get('search') || undefined
-    })
+    };
 
+    // Construcción del WHERE
     const where: CustomerWhereInput = {
-      AND: [ ...(isAdmin === "ADMIN" ? [] : [{ isActive: true }]), {type: "CUSTOMER"}],
-    }
-
-    // Filtro por texto (búsqueda)
-    if (filters.search) {
-      where.OR = [
-        {
-          code: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        },
-        {
-          firstName: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        },
-        {
-          middleName: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        },
-        {
-          lastNameOne: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        },
-        {
-          lastNameTwo: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        },        
-        {
-          phone: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        }
-      ];
-    }
+      AND: [
+        ...(isAdmin === "ADMIN" ? [] : [{ isActive: true }]),
+        { type: "RECIPIENT" }
+      ],
+      ...(filters.search && {
+        OR: [
+          { code: { contains: filters.search, mode: 'insensitive' } },
+          { firstName: { contains: filters.search, mode: 'insensitive' } },
+          { middleName: { contains: filters.search, mode: 'insensitive' } },
+          { lastNameOne: { contains: filters.search, mode: 'insensitive' } },
+          { lastNameTwo: { contains: filters.search, mode: 'insensitive' } },
+          { phone: { contains: filters.search, mode: 'insensitive' } }
+        ]
+      })
+    };
 
     // Consulta base
-    const query = {
-      where,
-      skip: (pagination.page - 1) * pagination.limit,
-      take: pagination.limit
-    }
+    const baseQuery = { where };
+
+    // Añadir paginación solo si vienen ambos parámetros
+    const query = pagination.page && pagination.limit
+      ? {
+          ...baseQuery,
+          skip: (pagination.page - 1) * pagination.limit,
+          take: pagination.limit
+        }
+      : baseQuery;
 
     // Ejecutar consulta
-    const [customers, total] = await Promise.all([
+    const [recipients, total] = await Promise.all([
       prisma.customer.findMany(query),
       prisma.customer.count({ where })
-    ])    
+    ]);
 
-    return NextResponse.json({
-      status: 200,
-      data: customers,
-      meta: {
-        total,
-        page:pagination.page,
-        llimit:pagination.limit,
-        totalPages: Math.ceil(total / pagination.limit),
-      },
-    });
+    // Respuesta condicional
+    return pagination.page && pagination.limit
+      ? NextResponse.json({
+          status: 200,
+          data: recipients,
+          meta: {
+            total,
+            page: pagination.page,
+            limit: pagination.limit,
+            totalPages: Math.ceil(total / pagination.limit),
+          }
+        })
+      : NextResponse.json({
+          status: 200,
+          data: recipients,
+          total // Incluir el total aunque no haya paginación
+        });
+
   } catch (error) {
-    console.log(error);
-    return NextResponse.json({ error: 'Error obteniendo clientes' }, { status: 401 })
+    console.error('Error obteniendo beneficiarios:', error);
+    return NextResponse.json(
+      { error: 'Error obteniendo beneficiarios' }, 
+      { status: 500 } // Cambiado a 500 para errores de servidor
+    );
   }
 }
 
-// POST /api/customer
+// POST /api/recipient
 export async function POST(req: Request) {
   const session = await auth();
 
@@ -158,7 +147,7 @@ export async function POST(req: Request) {
     }
 
     // Parsear datos del cliente
-    const clientData = CreateCustomerSchema.parse({
+    const recipientData = CreateCustomerSchema.parse({
       code: formData.get('code'),
       firstName: formData.get('firstName'),
       middleName: formData.get('middleName'),
@@ -173,7 +162,7 @@ export async function POST(req: Request) {
       dlid: formData.get('dlid'),
       imageUrl: imageUrl,
       percentage: formData.get('percentage'),
-      type: "CUSTOMER",
+      type: "RECIPIENT",
       notes: formData.get('notes'),
       countryId: formData.get('countryId'),
       stateId: formData.get('stateId'),
@@ -184,15 +173,15 @@ export async function POST(req: Request) {
     // Crear cliente con tipo explícito
     const customer = await prisma.customer.create({
       data: {
-        ...clientData,
+        ...recipientData,
       }
     });
 
     return NextResponse.json(customer, { status: 201 })
   } catch (error) {
-    console.error('Error creando el cliente:', error)
+    console.error('Error creando el beneficiario:', error)
     return NextResponse.json(
-      { error: 'Error creando el cliente' },
+      { error: 'Error creando el beneficiario' },
       { status: 500 }
     )
   }
