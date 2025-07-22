@@ -1,18 +1,26 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Customer } from '@prisma/client';
+import { Customer } from '@/app/lib/types/modelTypes';
 
 interface RecipientSearchProps {
   onSelect: (recipient: Customer) => void;
   onCreateNew?: () => void;
+  error?: boolean;
+  onBlur?: () => void;
 }
 
-export function RecipientSearch({ onSelect, onCreateNew }: RecipientSearchProps) {
+export function RecipientSearch({ 
+  onSelect, 
+  onCreateNew, 
+  error,
+  onBlur
+}: RecipientSearchProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedRecipient, setSelectedRecipient] = useState<Customer | null>(null);
 
   // Función para buscar beneficiarios
   const searchRecipients = useCallback(async (term: string) => {
@@ -37,11 +45,27 @@ export function RecipientSearch({ onSelect, onCreateNew }: RecipientSearchProps)
   // Debounce para evitar muchas llamadas API
   useEffect(() => {
     const timer = setTimeout(() => {
-      searchRecipients(searchTerm);
+      if (!selectedRecipient || searchTerm !== `${selectedRecipient.firstName} ${selectedRecipient.lastNameOne}`) {
+        searchRecipients(searchTerm);
+      }
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, searchRecipients]);
+  }, [searchTerm, searchRecipients, selectedRecipient]);
+
+  const handleSelect = (recipient: Customer) => {
+    setSelectedRecipient(recipient);
+    onSelect(recipient);
+    setShowDropdown(false);
+    setSearchTerm(`${recipient.firstName} ${recipient.lastNameOne}`);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      setShowDropdown(false);
+      if (onBlur) onBlur();
+    }, 200);
+  };
 
   return (
     <div className="relative w-full">
@@ -49,10 +73,17 @@ export function RecipientSearch({ onSelect, onCreateNew }: RecipientSearchProps)
         <input
           type="text"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Buscar por nombre, apellido o código..."
-          className="w-full p-2 border rounded"
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            if (e.target.value === '') {
+              setSelectedRecipient(null);
+              onSelect({} as Customer); // Reset selection
+            }
+          }}
           onFocus={() => searchTerm.length > 0 && setShowDropdown(true)}
+          onBlur={handleBlur}
+          placeholder="Buscar por nombre, apellido o código..."
+          className={`w-full p-2 border rounded ${error ? 'border-red-500' : 'border-gray-300'}`}
         />
         {isLoading && (
           <div className="flex items-center">
@@ -68,11 +99,7 @@ export function RecipientSearch({ onSelect, onCreateNew }: RecipientSearchProps)
               <div
                 key={recipient.id}
                 className="p-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => {
-                  onSelect(recipient);
-                  setShowDropdown(false);
-                  setSearchTerm(`${recipient.firstName} ${recipient.lastNameOne}`);
-                }}
+                onClick={() => handleSelect(recipient)}
               >
                 <div className="font-semibold">
                   {recipient.firstName} {recipient.lastNameOne} {recipient.lastNameTwo}
@@ -84,8 +111,8 @@ export function RecipientSearch({ onSelect, onCreateNew }: RecipientSearchProps)
             ))
           ) : (
             <div className="p-2 text-gray-500">
-              No se encontraron resultados
-              {onCreateNew && (
+              {searchTerm.length > 1 ? 'No se encontraron resultados' : 'Escribe al menos 2 caracteres'}
+              {onCreateNew && searchTerm.length > 1 && (
                 <button
                   onClick={() => {
                     onCreateNew();

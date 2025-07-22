@@ -2,8 +2,8 @@ import prisma from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { FilterSchema, PaginationSchema } from "@/app/lib/schemas/common";
 import { WireTransferWhereInput } from "@/app/lib/types/common";
-import { WireTransferFormSchema } from "@/app/lib/schemas/commonFormSchema";
 import { auth } from "@/app/lib/auth-credentials/auth";
+import { wireTransferFormSchema } from "@/app/lib/schemas/commonFormSchema";
 
 // GET /api/wiretransfer  --> Obtener todas las tansferencias bancarias
 export async function GET(request: NextRequest) {
@@ -99,7 +99,7 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     // 2. Validar con Zod
-    const validatedData = WireTransferFormSchema.parse(body);
+    const validatedData = wireTransferFormSchema.parse(body);
 
     // 3. Crear categoría en Prisma
     const wireTransfer = await prisma.wireTransfer.create({
