@@ -112,7 +112,7 @@ export const CustomerFormSchema = z.object({
   dlid: z.string().min(9).max(11),
 
 
-  percentage: z.string().min(1).max(3),
+  percentage: z.number().min(1).max(3),
  
   
   notes: z.string().optional(),
@@ -138,6 +138,33 @@ export const CreateCustomerSchema = CustomerSchema.omit({
   stateId: z.string(),
   cityId: z.string(),
 });
+
+export const CreateCustomerFormSchema = z.object({
+  code: z.string().min(1).max(8),
+  firstName: z.string().min(3).max(20),
+  middleName: z.string().optional(),
+  lastNameOne: z.string().min(3).max(30),
+  lastNameTwo: z.string().min(3).max(30),
+  address: z.string().min(3).max(50),
+  apartment: z.string().optional(),
+  zipCode: z.string().min(1).max(5),
+  phone: z
+    .string()
+    .min(10)
+    .regex(/^[0-9+]+$/),
+  dob: z.date(),
+  ssn: z.string().min(9).max(11),
+  dlid: z.string().min(9).max(11),
+
+  percentage: z.number().min(1).max(3),
+  
+  notes: z.string().optional(),
+  countryId: z.string(),
+  stateId: z.string(),
+  cityId: z.string(),
+});
+
+export type CreateCustomerFormValues = z.infer<typeof CreateCustomerFormSchema>;
 
 // Esquema para actualizar un Cliente
 export const UpdateClienteSchema = CreateCustomerSchema.partial().extend({});

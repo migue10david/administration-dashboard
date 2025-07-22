@@ -4,8 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import {
-  CustomerFormSchema,
-  CustomerFormValues,
+  CreateCustomerFormSchema,
+  CreateCustomerFormValues,
 } from "@/app/lib/schemas/customerFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -28,8 +28,8 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<CustomerFormValues>({
-    resolver: zodResolver(CustomerFormSchema),
+  } = useForm<CreateCustomerFormValues>({
+    resolver: zodResolver(CreateCustomerFormSchema),
     mode: "onChange",
     defaultValues: {
       code: "",
@@ -44,7 +44,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
       dob: new Date(),
       ssn: "",
       dlid: "",
-      percentage: "",
+      percentage: 0,
       notes: "",
       countryId: "",
       stateId: "",
@@ -61,7 +61,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
     setFile(undefined);
   };
 
-  const onSubmit = async (data: CustomerFormValues) => {
+  const onSubmit = async (data: CreateCustomerFormValues) => {
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -279,6 +279,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
     <div className="grid grid-cols-1 gap-4 mt-2">
       <div className="relative group flex items-center justify-center border-dashed border-2 border-gray-300 rounded-md p-3">
         {file?.type.startsWith("image") && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={URL.createObjectURL(file)}
             alt="Preview de la foto"
