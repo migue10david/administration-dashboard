@@ -21,6 +21,7 @@ import {
   WireTransferFormValues,
 } from "@/app/lib/schemas/commonFormSchema";
 import { RecipientSearch } from "../recipient/Serch";
+import { RecipientFormModal } from "../recipient/RecipientFormModal";
 
 type Props = {
   onOpenChange: (open: boolean) => void;
@@ -159,11 +160,13 @@ const CreateCustomerTransferForm = ({
               <Label htmlFor="recipient" className="text-gray-600">
                 Destinatario *
               </Label>
-             <RecipientSearch 
+            <div className="flex items-center gap-2">
+               <RecipientSearch 
                 onSelect={handleRecipientSelect}
                 error={!!errors.recipientId}
                 onBlur={() => trigger("recipientId")}
               />
+              <RecipientFormModal onOpenChange={onOpenChange} states={[]}/>
               {errors.recipientId && (
                 <p className="mt-1 text-sm text-red-600">
                   {errors.recipientId.message || "Debe seleccionar un destinatario"}
@@ -171,6 +174,7 @@ const CreateCustomerTransferForm = ({
               )}
               {/* Input oculto para el ID del destinatario (manejado por react-hook-form) */}
                <input type="hidden" {...register("recipientId")} />
+            </div>
             </div>
           </div>
 

@@ -145,7 +145,7 @@ export function CustomerTab({
               className="bg-blue-600 hover:bg-blue-700"
               onClick={() => setIsModalOpen(true)}
             >
-              Registrar Transferencia
+             Pago de cheque
             </Button>
             <CustomerModalCheck
               open={isModalOpen}
@@ -233,7 +233,7 @@ export function CustomerTab({
               className="bg-blue-600 hover:bg-blue-700"
               onClick={() => setIsModalOpen(true)}
             >
-              Registrar Transferencia
+               Transferencia bancaria
             </Button>
             <CustomerModalTransfer
               open={isModalOpen}

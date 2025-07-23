@@ -20,7 +20,7 @@ interface Props {
 const CustomerModalTransfer = ({ open, onOpenChange,customer, companies }: Props) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Confirmar Transferencia</DialogTitle>
           <DialogDescription>Confirma la transferencia de bancaria</DialogDescription>
