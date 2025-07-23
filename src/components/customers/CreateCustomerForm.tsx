@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import {
@@ -8,29 +7,56 @@ import {
   CreateCustomerFormValues,
 } from "@/app/lib/schemas/customerFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { 
+  Form, 
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage,
+} from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { State } from "@/app/lib/types/modelTypes";
+import { CalendarIcon } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/app/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
 
 type Props = {
   onOpenChange: (open: boolean) => void;
+  states: State[];
 };
 
-const CreateCustomerForm = ({ onOpenChange }: Props) => {
+const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
   const [file, setFile] = useState<File>();
-  const [, setIsSubmitting] = useState(false);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<CreateCustomerFormValues>({
-    resolver: zodResolver(CreateCustomerFormSchema),
-    mode: "onChange",
+  const form = useForm<CreateCustomerFormValues>({
+    resolver: zodResolver(CreateCustomerFormSchema), 
     defaultValues: {
       code: "",
       firstName: "",
@@ -50,6 +76,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
       stateId: "",
       cityId: "",
     },
+    mode: "onChange"
   });
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,6 +86,9 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
 
   const removeFile = () => {
     setFile(undefined);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const onSubmit = async (data: CreateCustomerFormValues) => {
@@ -69,14 +99,10 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
     try {
       const formData = new FormData();
 
-      // Agregar campos del formulario
       Object.entries(data).forEach(([key, value]) => {
         formData.append(key, value?.toString() ?? "");
       });
 
-      console.log("File:", file);
-
-      // Agregar foto
       if (file) {
         formData.append("customerPhoto", file);
       }
@@ -90,10 +116,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
         throw new Error("Error al enviar el formulario");
       }
 
-      const result = await response.json();
-      console.log("Success:", result);
       setSubmitSuccess(true);
-      reset();
       setFile(undefined);
       onOpenChange(false);
       router.refresh();
@@ -108,223 +131,385 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
   };
 
   return (
-    <>
+    <div className="space-y-4">
       {submitSuccess && (
-        <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
-          {"Cliente creado correctamente"}
+        <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
+          Cliente creado correctamente
         </div>
       )}
 
       {submitError && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
-          {"Error al crear el cliente"}
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+          Error al crear el cliente: {submitError}
         </div>
       )}
 
- <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-4xl mx-auto">
-  {/* Campos en 2 columnas */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-    {/* Columna izquierda */}
-    <div className="space-y-6">
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="firstName" className="text-sm text-left font-medium">
-          Primer Nombre
-        </Label>
-        <div className="col-span-3">
-          <Input type="text" placeholder="Primer Nombre" {...register("firstName")} />
-          {errors.firstName && (
-            <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
-          )}
-        </div>
-      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-4xl mx-auto">
+          <Tabs defaultValue="personal" className="w-full">
+            {/* Tabs con estilo mejorado */}
+            <TabsList className="grid w-full grid-cols-2 bg-gray-50 p-1 rounded-lg">
+              <TabsTrigger 
+                value="personal" 
+                className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary py-2 rounded-md transition-all"
+              >
+                Datos Personales
+              </TabsTrigger>
+              <TabsTrigger 
+                value="address" 
+                className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary py-2 rounded-md transition-all"
+              >
+                Dirección
+              </TabsTrigger>
+            </TabsList>
 
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="middleName" className="text-left text-sm font-medium">
-          Segundo Nombre
-        </Label>
-        <div className="col-span-3">
-          <Input type="text" placeholder="Segundo Nombre" {...register("middleName")} />
-        </div>
-      </div>
+            {/* Contenido de Datos Personales */}
+            <TabsContent value="personal" className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Columna izquierda - Foto */}
+                <div className="space-y-6 md:col-span-1">
+                  <Card className="p-4">
+                    <div className="space-y-4">
+                      <h3 className="font-medium text-center">Foto del Cliente</h3>
+                      {file ? (
+                        <div className="relative group flex flex-col items-center">
+                          {file.type.startsWith("image") && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt="Preview de la foto"
+                              className="w-full h-48 object-cover rounded-md border mb-2"
+                            />
+                          )}
+                          <div className="flex gap-2 w-full">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="w-full"
+                              onClick={() => fileInputRef.current?.click()}
+                            >
+                              Cambiar
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="w-full"
+                              onClick={removeFile}
+                            >
+                              Eliminar
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          className="border-dashed border-2 border-gray-300 rounded-md h-48 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <div className="text-center p-4">
+                            <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-2">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="w-6 h-6 text-gray-400"
+                              >
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7" />
+                                <line x1="16" x2="22" y1="5" y2="5" />
+                                <line x1="19" x2="19" y1="2" y2="8" />
+                                <circle cx="9" cy="9" r="2" />
+                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                              </svg>
+                            </div>
+                            <p className="text-sm text-gray-500">
+                              Haz clic para subir una foto
+                            </p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              Formatos: JPG, PNG (max. 5MB)
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                        ref={fileInputRef}
+                      />
+                    </div>
+                  </Card>
+                </div>
 
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="lastNameOne" className="text-left text-sm font-medium">
-          Primer Apellido
-        </Label>
-        <div className="col-span-3">
-          <Input type="text" placeholder="Primer Apellido" {...register("lastNameOne")} />
-          {errors.lastNameOne && (
-            <p className="mt-1 text-sm text-red-600">{errors.lastNameOne.message}</p>
-          )}
-        </div>
-      </div>
+                {/* Columna derecha - Campos de datos personales */}
+                <div className="space-y-6 md:col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Primer Nombre*</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Primer Nombre" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="lastNameTwo" className="text-left text-sm font-medium">
-          Segundo Apellido
-        </Label>
-        <div className="col-span-3">
-          <Input type="text" placeholder="Segundo Apellido" {...register("lastNameTwo")} />
-          {errors.lastNameTwo && (
-            <p className="mt-1 text-sm text-red-600">{errors.lastNameTwo.message}</p>
-          )}
-        </div>
-      </div>
+                    <FormField
+                      control={form.control}
+                      name="middleName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Segundo Nombre</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Segundo Nombre" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="address" className="text-left text-sm font-medium">
-          Dirección
-        </Label>
-        <div className="col-span-3">
-          <Input type="text" placeholder="Dirección" {...register("address")} />
-          {errors.address && (
-            <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>
-          )}
-        </div>
-      </div>
+                    <FormField
+                      control={form.control}
+                      name="lastNameOne"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Primer Apellido*</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Primer Apellido" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="apartment" className="text-left text-sm font-medium">
-          Apartamento
-        </Label>
-        <div className="col-span-3">
-          <Input type="text" placeholder="Apartamento" {...register("apartment")} />
-        </div>
-      </div>
+                    <FormField
+                      control={form.control}
+                      name="lastNameTwo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Segundo Apellido</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Segundo Apellido" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Teléfono*</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Teléfono" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="dob"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Fecha Nac.*</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button 
+                                  variant="outline"
+                                  className={cn(
+                                    "w-full pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>Seleccione una Fecha</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) => 
+                                  date > new Date() || date < new Date("1900-01-01")
+                                }
+                                initialFocus
+                                captionLayout="dropdown"
+                                fromYear={1900}
+                                toYear={new Date().getFullYear()}
+                                className="rounded-md border"
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="ssn"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SSN*</FormLabel>
+                          <FormControl>
+                            <Input placeholder="SSN" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="dlid"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Licencia (Opcional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Licencia" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="percentage"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Porcentaje*</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Porcentaje" 
+                              type="number"
+                              {...field}
+                              onChange={(e) => field.onChange(Number(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* Contenido de Dirección */}
+            <TabsContent value="address" className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Dirección*</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Dirección" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="apartment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Apartamento (Opcional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Apartamento" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="zipCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Código Postal*</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Código Postal" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="stateId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Estado*</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona un estado" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectGroup>
+                            {states.map((state) => (
+                              <SelectItem key={state.id} value={state.id}>
+                                {state.name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          {/* Botones */}
+          <div className="flex justify-end gap-4 pt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
+            >
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Guardando..." : "Guardar Cliente"}
+            </Button>
+          </div>
+        </form>
+      </Form>
     </div>
-
-    {/* Columna derecha */}
-    <div className="space-y-6">
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="zipCode" className="text-left text-sm font-medium">
-          Código Postal
-        </Label>
-        <div className="col-span-3">
-          <Input type="text" placeholder="Código Postal" {...register("zipCode")} />
-          {errors.zipCode && (
-            <p className="mt-1 text-sm text-red-600">{errors.zipCode.message}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="phone" className="text-left text-sm font-medium">
-          Teléfono
-        </Label>
-        <div className="col-span-3">
-          <Input type="text" placeholder="Teléfono" {...register("phone")} />
-          {errors.phone && (
-            <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="dob" className="text-left text-sm font-medium">
-          Fecha de Nacimiento
-        </Label>
-        <div className="col-span-3">
-          <Input type="text" placeholder="Fecha de Nacimiento" {...register("dob")} />
-          {errors.dob && (
-            <p className="mt-1 text-sm text-red-600">{errors.dob.message}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="ssn" className="text-left text-sm font-medium">
-          SSN
-        </Label>
-        <div className="col-span-3">
-          <Input type="text" placeholder="SSN" {...register("ssn")} />
-          {errors.ssn && (
-            <p className="mt-1 text-sm text-red-600">{errors.ssn.message}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="dlid" className="text-left text-sm font-medium">
-          Licencia
-        </Label>
-        <div className="col-span-3">
-          <Input type="text" placeholder="Licencia" {...register("dlid")} />
-          {errors.dlid && (
-            <p className="mt-1 text-sm text-red-600">{errors.dlid.message}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="percentage" className="text-left text-sm font-medium">
-          Porcentaje
-        </Label>
-        <div className="col-span-3">
-          <Input
-            type="number"
-            placeholder="Porciento"
-            {...register("percentage", { valueAsNumber: true })}
-          />
-          {errors.percentage && (
-            <p className="mt-1 text-sm text-red-600">{errors.percentage.message}</p>
-          )}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {/* Campo de imagen */}
-  <div className="mt-8">
-    <Label className="text-sm font-medium">Foto</Label>
-    <div className="grid grid-cols-1 gap-4 mt-2">
-      <div className="relative group flex items-center justify-center border-dashed border-2 border-gray-300 rounded-md p-3">
-        {file?.type.startsWith("image") && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={URL.createObjectURL(file)}
-            alt="Preview de la foto"
-            className="w-full h-60 object-cover rounded border"
-          />
-        )}
-        {file && (
-          <button
-            type="button"
-            onClick={removeFile}
-            className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            &times;
-          </button>
-        )}
-      </div>
-
-      <div
-        className={`relative border-dashed border-2 border-gray-300 rounded-md h-60 flex items-center justify-center cursor-pointer ${
-          file ? "hidden" : ""
-        }`}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <span className="text-gray-500 text-center">Adjuntar foto</span>
-      </div>
-
-      <Input
-        type="file"
-        accept="image/*"
-        onChange={handleFileUpload}
-        className="hidden"
-        ref={fileInputRef}
-      />
-    </div>
-  </div>
-
-  {/* Botones */}
-  <div className="flex justify-end gap-4 pt-6">
-    <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-      Cancelar
-    </Button>
-    <Button type="submit">Guardar Cliente</Button>
-  </div>
-</form>
-    </>
   );
 };
 

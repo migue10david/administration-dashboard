@@ -1,4 +1,5 @@
 "use client"
+
 import React from "react"
 import {
   Dialog,
@@ -24,7 +25,7 @@ export default function CustomerFormModal({ open, onOpenChange }: Props) {
           <DialogTitle>Agregar Nuevo Cliente</DialogTitle>
           <DialogDescription>Llena los campos para crear un nuevo cliente.</DialogDescription>
         </DialogHeader>
-        <CreateClientForm onOpenChange={onOpenChange} />
+        <CreateClientForm onOpenChange={onOpenChange} states={[]} />
       </DialogContent>
     </Dialog>
   )
