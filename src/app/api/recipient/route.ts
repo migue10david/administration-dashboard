@@ -146,6 +146,39 @@ export async function POST(req: Request) {
       imageUrl = await saveFile(customerPhoto, fileName)
     }
 
+    // Convertir el campo dob a Date
+    const dobValue = formData.get('dob');
+    let dobDate: Date | null = null;
+
+    if (dobValue) {
+      // Si es string ISO (desde JSON), convertir directamente
+      if (typeof dobValue === 'string' && dobValue.includes('T')) {
+        dobDate = new Date(dobValue);
+      }
+      // Si es string de formato local (desde formData)
+      else if (typeof dobValue === 'string') {
+        dobDate = new Date(dobValue);
+      }
+      // Verificar si la fecha es válida
+      if (isNaN(dobDate?.getTime() ?? NaN)) {
+        dobDate = null; // O manejar el error como prefieras
+      }
+    }
+
+    // Convertir percentage a float
+    const percentageValue = formData.get('percentage');
+    const percentage = typeof percentageValue === 'string' 
+      ? parseFloat(percentageValue)
+      : 0;
+
+    // Validar el rango
+    if (isNaN(percentage)) {
+      return NextResponse.json(
+        { error: 'Porcentaje inválido' },
+        { status: 400 }
+      );
+    }    
+
     // Parsear datos del cliente
     const recipientData = CreateCustomerSchema.parse({
       code: formData.get('code'),
@@ -157,11 +190,11 @@ export async function POST(req: Request) {
       apartment: formData.get('apartment'),
       zipCode: formData.get('zipCode'),
       phone: formData.get('phone'),
-      dob: formData.get('dob'),
+      dob: dobDate,
       ssn: formData.get('ssn'),
       dlid: formData.get('dlid'),
       imageUrl: imageUrl,
-      percentage: formData.get('percentage'),
+      percentage: percentage,
       type: "RECIPIENT",
       notes: formData.get('notes'),
       countryId: formData.get('countryId'),

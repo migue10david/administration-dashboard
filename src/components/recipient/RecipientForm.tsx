@@ -84,8 +84,6 @@ const RecipientForm = ({ onOpenChange }: Props) => {
   };
 
   const onSubmit = async (data: CreateCustomerFormValues) => {
-    console.log(data);
-  
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -100,8 +98,6 @@ const RecipientForm = ({ onOpenChange }: Props) => {
       if (file) {
         formData.append("customerPhoto", file);
       }
-
-      console.log("Enviando datos:", Object.fromEntries(formData.entries()));
 
       const response = await fetch("/api/recipient", {
         method: "POST",
@@ -130,13 +126,13 @@ const RecipientForm = ({ onOpenChange }: Props) => {
     <div className="space-y-4">
       {submitSuccess && (
         <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
-          Cliente creado correctamente
+          Beneficiario creado correctamente
         </div>
       )}
 
       {submitError && (
         <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
-          Error al crear el cliente: {submitError}
+          Error al crear el Beneficiario: {submitError}
         </div>
       )}
 

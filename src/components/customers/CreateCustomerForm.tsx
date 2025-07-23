@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, RefreshCcw, Trash } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -30,7 +32,7 @@ import { Card } from "@/components/ui/card";
 import { CountrySelect } from "../country/CountrySelect";
 import { StateSelect } from "../state/StateSelect";
 import { CitySelect } from "../citys/CitySelect";
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui/textarea";
 
 type Props = {
   onOpenChange: (open: boolean) => void;
@@ -84,8 +86,6 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
   };
 
   const onSubmit = async (data: CreateCustomerFormValues) => {
-    console.log(data);
-
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -104,7 +104,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
       const response = await fetch("/api/customer", {
         method: "POST",
         body: formData,
-        credentials: 'include'
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -190,24 +190,24 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
                               className="w-full h-48 object-cover rounded-md border mb-2"
                             />
                           )}
-                          <div className="flex gap-2 w-full">
+                          <div className="flex gap-10 w-full">
                             <Button
                               type="button"
                               variant="outline"
                               size="sm"
-                              className="w-full"
+                              className="flex-1"
                               onClick={() => fileInputRef.current?.click()}
                             >
-                              Cambiar
+                              <RefreshCcw />
                             </Button>
                             <Button
                               type="button"
                               variant="destructive"
                               size="sm"
-                              className="w-full"
+                              className="flex-1"
                               onClick={removeFile}
                             >
-                              Eliminar
+                              <Trash />
                             </Button>
                           </div>
                         </div>
@@ -418,7 +418,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
                             <Input
                               placeholder="Porcentaje"
                               type="number"
-                              step="0.01" 
+                              step="0.01"
                               {...field}
                               onChange={(e) =>
                                 field.onChange(Number(e.target.value))
@@ -437,14 +437,16 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
                         <FormItem>
                           <FormLabel>Código*</FormLabel>
                           <FormControl>
-                            <Input placeholder="Código" {...field} type="text" />
+                            <Input
+                              placeholder="Código"
+                              {...field}
+                              type="text"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-
-
                   </div>
                 </div>
               </div>
@@ -561,7 +563,6 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
             </TabsContent>
 
             <TabsContent value="observaciones" className="mt-6">
-
               <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                 <FormField
                   control={form.control}
@@ -570,14 +571,17 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
                     <FormItem>
                       <FormLabel>Notas (Opcional)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Ponga su nota aquí" rows={3} {...field} />
+                        <Textarea
+                          placeholder="Ponga su nota aquí"
+                          rows={3}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-            </div>
-
+              </div>
             </TabsContent>
           </Tabs>
 

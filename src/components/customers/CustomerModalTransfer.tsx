@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Company, Customer, TransactionType } from '@/app/lib/types/modelTypes'
+import { Company, Customer } from '@/app/lib/types/modelTypes'
 import CreateCustomerTransferForm from './CreateCustomerTransferForm'
 
 interface Props {
@@ -23,7 +23,7 @@ const CustomerModalTransfer = ({ open, onOpenChange,customer, companies }: Props
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Confirmar Transferencia</DialogTitle>
-          <DialogDescription>Confirma la transferencia de bancaria</DialogDescription>
+          <DialogDescription>Realizar la transferencia de bancaria</DialogDescription>
         </DialogHeader>
         <CreateCustomerTransferForm onOpenChange={onOpenChange} customer={customer} companies={companies} />
       </DialogContent>

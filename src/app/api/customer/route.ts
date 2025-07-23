@@ -190,8 +190,6 @@ export async function POST(req: Request) {
       );
     }    
 
-    console.log("FormData: ", formData);
-
     // Parsear datos del cliente
     const clientData = CreateCustomerSchema.parse({
       code: formData.get('code'),

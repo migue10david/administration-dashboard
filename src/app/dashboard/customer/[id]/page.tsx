@@ -2,7 +2,7 @@ import React from "react";
 import { User } from "lucide-react";
 import Image from "next/image";
 import BreadCrumbs from "@/components/common/bread-crumbs";
-import { getCustomers, getCustomersById } from "@/app/lib/actions/customersActions";
+import { getCustomersById } from "@/app/lib/actions/customersActions";
 import { CustomerTab } from "@/components/customers/CustomersTab";
 import { Button } from "@/components/ui/button";
 import { getTransactionTypes } from "@/app/lib/actions/transactionTypeActions";
