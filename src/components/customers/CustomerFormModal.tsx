@@ -25,7 +25,7 @@ export default function CustomerFormModal({ open, onOpenChange }: Props) {
           <DialogTitle>Agregar Nuevo Cliente</DialogTitle>
           <DialogDescription>Llena los campos para crear un nuevo cliente.</DialogDescription>
         </DialogHeader>
-        <CreateClientForm onOpenChange={onOpenChange} states={[]} />
+        <CreateClientForm onOpenChange={onOpenChange} />
       </DialogContent>
     </Dialog>
   )

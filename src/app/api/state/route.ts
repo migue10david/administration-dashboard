@@ -46,6 +46,10 @@ export async function GET(request: NextRequest) {
             contains: filters.search as string,
             mode: "insensitive",
           },
+          countryId: {
+            contains: filters.search as string,
+            mode: "insensitive",
+          },
         }
       ];
     }

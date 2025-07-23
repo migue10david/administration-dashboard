@@ -8,24 +8,15 @@ import {
 } from "@/app/lib/schemas/customerFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { State } from "@/app/lib/types/modelTypes";
 import { CalendarIcon } from "lucide-react";
 import {
   Popover,
@@ -34,20 +25,17 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/app/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
+import { CountrySelect } from "../country/CountrySelect";
+import { StateSelect } from "../state/StateSelect";
+import { CitySelect } from "../citys/CitySelect";
 
 type Props = {
   onOpenChange: (open: boolean) => void;
-  states: State[];
 };
 
-const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
+const CreateCustomerForm = ({ onOpenChange }: Props) => {
   const [file, setFile] = useState<File>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -55,8 +43,11 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+
   const form = useForm<CreateCustomerFormValues>({
-    resolver: zodResolver(CreateCustomerFormSchema), 
+    resolver: zodResolver(CreateCustomerFormSchema),
     defaultValues: {
       code: "",
       firstName: "",
@@ -76,7 +67,7 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
       stateId: "",
       cityId: "",
     },
-    mode: "onChange"
+    mode: "onChange",
   });
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,6 +83,8 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
   };
 
   const onSubmit = async (data: CreateCustomerFormValues) => {
+    console.log(data);
+  
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -106,6 +99,8 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
       if (file) {
         formData.append("customerPhoto", file);
       }
+
+      console.log("Enviando datos:", Object.fromEntries(formData.entries()));
 
       const response = await fetch("/api/customer", {
         method: "POST",
@@ -145,18 +140,21 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
       )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-4xl mx-auto">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 max-w-4xl mx-auto"
+        >
           <Tabs defaultValue="personal" className="w-full">
             {/* Tabs con estilo mejorado */}
             <TabsList className="grid w-full grid-cols-2 bg-gray-50 p-1 rounded-lg">
-              <TabsTrigger 
-                value="personal" 
+              <TabsTrigger
+                value="personal"
                 className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary py-2 rounded-md transition-all"
               >
                 Datos Personales
               </TabsTrigger>
-              <TabsTrigger 
-                value="address" 
+              <TabsTrigger
+                value="address"
                 className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary py-2 rounded-md transition-all"
               >
                 Dirección
@@ -170,7 +168,9 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
                 <div className="space-y-6 md:col-span-1">
                   <Card className="p-4">
                     <div className="space-y-4">
-                      <h3 className="font-medium text-center">Foto del Cliente</h3>
+                      <h3 className="font-medium text-center">
+                        Foto del Cliente
+                      </h3>
                       {file ? (
                         <div className="relative group flex flex-col items-center">
                           {file.type.startsWith("image") && (
@@ -330,7 +330,7 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
-                                <Button 
+                                <Button
                                   variant="outline"
                                   className={cn(
                                     "w-full pl-3 text-left font-normal",
@@ -346,13 +346,17 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={field.value}
                                 onSelect={field.onChange}
-                                disabled={(date) => 
-                                  date > new Date() || date < new Date("1900-01-01")
+                                disabled={(date) =>
+                                  date > new Date() ||
+                                  date < new Date("1900-01-01")
                                 }
                                 initialFocus
                                 captionLayout="dropdown"
@@ -402,11 +406,13 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
                         <FormItem>
                           <FormLabel>Porcentaje*</FormLabel>
                           <FormControl>
-                            <Input 
-                              placeholder="Porcentaje" 
+                            <Input
+                              placeholder="Porcentaje"
                               type="number"
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
                             />
                           </FormControl>
                           <FormMessage />
@@ -465,26 +471,22 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
 
                 <FormField
                   control={form.control}
-                  name="stateId"
+                  name="countryId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>País*</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecciona un País" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            {states.map((state) => (
-                              <SelectItem key={state.id} value={state.id}>
-                                {state.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <CountrySelect
+                          value={field.value}
+                          onChange={(value) => {
+                            field.onChange(value);
+                            setSelectedCountry(value);
+                            setSelectedState(""); // Reset state when country changes
+                            form.setValue("stateId", ""); // Clear state field
+                            form.setValue("cityId", ""); // Clear city field
+                          }}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -495,23 +497,18 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
                   name="stateId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Estado*</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecciona un estado" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            {states.map((state) => (
-                              <SelectItem key={state.id} value={state.id}>
-                                {state.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>Estado/Provincia*</FormLabel>
+                      <FormControl>
+                        <StateSelect
+                          countryId={selectedCountry}
+                          value={field.value}
+                          onChange={(value) => {
+                            field.onChange(value);
+                            setSelectedState(value);
+                            form.setValue("cityId", ""); // Clear city field when state changes
+                          }}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -519,31 +516,21 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
 
                 <FormField
                   control={form.control}
-                  name="stateId"
+                  name="cityId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Ciudad*</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecciona ciudad" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            {states.map((state) => (
-                              <SelectItem key={state.id} value={state.id}>
-                                {state.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <CitySelect
+                          stateId={selectedState}
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
               </div>
             </TabsContent>
           </Tabs>

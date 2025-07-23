@@ -154,9 +154,9 @@ export const CreateCustomerFormSchema = z.object({
     .regex(/^[0-9+]+$/),
   dob: z.date(),
   ssn: z.string().min(9).max(11),
-  dlid: z.string().min(9).max(11),
+  dlid: z.string().optional(),
 
-  percentage: z.number().min(1).max(3),
+  percentage: z.number().min(0, "Porcentaje no puede ser negativo").max(100, "Porcentaje no puede ser mayor a 100"),
   
   notes: z.string().optional(),
   countryId: z.string(),
