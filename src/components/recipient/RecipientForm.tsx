@@ -550,7 +550,7 @@ const RecipientForm = ({ onOpenChange }: Props) => {
                     <FormItem>
                       <FormLabel>Notas (Opcional)</FormLabel>
                       <FormControl>
-                        <Textarea {...field} />
+                        <Textarea {...field} /> 
                       </FormControl>
                       <FormMessage />
                     </FormItem>
