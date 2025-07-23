@@ -30,6 +30,7 @@ import { Card } from "@/components/ui/card";
 import { CountrySelect } from "../country/CountrySelect";
 import { StateSelect } from "../state/StateSelect";
 import { CitySelect } from "../citys/CitySelect";
+import { Textarea } from "@/components/ui/textarea"
 
 type Props = {
   onOpenChange: (open: boolean) => void;
@@ -100,8 +101,6 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
         formData.append("customerPhoto", file);
       }
 
-      console.log("Enviando datos:", Object.fromEntries(formData.entries()));
-
       const response = await fetch("/api/customer", {
         method: "POST",
         body: formData,
@@ -150,7 +149,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
         >
           <Tabs defaultValue="personal" className="w-full">
             {/* Tabs con estilo mejorado */}
-            <TabsList className="grid w-full grid-cols-2 bg-gray-50 p-1 rounded-lg">
+            <TabsList className="grid w-full grid-cols-3 bg-gray-50 p-1 rounded-lg">
               <TabsTrigger
                 value="personal"
                 className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary py-2 rounded-md transition-all"
@@ -162,6 +161,12 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
                 className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary py-2 rounded-md transition-all"
               >
                 Dirección
+              </TabsTrigger>
+              <TabsTrigger
+                value="observaciones"
+                className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary py-2 rounded-md transition-all"
+              >
+                Notas
               </TabsTrigger>
             </TabsList>
 
@@ -553,6 +558,26 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
                   )}
                 />
               </div>
+            </TabsContent>
+
+            <TabsContent value="observaciones" className="mt-6">
+
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Notas (Opcional)</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Ponga su nota aquí" rows={3} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+            </div>
+
             </TabsContent>
           </Tabs>
 
