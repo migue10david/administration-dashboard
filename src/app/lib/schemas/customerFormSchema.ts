@@ -16,10 +16,8 @@ export const CustomerSchema = z.object({
     .regex(/^[0-9+]+$/),
   dob: z.date(),
   ssn: z.string().min(9).max(11),
-  dlid: z.string().min(9).max(11),
-  imageUrl: z
-    .string()
-    .url("La URL de la imagen no es válida")
+  dlid: z.string().optional(),
+  imageUrl: z.string()
     .optional()
     .or(z.literal("")), // Permite string vacío
   percentage: z.number().min(0).max(100).default(0),
@@ -128,6 +126,7 @@ export const CreateCustomerSchema = CustomerSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+  isActive: true,
   country: true, // Omitir el objeto completo
   state: true, // Omitir el objeto completo
   city: true, // Omitir el objeto completo

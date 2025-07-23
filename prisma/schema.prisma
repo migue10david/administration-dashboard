@@ -158,7 +158,7 @@ model Customer {
   phone       String
   dob         DateTime
   ssn         String
-  dlid        String
+  dlid        String?
   imageUrl    String?
   percentage  Float        @default(0)
   createdAt   DateTime     @default(now())

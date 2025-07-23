@@ -84,7 +84,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
 
   const onSubmit = async (data: CreateCustomerFormValues) => {
     console.log(data);
-  
+
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -105,6 +105,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
       const response = await fetch("/api/customer", {
         method: "POST",
         body: formData,
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -141,7 +142,10 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmit(form.getValues());
+          }}
           className="space-y-8 max-w-4xl mx-auto"
         >
           <Tabs defaultValue="personal" className="w-full">
@@ -154,7 +158,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
                 Datos Personales
               </TabsTrigger>
               <TabsTrigger
-                value="address"
+                value="direcciones"
                 className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary py-2 rounded-md transition-all"
               >
                 Dirección
@@ -409,6 +413,7 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
                             <Input
                               placeholder="Porcentaje"
                               type="number"
+                              step="0.01" 
                               {...field}
                               onChange={(e) =>
                                 field.onChange(Number(e.target.value))
@@ -419,13 +424,29 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
                         </FormItem>
                       )}
                     />
+
+                    <FormField
+                      control={form.control}
+                      name="code"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Código*</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Código" {...field} type="text" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+
                   </div>
                 </div>
               </div>
             </TabsContent>
 
             {/* Contenido de Dirección */}
-            <TabsContent value="address" className="mt-6">
+            <TabsContent value="direcciones" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
