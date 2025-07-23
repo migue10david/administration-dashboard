@@ -468,6 +468,33 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
                   name="stateId"
                   render={({ field }) => (
                     <FormItem>
+                      <FormLabel>País*</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona un País" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectGroup>
+                            {states.map((state) => (
+                              <SelectItem key={state.id} value={state.id}>
+                                {state.name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="stateId"
+                  render={({ field }) => (
+                    <FormItem>
                       <FormLabel>Estado*</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
@@ -489,6 +516,34 @@ const CreateCustomerForm = ({ onOpenChange, states = [] }: Props) => {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="stateId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ciudad*</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona ciudad" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectGroup>
+                            {states.map((state) => (
+                              <SelectItem key={state.id} value={state.id}>
+                                {state.name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
               </div>
             </TabsContent>
           </Tabs>
