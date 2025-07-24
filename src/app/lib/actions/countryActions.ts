@@ -35,3 +35,17 @@ export const getCountryById = async (id: string) => {
   const country = await res.json();
   return  country.data as Country;
 }; 
+
+export async function deleteCountry(id: string) {
+  const cookie = (await headers()).get("cookie");
+  const response = await fetch(`http://localhost:3000/api/country/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...(cookie ? { cookie } : {}), // ✅ Incluye la sesión del usuario
+    },
+  });
+
+  const data = await response.json();
+  return data;
+}

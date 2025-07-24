@@ -33,10 +33,10 @@ import { CitySelect } from "../citys/CitySelect";
 import { Textarea } from "../ui/textarea";
 
 type Props = {
-  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
 };
 
-const RecipientForm = ({ onOpenChange }: Props) => {
+const RecipientForm = ({ onSuccess }: Props) => {
   const [file, setFile] = useState<File>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -103,6 +103,7 @@ const RecipientForm = ({ onOpenChange }: Props) => {
         method: "POST",
         body: formData,
       });
+      console.log(response, formData);
 
       if (!response.ok) {
         throw new Error("Error al enviar el formulario");
@@ -110,8 +111,8 @@ const RecipientForm = ({ onOpenChange }: Props) => {
 
       setSubmitSuccess(true);
       setFile(undefined);
-      onOpenChange(false);
       router.refresh();
+      onSuccess();
     } catch (error) {
       console.error("Error:", error);
       setSubmitError(
@@ -558,16 +559,18 @@ const RecipientForm = ({ onOpenChange }: Props) => {
 
           {/* Botones */}
           <div className="flex justify-end gap-4 pt-6">
-            <Button
+            {/* <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                form.reset();
+              }}
               disabled={isSubmitting}
             >
               Cancelar
-            </Button>
+            </Button> */}
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Guardando..." : "Guardar Cliente"}
+              {isSubmitting ? "Guardando..." : "Guardar Destinatario"}
             </Button>
           </div>
         </form>
