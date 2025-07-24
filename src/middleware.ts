@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('authjs.session-token')?.value
   
   // 1. Configuración CORS para peticiones API
-  if (pathname.startsWith('/api')) {
+/*   if (pathname.startsWith('/api')) {
     const response = token 
       ? NextResponse.next() 
       : NextResponse.json({ error: 'No autorizado' }, { status: 401 })
@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
     return response    
 
   }    
-
+ */
   // Excluir rutas estáticas y APIs
   if (pathname.startsWith('/_next') || 
       pathname.includes('.') || 
