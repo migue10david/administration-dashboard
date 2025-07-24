@@ -30,7 +30,7 @@ const CreateCountryForm = ({ onOpenChange }: Props) => {
       const onSubmit = async (data: CountryFormValues) => {
         console.log("✅ Formulario enviado:", data);
     
-        const response = await fetch("http://localhost:3000/api/country", {
+        const response = await fetch("/api/country", {
           method: "POST",
           body: JSON.stringify(data),
           headers: {

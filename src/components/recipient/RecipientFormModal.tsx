@@ -1,21 +1,41 @@
-import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "../ui/button"
-import RecipientForm from "./RecipientForm"
+"use client";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import RecipientForm from "./RecipientForm";
+import { useEffect, useRef } from "react";
 
 type Props = {
-    onOpenChange: (open: boolean) => void
-}
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
 
-export function RecipientFormModal({ onOpenChange }: Props) {
+export function RecipientFormModal({ open, onOpenChange }: Props) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">+</Button>
-      </DialogTrigger>
-      <DialogContent className="min-w-4xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent 
+        ref={dialogRef}
+        className="min-w-4xl max-h-[90vh] overflow-y-auto"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogTitle>Crea un nuevo destinatario</DialogTitle>
-        <RecipientForm onSuccess={() => onOpenChange(false)} />
+        <RecipientForm onOpenChange={onOpenChange} />
       </DialogContent>
     </Dialog>
-  )
+  );
 }
