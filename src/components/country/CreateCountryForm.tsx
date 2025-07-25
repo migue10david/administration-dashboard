@@ -30,45 +30,28 @@ const CreateCountryForm = ({ onOpenChange }: Props) => {
     },
   });
 
-  const onSubmit = async (data: CountryFormValues) => {
-    try {
-      const response = await fetch("http://localhost:3000/api/country", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-<<<<<<< HEAD
-      if (!response.ok) throw new Error("Error al enviar el formulario");
-      onOpenChange(false);
-      toast.success("✅ Pais creado correctamente");
-      router.refresh();
-    } catch (error) {
-      toast.error("❌ No se pudo crear el pais");
-    }
-  };
-=======
+ const onSubmit = async (data: CountryFormValues) => {
+  try {
+    const response = await fetch("/api/country", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) throw new Error("Error al enviar el formulario");
     
-      const onSubmit = async (data: CountryFormValues) => {
-        console.log("✅ Formulario enviado:", data);
+    const res = await response.json();
+    onOpenChange(false);
+    router.refresh();
     
-        const response = await fetch("/api/country", {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-    
-        const res = await response.json();
-    
-        onOpenChange(false);
-        router.refresh();
-    
-        toast(res.message);
-      };
->>>>>>> 0bd1b99847625bdaf1a29e4b066fcb08bb514b7d
+    toast.success(res.message || "✅ País creado correctamente");
+  } catch (error) {
+    toast.error("❌ No se pudo crear el país");
+  }
+};
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid gap-4 py-4">
