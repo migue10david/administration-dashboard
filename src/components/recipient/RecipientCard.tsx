@@ -7,11 +7,11 @@ type Props = {
     customers: Customer[]
 }
 
-const CustomerCard = ({ customers }: Props) => {
+const RecipientCard = ({ customers }: Props) => {
   return (
     <div className="pt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {customers.map((customer) => (
-          <Link key={customer.id} href={`/dashboard/customer/${customer.id}`}>
+          <Link key={customer.id} href={`/dashboard/recipient/${customer.id}`}>
             <Card key={customer.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
@@ -25,6 +25,9 @@ const CustomerCard = ({ customers }: Props) => {
                 <div className="text-sm">
                   <span className="font-medium">Teléfono:</span> {customer.phone}
                 </div>
+                <div className="text-sm">
+                  <span className="font-medium">Empresa:</span> {customer.countryId}
+                </div>
               </CardContent>
             </Card>
           </Link>
@@ -33,4 +36,4 @@ const CustomerCard = ({ customers }: Props) => {
   )
 }
 
-export default CustomerCard
+export default RecipientCard

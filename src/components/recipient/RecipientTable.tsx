@@ -13,7 +13,7 @@ type Props = {
   customers: Customer[];
 };
 
-const CustomerTable = ({ customers }: Props) => {
+const RecipientTable = ({ customers }: Props) => {
   return (
     <div className="pt-4">
     <div className="border rounded-lg">
@@ -23,6 +23,7 @@ const CustomerTable = ({ customers }: Props) => {
             <TableHead>Nombre</TableHead>
             <TableHead>Direccion</TableHead>
             <TableHead>Teléfono</TableHead>
+            <TableHead>Nacionalidad</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -31,6 +32,7 @@ const CustomerTable = ({ customers }: Props) => {
               <TableCell className="font-medium">{customer.firstName + ' ' + customer.lastNameOne}</TableCell>
               <TableCell>{customer.address}</TableCell>
               <TableCell>{customer.phone}</TableCell>
+              <TableCell>{customer.countryId}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -40,4 +42,4 @@ const CustomerTable = ({ customers }: Props) => {
   );
 };
 
-export default CustomerTable;
+export default RecipientTable;

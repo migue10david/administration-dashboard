@@ -25,7 +25,7 @@ export const getCompanies = async () => {
 
 export async function deleteCompany(id: string) {
   const cookie = (await headers()).get("cookie");
-  const response = await fetch(`http://localhost:3000/api/company/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/company/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

@@ -110,7 +110,7 @@ export async function POST(req: Request) {
       data: {
         name: validatedData.name,
         code: validatedData.code,
-        stateId: validatedData.stateid,
+        stateId: validatedData.stateId,
         createdById: createdById,
       },
     });

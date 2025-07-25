@@ -1,7 +1,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { countryFormSchema, CountryFormValues } from '@/app/lib/schemas/commonFormSchema';
-import React from 'react'
+import {
+  countryFormSchema,
+  CountryFormValues,
+} from "@/app/lib/schemas/commonFormSchema";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -13,38 +16,37 @@ type Props = {
 };
 
 const CreateCountryForm = ({ onOpenChange }: Props) => {
-    const router = useRouter();
-    
-      const {
-        register,
-        handleSubmit,
-        formState: { errors },
-      } = useForm<CountryFormValues>({
-        resolver: zodResolver(countryFormSchema),
-        defaultValues: {
-          name: "",
-          code: "",
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CountryFormValues>({
+    resolver: zodResolver(countryFormSchema),
+    defaultValues: {
+      name: "",
+      code: "",
+    },
+  });
+
+  const onSubmit = async (data: CountryFormValues) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/country", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
         },
       });
-    
-      const onSubmit = async (data: CountryFormValues) => {
-        console.log("✅ Formulario enviado:", data);
-    
-        const response = await fetch("http://localhost:3000/api/country", {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-    
-        const res = await response.json();
-    
-        onOpenChange(false);
-        router.refresh();
-    
-        toast(res.message);
-      };
+      if (!response.ok) throw new Error("Error al enviar el formulario");
+      onOpenChange(false);
+      toast.success("✅ Pais creado correctamente");
+      router.refresh();
+    } catch (error) {
+      toast.error("❌ No se pudo crear el pais");
+    }
+  };
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid gap-4 py-4">
@@ -86,7 +88,7 @@ const CreateCountryForm = ({ onOpenChange }: Props) => {
         <Button type="submit">Guardar Pais</Button>
       </div>
     </form>
-  )
-}
+  );
+};
 
-export default CreateCountryForm
+export default CreateCountryForm;

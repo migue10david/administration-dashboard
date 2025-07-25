@@ -1,33 +1,32 @@
 "use client";
 
-import {
-    cityFormSchema,
-    CityFormValues,
-} from "@/app/lib/schemas/commonFormSchema";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { State } from "@/app/lib/types/modelTypes";
+import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import {cityFormSchema, CityFormValues} from "@/app/lib/schemas/commonFormSchema";
+import {  State } from "@/app/lib/types/modelTypes";
 
 type Props = {
-  onOpenChange: (open: boolean) => void;
+  cities: CityFormValues & { id: string };
   states: State[];
+  onOpenChange: (open: boolean) => void;
 };
 
-const CreateCityForm = ({ onOpenChange, states }: Props) => {
+export default function EditCityForm({ states,cities, onOpenChange }: Props) {
   const router = useRouter();
 
   const {
@@ -38,78 +37,61 @@ const CreateCityForm = ({ onOpenChange, states }: Props) => {
   } = useForm<CityFormValues>({
     resolver: zodResolver(cityFormSchema),
     defaultValues: {
-      name: "",
-      code: "",
-      stateId: "",
+      name: cities.name || "",
+      code: cities.code || "",
+      stateId: cities.stateId || "",
     },
   });
-
-  const [selectedStateId, setSelectedStateId] = useState<string>("");
+    const [selectedStateId, setSelectedStateId] = useState<string>("");
 
   const onSubmit = async (data: CityFormValues) => {
     try {
-      const response = await fetch("/api/city", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) throw new Error("Error al enviar el formulario");
-    onOpenChange(false);
-    toast.success("✅ Ciudad creada correctamente");
-    router.refresh();
-    } catch (error) {
-      toast.error("❌ No se pudo crear la ciudad");
-    }
+      const response = await fetch(`/api/city/${cities.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      console.log("Datos a enviar:", data); // Para depuración
+      if (!response.ok) throw new Error("Error al actualizar");
 
+      toast.success("✅ Ciudad actualizada correctamente");
+      onOpenChange(false);
+      router.refresh();
+    } catch (error) {
+      console.log(error);
+      toast.error("❌ No se pudo actualizar la ciudad");
+    }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Mostrar errores si existen */}
+      {Object.keys(errors).length > 0 && (
+        <pre className="bg-red-100 text-red-700 p-2 rounded text-sm overflow-auto max-h-40">
+          {JSON.stringify(errors, null, 2)}
+        </pre>
+      )}
+
       <div className="grid gap-4 py-4">
         {/* Nombre */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="name" className="text-right">
             Nombre
           </Label>
-          <Input
-            id="name"
-            type="text"
-            placeholder="Nombre de la ciudad"
-            className="col-span-3"
-            {...register("name")}
-            required
-          />
-          {errors.name && (
-            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">
-              {errors.name?.message}
-            </p>
-          )}
+          <Input id="name" type="text" placeholder="Nombre completo" className="col-span-3" {...register("name")} required />
         </div>
 
+        {/* Dirección */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="codigo" className="text-right">
+          <Label htmlFor="code" className="text-right">
             Codigo
           </Label>
-          <Input
-            id="codigo"
-            type="text"
-            placeholder="Codigo"
-            className="col-span-3"
-            {...register("code")}
-            required
-          />
-          {errors.code && (
-            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">
-              {errors.code?.message}
-            </p>
-          )}
+          <Input id="code" type="text" placeholder="Dirección" className="col-span-3" {...register("code")} />
         </div>
-
-        {/* State */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="stateId" className="text-right">
+          <Label htmlFor="stateid" className="text-right">
             Estado
           </Label>
           <div className="col-span-3">
@@ -121,10 +103,11 @@ const CreateCityForm = ({ onOpenChange, states }: Props) => {
               value={selectedStateId}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona un estado" />
+                <SelectValue placeholder="Selecciona un Estado" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
+                  <SelectLabel>Estados</SelectLabel>
                   {states.map((state) => (
                     <SelectItem key={state.id} value={state.id}>
                       {state.name}
@@ -142,15 +125,12 @@ const CreateCityForm = ({ onOpenChange, states }: Props) => {
         </div>
       </div>
 
-      {/* Botones */}
       <div className="flex justify-end gap-4">
         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
           Cancelar
         </Button>
-        <Button type="submit">Guardar Ciudad</Button>
+        <Button type="submit">Guardar Cambios</Button>
       </div>
     </form>
   );
-};
-
-export default CreateCityForm;
+}

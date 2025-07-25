@@ -18,7 +18,7 @@ export type StateFormValues = z.infer<typeof stateFormSchema>
 export const cityFormSchema = z.object({
     name: z.string().min(3).max(50),
     code: z.string().min(1).max(3),
-    stateid: z.string()
+    stateId: z.string()
 })
 
 export type CityFormValues = z.infer<typeof cityFormSchema>
