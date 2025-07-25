@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -39,6 +39,9 @@ const CreateCustomerTransferForm = ({
   const [, setIsCustomFeed] = useState(false);
   const [, setRecipientName] = useState(""); // Estado para el nombre mostrado
 
+  const [isModalOpen2, setIsModalOpen2] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
   const {
     register,
     handleSubmit,
@@ -64,11 +67,11 @@ const CreateCustomerTransferForm = ({
   //const recipientId = watch("recipientId");
 
   // Calcula "A pagar"
-  const totalToPay = Number(amount) + Number(feed);
+  const totalToPay = Number(amount) - Number(feed);
 
   const onSubmit = async (data: WireTransferFormValues) => {
     try {
-      const response = await fetch("http://localhost:3000/api/wireTransfer", {
+      const response = await fetch("/api/wireTransfer", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -103,7 +106,14 @@ const CreateCustomerTransferForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form
+      className="space-y-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(onSubmit)(e);
+      }}
+      ref={formRef}
+    >
       <div className="grid gap-6">
         {/* Sección de información del cliente */}
         <div className="grid grid-cols-1 gap-4 p-4 bg-gray-50 rounded-lg">
@@ -134,7 +144,6 @@ const CreateCustomerTransferForm = ({
         <div className="grid grid-cols-1 gap-4 p-4 bg-gray-50 rounded-lg">
           {/* Campo de búsqueda de destinatario */}
 
-          
           <div className="space-y-2">
             <Label htmlFor="recipient" className="text-gray-600">
               Destinatario *
@@ -145,103 +154,124 @@ const CreateCustomerTransferForm = ({
                 error={!!errors.recipientId}
                 onBlur={() => trigger("recipientId")}
               />
-              <RecipientFormModal onOpenChange={onOpenChange} />
-              {errors.recipientId && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.recipientId.message ||
-                    "Debe seleccionar un destinatario"}
-                </p>
-              )}
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsModalOpen2(true);
+                }}
+              >
+                +
+              </Button>
+
+              <RecipientFormModal
+                open={isModalOpen2}
+                onOpenChange={(open) => {
+                  setIsModalOpen2(open);
+                  if (!open) {
+                    // Enfoca el formulario padre al cerrar el modal hijo
+                    formRef.current?.focus();
+                  }
+                }}
+              />
               {/* Input oculto para el ID del destinatario (manejado por react-hook-form) */}
               <input type="hidden" {...register("recipientId")} />
             </div>
+            {errors.recipientId && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.recipientId.message ||
+                  "Debe seleccionar un destinatario"}
+              </p>
+            )}
           </div>
 
-          {/* Sección de datos de la transferencia */}
-          <div className="space-y-2 p-2">
-            <div className="grid grid-cols-1 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="amount" className="text-gray-600">
-                  Cantidad ($) *
-                </Label>
+          <div className="space-y-2">
+            <Label className="text-gray-600">Compañía *</Label>
+            <Select
+              onValueChange={(value) => {
+                setValue("companyId", value, { shouldValidate: true });
+                setSelectedCompanyId(value);
+              }}
+              value={selectedCompanyId}
+            >
+              <SelectTrigger
+                className={
+                  errors.companyId ? "border-red-500 w-full" : "w-full"
+                }
+              >
+                <SelectValue placeholder="Seleccione una compañía" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {companies.map((company) => (
+                    <SelectItem key={company.id} value={company.id}>
+                      {company.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {errors.companyId && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.companyId.message}
+              </p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="feed" className="text-gray-600">
+                Comisión ($)
+              </Label>
+              <div className="flex items-center gap-2">
                 <Input
                   type="number"
                   step="0.01"
                   placeholder="0.00"
-                  {...register("amount", {
-                    valueAsNumber: true,
-                    onChange: (e) => {
-                      const value = parseFloat(e.target.value);
-                      setValue("amount", isNaN(value) ? 0 : value, {
-                        shouldValidate: true,
-                      });
-                    },
-                  })}
-                  className={errors.amount ? "border-red-500" : ""}
+                  {...register("feed", { valueAsNumber: true })}
+                  onChange={handleFeedChange}
+                  className={`flex-1 ${errors.feed ? "border-red-500" : ""}`}
                 />
-                {errors.amount && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.amount.message}
-                  </p>
-                )}
               </div>
+              {errors.feed && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.feed.message}
+                </p>
+              )}
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label className="text-gray-600">Compañía *</Label>
-                  <Select
-                    onValueChange={(value) => {
-                      setValue("companyId", value, { shouldValidate: true });
-                      setSelectedCompanyId(value);
-                    }}
-                    value={selectedCompanyId}
-                  >
-                    <SelectTrigger
-                      className={errors.companyId ? "border-red-500" : ""}
-                    >
-                      <SelectValue placeholder="Seleccione una compañía" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {companies.map((company) => (
-                          <SelectItem key={company.id} value={company.id}>
-                            {company.name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  {errors.companyId && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.companyId.message}
-                    </p>
-                  )}
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="amount" className="text-gray-600">
+                Cantidad ($) *
+              </Label>
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                {...register("amount", {
+                  valueAsNumber: true,
+                  onChange: (e) => {
+                    const value = parseFloat(e.target.value);
+                    setValue("amount", isNaN(value) ? 0 : value, {
+                      shouldValidate: true,
+                    });
+                  },
+                })}
+                className={errors.amount ? "border-red-500" : ""}
+              />
+              {errors.amount && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.amount.message}
+                </p>
+              )}
+            </div>
+          </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="feed" className="text-gray-600">
-                    Comisión ($)
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="0.00"
-                      {...register("feed", { valueAsNumber: true })}
-                      onChange={handleFeedChange}
-                      className={`flex-1 ${
-                        errors.feed ? "border-red-500" : ""
-                      }`}
-                    />
-                  </div>
-                  {errors.feed && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.feed.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
+          <div className="space-y-2 p-2">
+            <div className="grid grid-cols-1 gap-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="text-gray-600">Total a Pagar ($)</Label>

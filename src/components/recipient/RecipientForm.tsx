@@ -33,10 +33,10 @@ import { CitySelect } from "../citys/CitySelect";
 import { Textarea } from "../ui/textarea";
 
 type Props = {
-  onSuccess: () => void;
+  onOpenChange: (open: boolean) => void;
 };
 
-const RecipientForm = ({ onSuccess }: Props) => {
+const RecipientForm = ({ onOpenChange }: Props) => {
   const [file, setFile] = useState<File>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -46,6 +46,8 @@ const RecipientForm = ({ onSuccess }: Props) => {
 
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
+
+  const formRef = useRef<HTMLFormElement>(null);  
 
   const form = useForm<CreateCustomerFormValues>({
     resolver: zodResolver(CreateCustomerFormSchema),
@@ -83,7 +85,16 @@ const RecipientForm = ({ onSuccess }: Props) => {
     }
   };
 
-  const onSubmit = async (data: CreateCustomerFormValues) => {
+  const onSubmited = async (
+    data: CreateCustomerFormValues,
+    e?: React.BaseSyntheticEvent
+  ) => {
+    e?.stopPropagation(); // Detiene la propagación del evento
+    e?.preventDefault(); // Previene el comportamiento por defecto
+
+    console.log(data);
+    alert("Form submitted");
+
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -112,7 +123,6 @@ const RecipientForm = ({ onSuccess }: Props) => {
       setSubmitSuccess(true);
       setFile(undefined);
       router.refresh();
-      onSuccess();
     } catch (error) {
       console.error("Error:", error);
       setSubmitError(
@@ -139,7 +149,11 @@ const RecipientForm = ({ onSuccess }: Props) => {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          ref={formRef}
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit((data) => onSubmited(data, e))();
+          }}
           className="space-y-8 max-w-4xl mx-auto"
         >
           <Tabs defaultValue="personal" className="w-full">
@@ -158,11 +172,11 @@ const RecipientForm = ({ onSuccess }: Props) => {
                 Dirección
               </TabsTrigger>
               <TabsTrigger
-              value="notes"
-              className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary py-2 rounded-md transition-all"
-            >
-              Notas
-            </TabsTrigger>
+                value="notes"
+                className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary py-2 rounded-md transition-all"
+              >
+                Notas
+              </TabsTrigger>
             </TabsList>
 
             {/* Contenido de Datos Personales */}
@@ -193,7 +207,7 @@ const RecipientForm = ({ onSuccess }: Props) => {
                               className="flex-1"
                               onClick={() => fileInputRef.current?.click()}
                             >
-                              <RefreshCcw/>
+                              <RefreshCcw />
                             </Button>
                             <Button
                               type="button"
@@ -202,7 +216,7 @@ const RecipientForm = ({ onSuccess }: Props) => {
                               className="flex-1"
                               onClick={removeFile}
                             >
-                              <Trash/>
+                              <Trash />
                             </Button>
                           </div>
                         </div>
@@ -547,7 +561,7 @@ const RecipientForm = ({ onSuccess }: Props) => {
                     <FormItem>
                       <FormLabel>Notas (Opcional)</FormLabel>
                       <FormControl>
-                        <Textarea {...field} /> 
+                        <Textarea {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -559,20 +573,31 @@ const RecipientForm = ({ onSuccess }: Props) => {
 
           {/* Botones */}
           <div className="flex justify-end gap-4 pt-6">
-            {/* <Button
+            <Button
               type="button"
               variant="outline"
-              onClick={() => {
-                form.reset();
-              }}
+              onClick={() => onOpenChange(false)}
               disabled={isSubmitting}
             >
               Cancelar
-            </Button> */}
-            <Button type="submit" disabled={isSubmitting}>
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              onClick={(e) => {
+                e.preventDefault();
+                //e.stopPropagation();
+
+                formRef.current?.dispatchEvent(
+                  new Event('submit', { cancelable: true, bubbles: false })
+                );
+
+              }}            
+            >
               {isSubmitting ? "Guardando..." : "Guardar Destinatario"}
             </Button>
           </div>
+
         </form>
       </Form>
     </div>
