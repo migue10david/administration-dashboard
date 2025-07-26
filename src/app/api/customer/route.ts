@@ -1,6 +1,6 @@
 import prisma from '@/app/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
-import { FilterSchema, PaginationSchema } from '@/app/lib/schemas/common';
+import { FilterSchema } from '@/app/lib/schemas/common';
 import { CustomerWhereInput } from '@/app/lib/types/customer';
 import { CreateCustomerSchema } from '@/app/lib/schemas/customerFormSchema';
 import { auth } from "@/app/lib/auth-credentials/auth";
@@ -24,84 +24,74 @@ export async function GET(
   try {
     const { searchParams } = new URL(request.url!)
 
-    const pagination = PaginationSchema.parse({
-      page: parseInt(searchParams.get('page') || "1"),
-      limit: parseInt(searchParams.get('limit') || "10")
-    });
+    // Paginación opcional
+    const pageParam = searchParams.get('page');
+    const limitParam = searchParams.get('limit');
+    
+    const pagination = {
+      page: pageParam ? parseInt(pageParam) : undefined,
+      limit: limitParam ? parseInt(limitParam) : undefined
+    };
 
     const filters = FilterSchema.parse({
       search: searchParams.get('search') || undefined
     })
 
+    // Construcción del WHERE
     const where: CustomerWhereInput = {
-      AND: [ ...(isAdmin === "ADMIN" ? [] : [{ isActive: true }]), {type: "CUSTOMER"}],
-    }
-
-    // Filtro por texto (búsqueda)
-    if (filters.search) {
-      where.OR = [
-        {
-          code: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        },
-        {
-          firstName: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        },
-        {
-          middleName: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        },
-        {
-          lastNameOne: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        },
-        {
-          lastNameTwo: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        },        
-        {
-          phone: {
-            contains: filters.search as string,
-            mode: 'insensitive',
-          },
-        }
-      ];
-    }
+      AND: [
+        ...(isAdmin === "ADMIN" ? [] : [{ isActive: true }]),
+        { type: "RECIPIENT" }
+      ],
+      ...(filters.search && {
+        OR: [
+          { code: { contains: filters.search, mode: 'insensitive' } },
+          { firstName: { contains: filters.search, mode: 'insensitive' } },
+          { middleName: { contains: filters.search, mode: 'insensitive' } },
+          { lastNameOne: { contains: filters.search, mode: 'insensitive' } },
+          { lastNameTwo: { contains: filters.search, mode: 'insensitive' } },
+          { phone: { contains: filters.search, mode: 'insensitive' } }
+        ]
+      })
+    };
 
     // Consulta base
-    const query = {
-      where,
-      skip: (pagination.page - 1) * pagination.limit,
-      take: pagination.limit
-    }
+    const baseQuery = { where };
+
+    // Añadir paginación solo si vienen ambos parámetros
+    const query = pagination.page && pagination.limit
+      ? {
+          ...baseQuery,
+          skip: (pagination.page - 1) * pagination.limit,
+          take: pagination.limit
+        }
+      : baseQuery;
 
     // Ejecutar consulta
     const [customers, total] = await Promise.all([
       prisma.customer.findMany(query),
       prisma.customer.count({ where })
-    ])    
+    ]);
 
-    return NextResponse.json({
-      status: 200,
-      data: customers,
-      meta: {
-        total,
-        page:pagination.page,
-        llimit:pagination.limit,
-        totalPages: Math.ceil(total / pagination.limit),
-      },
-    });
+    // Respuesta condicional
+    return pagination.page && pagination.limit
+      ? NextResponse.json({
+          status: 200,
+          data: customers,
+          meta: {
+            total,
+            page: pagination.page,
+            limit: pagination.limit,
+            totalPages: Math.ceil(total / pagination.limit),
+          }
+        })
+      : NextResponse.json({
+          status: 200,
+          data: customers,
+          total // Incluir el total aunque no haya paginación
+        });
+
+
   } catch (error) {
     console.log(error);
     return NextResponse.json({ error: 'Error obteniendo clientes' }, { status: 401 })

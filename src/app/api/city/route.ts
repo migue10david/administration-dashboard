@@ -21,45 +21,44 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url!);
 
-    const pagination = PaginationSchema.parse({
-      page: parseInt(searchParams.get("page") || "1"),
-      limit: parseInt(searchParams.get("limit") || "10"),
-    });
+    // Paginación opcional
+    const pageParam = searchParams.get('page');
+    const limitParam = searchParams.get('limit');
+    
+    const pagination = {
+      page: pageParam ? parseInt(pageParam) : undefined,
+      limit: limitParam ? parseInt(limitParam) : undefined
+    };
 
     const filters = FilterSchema.parse({
       search: searchParams.get("search") || undefined,
     });
 
+    // Construcción del WHERE
     const where: CityWhereInput = {
-      AND: [ ...(isAdmin === "ADMIN" ? [] : [{ isActive: true }])],
+      AND: [
+        ...(isAdmin === "ADMIN" ? [] : [{ isActive: true }])
+      ],
+      ...(filters.search && {
+        OR: [
+          { code: { contains: filters.search, mode: 'insensitive' } },
+          { name: { contains: filters.search, mode: 'insensitive' } },
+          { stateId: { contains: filters.search, mode: 'insensitive' } }
+        ]
+      })
     };
-
-    // Filtro por texto (búsqueda)
-    if (filters.search) {
-      where.OR = [
-        {
-          name: {
-            contains: filters.search as string,
-            mode: "insensitive",
-          },
-          code: {
-            contains: filters.search as string,
-            mode: "insensitive",
-          },
-          stateId: {
-            contains: filters.search as string,
-            mode: "insensitive",
-          },
-        }
-      ];
-    }
 
     // Consulta base
-    const query = {
-      where,
-      skip: (pagination.page - 1) * pagination.limit,
-      take: pagination.limit,
-    };
+    const baseQuery = { where };
+
+    // Añadir paginación solo si vienen ambos parámetros
+    const query = pagination.page && pagination.limit
+      ? {
+          ...baseQuery,
+          skip: (pagination.page - 1) * pagination.limit,
+          take: pagination.limit
+        }
+      : baseQuery;
 
     // Ejecutar consulta
     const [city, total] = await Promise.all([
@@ -67,16 +66,25 @@ export async function GET(request: NextRequest) {
       prisma.city.count({ where }),
     ]);
 
-    return NextResponse.json({
-      status: 200,
-      data: city,
-      meta: {
-        total,
-        page: pagination.page,
-        llimit: pagination.limit,
-        totalPages: Math.ceil(total / pagination.limit),
-      },
-    });
+    // Respuesta condicional
+    return pagination.page && pagination.limit
+      ? NextResponse.json({
+          status: 200,
+          data: city,
+          meta: {
+            total,
+            page: pagination.page,
+            limit: pagination.limit,
+            totalPages: Math.ceil(total / pagination.limit),
+          }
+        })
+      : NextResponse.json({
+          status: 200,
+          data: city,
+          total // Incluir el total aunque no haya paginación
+        });
+
+
   } catch (error) {
     console.log(error);
     return NextResponse.json(
