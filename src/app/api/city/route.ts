@@ -1,6 +1,6 @@
 import prisma from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
-import { FilterSchema, PaginationSchema } from "@/app/lib/schemas/common";
+import { FilterSchema } from "@/app/lib/schemas/common";
 import { auth } from "@/app/lib/auth-credentials/auth";
 import { CityWhereInput } from "@/app/lib/types/common";
 import { cityFormSchema } from "@/app/lib/schemas/commonFormSchema";
