@@ -4,7 +4,7 @@ import Search from "../common/search";
 import { Country } from "@/app/lib/types/modelTypes";
 import CountryFormModal from "./CountryFormModal";
 import { Button } from "../ui/button";
-import { Pencil, Plus, Trash } from "lucide-react";
+import { Edit, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -59,10 +59,10 @@ const Countrys = ({ country }: Props) => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mt-4">
         <div className="grid grid-cols-12 bg-gray-50 p-4 border-b border-gray-200">
           <div className="col-span-8 font-medium text-gray-500">
-            Nombre del País
+            NOMBRE DEL PAIS
           </div>
-          <div className="col-span-2 font-medium text-gray-500">Código</div>
-          <div className="col-span-2 font-medium text-gray-500">Botones</div>
+          <div className="col-span-2 font-medium text-gray-500">CODIGO</div>
+          <div className="col-span-2 font-medium text-gray-500">ACCIONES</div>
         </div>
 
         <div className="divide-y divide-gray-200">
@@ -81,20 +81,24 @@ const Countrys = ({ country }: Props) => {
                   {country.code}
                 </span>
               </div>
-              <div className="col-span-2 flex items-center gap-2">
+               <div className="flex gap-2">
                 <Button
-                  onClick={() => setDeletingCountryId(country.id)}
-                  variant="destructive"
                   size="sm"
+                  variant="outline"
+                  className="text-blue-600 hover:bg-blue-50 border-blue-200"
+                  onClick={() => setEditingCountryId(country.id)}
                 >
-                  <Trash className="h-4 w-4" />
+                  <Edit className="h-4 w-4 mr-2" />
+                  Editar
                 </Button>
                 <Button
-                  onClick={() => setEditingCountryId(country.id)}
                   size="sm"
-                  className="bg-amber-500 hover:bg-amber-600"
+                  variant="outline"
+                  className="text-red-600 hover:bg-red-50 border-red-200"
+                  onClick={() => setDeletingCountryId(country.id)}
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Eliminar
                 </Button>
               </div>
               <Dialog

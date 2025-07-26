@@ -1,7 +1,7 @@
 "use client";
 
 import type * as React from "react";
-import { Building2, DoorOpen, FileText, Flag, Home, Star, Users } from "lucide-react";
+import { Building2, DoorOpen, FileText, Flag, Home, Star, Users, Users2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -27,6 +27,11 @@ const navigationItems = [
     title: "Clientes",
     url: "/customer",
     icon: Users,
+  },
+  {
+    title: "Beneficiarios",
+    url: "/recipient",
+    icon: Users2,
   },
   {
     title: "Compañías",

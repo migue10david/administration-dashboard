@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { Customer } from "../types/modelTypes";
 
 export const getRecipients = async () => {
   const cookie = (await headers()).get("cookie");
@@ -13,5 +14,5 @@ export const getRecipients = async () => {
   });
 
   const recipients = await res.json();
-  return recipients.data;
+  return {data:recipients.data as Customer[], totalPages: recipients.total as number};
 };

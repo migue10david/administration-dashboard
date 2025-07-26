@@ -8,20 +8,40 @@ import { Button } from "@/components/ui/button";
 import { getTransactionTypes } from "@/app/lib/actions/transactionTypeActions";
 import { getCompanies } from "@/app/lib/actions/companyActions";
 import { getRecipients } from "@/app/lib/actions/recipientActions";
-
+import { getCountries } from "@/app/lib/actions/countryActions";
+import { getStates } from "@/app/lib/actions/stateActions";
+import { getCities } from "@/app/lib/actions/citiesActions";
 type Props = {
   params: {
     id: string;
   };
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 };
 
 
-const CustomersDetailsPage = async ({ params }: Props) => {
+const CustomersDetailsPage = async ({ params, searchParams }: Props) => {
   const { id } = await params;
   const customer = await getCustomersById(id);
+
+  const resolvedSearchParams = await searchParams;
+  const currentPage = parseInt((resolvedSearchParams.page as string) || "1");
+  const postsPerPage = parseInt(
+    (resolvedSearchParams.pageSize as string) || "12"
+  );
   const transactionTypes = await getTransactionTypes();
   const {data} = await getCompanies();
-  const recipients = await getRecipients();
+  const {data: recipients} = await getRecipients();
+  const { data: countries } = await getCountries(
+    currentPage,
+    postsPerPage
+  );
+  const { data: states} = await getStates(
+    currentPage,
+    postsPerPage
+  );
+  const { data: cities } = await getCities();
+
+
   return (
     <div className="bg-[#F3F5F9] min-h-screen">
       <div className="px-4 py-16 sm:px-6 lg:px-8">
@@ -83,7 +103,7 @@ const CustomersDetailsPage = async ({ params }: Props) => {
                 </div>
                 <div className="flex flex-col">
                   <p className="text-gray-600 text-lg">Pais</p>
-                  <h1 className="text-xl">{customer?.countryId}</h1>
+                  <h1 className="text-xl">{ countries.find((country) => country.id === customer?.countryId)?.name}</h1>
                 </div>
               </div>
             </div>
@@ -104,11 +124,11 @@ const CustomersDetailsPage = async ({ params }: Props) => {
               <div className="space-y-4">
                 <div className="flex flex-col">
                   <p className="text-gray-600 text-lg">Estado</p>
-                  <h1 className="text-xl">{customer?.stateId}</h1>
+                  <h1 className="text-xl">{states.find((state) => state.id === customer?.stateId)?.name}</h1>
                 </div>
                 <div className="flex flex-col">
                   <p className="text-gray-600 text-lg"> Ciudad</p>
-                  <h1 className="text-xl">{customer?.cityId}</h1>
+                  <h1 className="text-xl">{ cities.find((city) => city.id === customer?.cityId)?.name}</h1>
                 </div>
               </div>
               <div className="space-y-4">

@@ -1,18 +1,13 @@
 "use client";
 
-import {
-  stateFormSchema,
-  StateFormValues,
-} from "@/app/lib/schemas/commonFormSchema";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Country } from "@/app/lib/types/modelTypes";
+import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -22,13 +17,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import {stateFormSchema, StateFormValues } from "@/app/lib/schemas/commonFormSchema";
+import { Country } from "@/app/lib/types/modelTypes";
 
 type Props = {
-  onOpenChange: (open: boolean) => void;
+  states: StateFormValues & { id: string };
   countries: Country[];
+  onOpenChange: (open: boolean) => void;
 };
 
-const CreateStateForm = ({ onOpenChange, countries }: Props) => {
+export default function EditStateForm({ states,countries, onOpenChange }: Props) {
   const router = useRouter();
 
   const {
@@ -39,78 +37,59 @@ const CreateStateForm = ({ onOpenChange, countries }: Props) => {
   } = useForm<StateFormValues>({
     resolver: zodResolver(stateFormSchema),
     defaultValues: {
-      name: "",
-      code: "",
-      countryId: "",
+      name: states.name || "",
+      code: states.code || "",
+      countryId: states.countryId || "",
     },
   });
-
-  const [selectedCountryId, setSelectedCountryId] = useState<string>("");
+    const [selectedCountryId, setSelectedCountryId] = useState<string>("");
 
   const onSubmit = async (data: StateFormValues) => {
-
     try {
-      const response = await fetch("http://localhost:3000/api/state", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) throw new Error("Error al enviar el formulario");
-    onOpenChange(false);
-    toast.success("✅ Estado creado correctamente");
-    router.refresh();
+      const response = await fetch(`/api/state/${states.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
+      if (!response.ok) throw new Error("Error al actualizar");
+
+      toast.success("✅ Estado actualizada correctamente");
+      onOpenChange(false);
+      router.refresh();
     } catch (error) {
-      toast.error("❌ No se pudo crear el estado");
+      console.log(error);
+      toast.error("❌ No se pudo actualizar el estado");
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Mostrar errores si existen */}
+      {Object.keys(errors).length > 0 && (
+        <pre className="bg-red-100 text-red-700 p-2 rounded text-sm overflow-auto max-h-40">
+          {JSON.stringify(errors, null, 2)}
+        </pre>
+      )}
+
       <div className="grid gap-4 py-4">
         {/* Nombre */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="name" className="text-right">
             Nombre
           </Label>
-          <Input
-            id="name"
-            type="text"
-            placeholder="Nombre completo"
-            className="col-span-3"
-            {...register("name")}
-            required
-          />
-          {errors.name && (
-            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">
-              {errors.name?.message}
-            </p>
-          )}
+          <Input id="name" type="text" placeholder="Nombre completo" className="col-span-3" {...register("name")} required />
         </div>
 
-        {/* Código */}
+        {/* Dirección */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="code" className="text-right">
-            Código
+            Codigo
           </Label>
-          <Input
-            id="code"
-            type="text"
-            placeholder="Código del estado"
-            className="col-span-3"
-            {...register("code")}
-            required
-          />
-          {errors.code && (
-            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">
-              {errors.code?.message}
-            </p>
-          )}
+          <Input id="code" type="text" placeholder="Dirección" className="col-span-3" {...register("code")} />
         </div>
-
-        {/* País */}
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="countryId" className="text-right">
             País
@@ -146,15 +125,12 @@ const CreateStateForm = ({ onOpenChange, countries }: Props) => {
         </div>
       </div>
 
-      {/* Botones */}
       <div className="flex justify-end gap-4">
         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
           Cancelar
         </Button>
-        <Button type="submit">Guardar Estado</Button>
+        <Button type="submit">Guardar Cambios</Button>
       </div>
     </form>
   );
-};
-
-export default CreateStateForm;
+}
