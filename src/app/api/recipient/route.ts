@@ -85,7 +85,9 @@ export async function GET(request: NextRequest) {
       : NextResponse.json({
           status: 200,
           data: recipients,
-          total // Incluir el total aunque no haya paginación
+          meta: {
+            total
+          }
         });
 
   } catch (error) {

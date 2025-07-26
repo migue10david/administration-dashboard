@@ -41,7 +41,7 @@ export async function GET(
     const where: CustomerWhereInput = {
       AND: [
         ...(isAdmin === "ADMIN" ? [] : [{ isActive: true }]),
-        { type: "RECIPIENT" }
+        { type: "CUSTOMER" }
       ],
       ...(filters.search && {
         OR: [
@@ -88,7 +88,9 @@ export async function GET(
       : NextResponse.json({
           status: 200,
           data: customers,
-          total // Incluir el total aunque no haya paginación
+          meta: {
+            total
+          }
         });
 
 
@@ -116,10 +118,10 @@ export async function POST(req: Request) {
     await ensureUploadsDirExists()
     const formData = await clonedRequest.formData()
 
-    // Obtener archivo (asumiendo que el campo se llama 'dniImage')
+    // Obtener archivo (asumiendo que el campo se llama 'customerPhoto')
     const customerPhoto = formData.get('customerPhoto') as Blob | null
 
-    let imageUrl: string | null = null
+    let imageUrl: string = "";
 
     // Procesar imagen si existe
     if (customerPhoto && customerPhoto.size > 0) {

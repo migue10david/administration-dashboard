@@ -17,9 +17,7 @@ export const CustomerSchema = z.object({
   dob: z.date(),
   ssn: z.string().min(9).max(11),
   dlid: z.string().optional(),
-  imageUrl: z.string()
-    .optional()
-    .or(z.literal("")), // Permite string vacío
+  imageUrl: z.string().optional(),
   percentage: z.number().min(0).max(100).default(0),
   createdAt: z.date().default(() => new Date()),
   updatedAt: z.date(),
