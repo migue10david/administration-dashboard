@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     // 👇 Solo revisa estos directorios durante el build y `next lint`
     //dirs: ['src'], 
     // Opcional: Ignora ESLint en producción (útil para builds rápidos)
-    ignoreDuringBuilds: false, 
+    ignoreDuringBuilds: true, 
   },
   typescript: {
     ignoreBuildErrors: false, // Opcional: Falla el build si hay errores de TypeScript

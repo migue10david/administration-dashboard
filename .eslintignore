@@ -1,0 +1,8 @@
+# Archivos generados por Prisma
+/src/generated/
+/prisma/generated/
+node_modules/
+.next/
+out/
+build/
+dist/
