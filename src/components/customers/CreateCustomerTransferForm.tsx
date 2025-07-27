@@ -67,7 +67,7 @@ const CreateCustomerTransferForm = ({
   //const recipientId = watch("recipientId");
 
   // Calcula "A pagar"
-  const totalToPay = Number(amount) - Number(feed);
+  const totalToPay = Number(amount) + Number(feed);
 
   const onSubmit = async (data: WireTransferFormValues) => {
     try {

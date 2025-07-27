@@ -100,7 +100,6 @@ const CreateCustomerForm = ({ onOpenChange }: Props) => {
       if (file) {
         formData.append("customerPhoto", file);
       }
-
       const response = await fetch("/api/customer", {
         method: "POST",
         body: formData,

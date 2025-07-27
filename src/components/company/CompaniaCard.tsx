@@ -17,15 +17,18 @@ import EditCompaniaForm from "./EditCompaniaForm"; // Importa el formulario de e
 import { Company } from "@/app/lib/types/modelTypes";
 import { deleteCompany } from "@/app/lib/actions/companyActions";
 
-
 type Props = {
   companies: Company[];
 };
 
 export default function CompaniaCard({ companies }: Props) {
   const router = useRouter();
-  const [editingCompaniaId, setEditingCompaniaId] = useState<string | null>(null); // Estado para el modal de edición
-  const [deletingCompaniaId, setDeletingCompaniaId] = useState<string | null>(null);
+  const [editingCompaniaId, setEditingCompaniaId] = useState<string | null>(
+    null
+  ); // Estado para el modal de edición
+  const [deletingCompaniaId, setDeletingCompaniaId] = useState<string | null>(
+    null
+  );
 
   const handleDelete = async (id: string) => {
     try {
@@ -50,32 +53,35 @@ export default function CompaniaCard({ companies }: Props) {
             </CardHeader>
             <CardContent className="space-y-2 relative">
               <div className="text-sm">
-                <span className="font-medium">Descripcion:</span> {compania.description}
+                <span className="font-medium">Descripcion:</span>{" "}
+                {compania.description}
               </div>
               <div className="text-sm">
                 <span className="font-medium">Nombre:</span> {compania.name}
               </div>
               <div className="text-sm">
-                <span className="font-medium">Activa:</span> {compania.isActive === true ? "Si" : "No"}
+                <span className="font-medium">Activa:</span>{" "}
+                {compania.isActive === true ? "Si" : "No"}
               </div>
 
               {/* Botones de acción */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-4">
                 <Button
-                  size="lg"
-                  className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600"
-                  onClick={() => setEditingCompaniaId(compania.id)} // Abrir modal de edición
+                  size="sm"
+                  variant="outline"
+                  className="text-blue-600 hover:bg-blue-50 border-blue-200"
+                  onClick={() => setEditingCompaniaId(compania.id)}
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit className="h-4 w-4 mr-2" />
                   Editar
                 </Button>
                 <Button
-                  size="lg"
-                  variant="destructive"
-                  className="flex items-center gap-2"
+                  size="sm"
+                  variant="outline"
+                  className="text-red-600 hover:bg-red-50 border-red-200"
                   onClick={() => setDeletingCompaniaId(compania.id)}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4 mr-2" />
                   Eliminar
                 </Button>
               </div>
@@ -94,7 +100,8 @@ export default function CompaniaCard({ companies }: Props) {
                 <DialogTitle>¿Estás seguro?</DialogTitle>
                 <DialogDescription>
                   Esta acción deshabilitara/habilitara la compania{" "}
-                  <span className="font-semibold">{compania.name}</span> de la base de datos.
+                  <span className="font-semibold">{compania.name}</span> de la
+                  base de datos.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>

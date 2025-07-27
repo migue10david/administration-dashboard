@@ -6,6 +6,7 @@ import { Customer } from "@/app/lib/types/modelTypes";
 import Search from "../common/search";
 import RecipientCard from "./RecipientCard";
 import RecipientTable from "./RecipientTable";
+import { RecipientFormModal } from "./RecipientFormModal";
 
 type Props = {
   customers: Customer[];
@@ -62,8 +63,7 @@ const Recipients = ({ customers }: Props) => {
         <RecipientTable customers={customers} />
       )}
 
-      {/* Modal del formulario */}
-      {/* <CustomerFormModal open={isModalOpen} onOpenChange={setIsModalOpen} /> */}
+    <RecipientFormModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>
   );
 };
