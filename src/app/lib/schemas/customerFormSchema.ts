@@ -2,7 +2,7 @@ import z from "zod";
 
 export const CustomerSchema = z.object({
   id: z.string().cuid(),
-  code: z.string().min(1).max(8),
+  code: z.string().min(1),
   firstName: z.string().min(3).max(20),
   middleName: z.string().optional(),
   lastNameOne: z.string().min(3).max(30),

@@ -120,7 +120,7 @@ export async function POST(req: Request) {
     // Obtener archivo (asumiendo que el campo se llama 'dniImage')
     const customerPhoto = formData.get('customerPhoto') as Blob | null
 
-    let imageUrl: string | null = null
+    let imageUrl: string = "";
 
     // Procesar imagen si existe
     if (customerPhoto && customerPhoto.size > 0) {
@@ -181,7 +181,7 @@ export async function POST(req: Request) {
       );
     }    
 
-    // Parsear datos del cliente
+    // Parsear datos del beneficiario
     const recipientData = CreateCustomerSchema.parse({
       code: formData.get('code'),
       firstName: formData.get('firstName'),
