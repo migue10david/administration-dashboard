@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { companyFormSchema, CompanyFormValues, countryFormSchema, CountryFormValues } from "@/app/lib/schemas/commonFormSchema";
+import { countryFormSchema, CountryFormValues } from "@/app/lib/schemas/commonFormSchema";
 
 type Props = {
   country: CountryFormValues & { id: string };
