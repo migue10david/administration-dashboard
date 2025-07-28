@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -13,6 +11,8 @@ services:
       - /app/.next
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      - AUTH_TRUST_HOST=true
+      - NEXTAUTH_URL=http://localhost:3000
     depends_on:
       db:
         condition: service_healthy
@@ -25,6 +25,10 @@ services:
       timeout: 5s
       retries: 5
     env_file: .env
+    environment:
+    - POSTGRES_USER=${DB_USER}
+    - POSTGRES_PASSWORD=${DB_PASSWORD}
+    - POSTGRES_DB=${DB_NAME}    
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
