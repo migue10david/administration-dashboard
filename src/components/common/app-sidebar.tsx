@@ -1,7 +1,7 @@
 "use client";
 
 import type * as React from "react";
-import { Building2, DoorOpen, FileText, Flag, Home, Star, Users, Users2 } from "lucide-react";
+import { Building2, DoorOpen, FileText, Flag, Home, Settings, Star, Users, Users2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -52,6 +52,11 @@ const navigationItems = [
     title: "Ciudades",
     url: "/city",
     icon: FileText
+  },
+  {
+    title: "Configuración",
+    url: "/settings",
+    icon: Settings
   }
 ];
 

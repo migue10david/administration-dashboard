@@ -59,7 +59,7 @@ export const wireTransferFormSchema = z.object({
 
 export type WireTransferFormValues = z.infer<typeof wireTransferFormSchema>
 
-export const SettingFormSchema = z.object({
+export const settingFormSchema = z.object({
   name: z.string().min(3).max(50),       
   code: z.string().min(1).max(3),     
   zipCode: z.string().min(3).max(5),    
@@ -72,4 +72,4 @@ export const SettingFormSchema = z.object({
   minimunAge: z.number()
 })
 
-export type SettingFormValues = z.infer<typeof SettingFormSchema>
+export type SettingFormValues = z.infer<typeof settingFormSchema>

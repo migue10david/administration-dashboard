@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/app/lib/auth-credentials/auth";
-import { SettingFormSchema } from "@/app/lib/schemas/commonFormSchema";
+import { settingFormSchema } from "@/app/lib/schemas/commonFormSchema";
 import { z } from "zod";
 
 // GET /api/setting  --> Obtener configuracion
@@ -55,7 +55,7 @@ export async function PATCH(
     const body = await req.json();
 
     // 3. Validación parcial (schema diferente al POST)
-    const validatedData = SettingFormSchema.parse(body);
+    const validatedData = settingFormSchema.parse(body);
 
     // 4. Actualizar solo campos proporcionados
     const updSetting = await prisma.systemSetting.update({

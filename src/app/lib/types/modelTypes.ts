@@ -76,3 +76,17 @@ export type State = {
   code: string
   countryId: string
 }
+
+export type Settings = {
+  id: string
+  name: string
+  code: string
+  zipCode: string
+  cityId: string
+  stateId: string
+  numCustomerPercentRate: number
+  customerPercentRate: number
+  moneyOrderFeed: number
+  maxBankDepositLimit: number
+  minimunAge: number
+}

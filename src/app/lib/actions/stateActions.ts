@@ -2,12 +2,14 @@
 import { headers } from "next/headers";
 import { State } from "../types/modelTypes";
 
-export const getStates = async (page: number, perPage: number) => {
+export const getStates = async (page?: number, perPage?: number) => {
   const cookie = (await headers()).get("cookie");
-  const start = page - 1 + 1 || 1;
+    const start = page ? page - 1 + 1 : 1;
   const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/state`);
-  url.searchParams.set("page", String(start));
-  url.searchParams.set("limit", String(perPage));
+  if(page){
+    url.searchParams.set("page", String(start));
+    url.searchParams.set("limit", String(perPage));
+  }
 
   // Llama a tu API pasando la cookie
   const res = await fetch(url.toString(), {
