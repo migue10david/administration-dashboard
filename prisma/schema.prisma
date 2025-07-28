@@ -40,11 +40,14 @@ model SystemSetting {
   name    String
   code    String
   zipCode String
-  cityId  String
-  stateId String
 
-  city  City  @relation(fields: [cityId], references: [id])
-  state State @relation(fields: [stateId], references: [id])
+  // Relación 1:1 con City (opcional)
+  cityId                  String?  @unique  // Campo opcional para relación 1:1
+  city                    City?    @relation(fields: [cityId], references: [id])
+  
+  // Relación 1:1 con City (opcional)
+  stateId                  String?  @unique  // Campo opcional para relación 1:1
+  state                    State?    @relation(fields: [stateId], references: [id])
 
   numCustomerPercentRate Float @default(0)
   customerPercentRate    Float @default(0)
@@ -115,7 +118,9 @@ model State {
   // Relación con el usuario creador (obligatoria)
   createdBy   User       @relation(fields: [createdById], references: [id], name: "CreatedBy")
 
-  SystemSetting SystemSetting[]
+  // Relación inversa con SystemSetting (1:1)
+  systemSetting SystemSetting?  // Relación opcional inversa
+
 }
 
 model City {
@@ -132,7 +137,9 @@ model City {
   createdById String     @db.Uuid // Cambiado a Uuid
   createdBy   User       @relation(fields: [createdById], references: [id], name: "CreatedBy")
 
-  SystemSetting SystemSetting[]
+  // Relación inversa con SystemSetting (1:1)
+  systemSetting SystemSetting?  // Relación opcional inversa
+
 }
 
 enum CustomerType {

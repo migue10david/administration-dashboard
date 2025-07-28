@@ -59,17 +59,53 @@ export const wireTransferFormSchema = z.object({
 
 export type WireTransferFormValues = z.infer<typeof wireTransferFormSchema>
 
-export const SettingFormSchema = z.object({
-  name: z.string().min(3).max(50),       
-  code: z.string().min(1).max(3),     
-  zipCode: z.string().min(3).max(5),    
-  cityId: z.string(),
-  stateId: z.string(),
-  numCustomerRate: z.number(),
+export const SystemSettingSchema = z.object({
+  id: z.string().cuid(),
+  name: z.string().min(3).max(50),
+  code: z.string().min(1).max(4),
+  zipCode: z.string().min(3).max(5),
+  numCustomerPercentRate: z.number(),
   customerPercentRate: z.number(),
   moneyOrderFeed: z.number(),
-  maxBankDepositLimit: z.number(),
-  minimunAge: z.number()
-})
+  maxBankDepositLimit: z.number().int(),
+  minimunAge: z.number().int(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  
+  // Relación con City (opcional)
+  cityId: z.string().cuid().optional(),
+  city: z.object({
+    id: z.string().cuid(),
+    name: z.string(),
+    code: z.string(),
+    isActive: z.boolean(),
+  }).optional(),
 
-export type SettingFormValues = z.infer<typeof SettingFormSchema>
+  // Relación con State (opcional)
+  stateId: z.string().cuid().optional(),
+  state: z.object({
+    id: z.string().cuid(),
+    name: z.string(),
+    code: z.string(),
+    isActive: z.boolean(),
+  }).optional()
+
+});
+
+// Esquema para crear un nuevo Cliente (omitiendo campos autogenerados)
+export const UpdateSystemSettingSchema = SystemSettingSchema
+  .omit({ 
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    city: true, // Excluir el objeto completo de City
+    state: true // Excluir el objeto completo de State
+  })
+  .extend({
+    // Campos opcionales para actualización
+    cityId: z.string().cuid().optional(), // Solo el ID, no el objeto completo
+    stateId: z.string().cuid().optional() // Solo el ID, no el objeto completo
+  });
+
+export type UpdateSystemSettingInput = z.infer<typeof UpdateSystemSettingSchema>;
+
