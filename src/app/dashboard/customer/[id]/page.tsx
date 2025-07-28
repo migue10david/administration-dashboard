@@ -11,34 +11,22 @@ import { getRecipients } from "@/app/lib/actions/recipientActions";
 import { getCountries } from "@/app/lib/actions/countryActions";
 import { getStates } from "@/app/lib/actions/stateActions";
 import { getCities } from "@/app/lib/actions/citiesActions";
+import EditCustomerModal from "@/components/customers/EditCustomerModal";
 type Props = {
   params: {
     id: string;
   };
-  searchParams: Promise<{ [key: string]: string | undefined }>;
 };
 
 
-const CustomersDetailsPage = async ({ params, searchParams }: Props) => {
+const CustomersDetailsPage = async ({ params }: Props) => {
   const { id } = await params;
   const customer = await getCustomersById(id);
-
-  const resolvedSearchParams = await searchParams;
-  const currentPage = parseInt((resolvedSearchParams.page as string) || "1");
-  const postsPerPage = parseInt(
-    (resolvedSearchParams.pageSize as string) || "12"
-  );
   const transactionTypes = await getTransactionTypes();
   const {data} = await getCompanies();
   const {data: recipients} = await getRecipients();
-  const { data: countries } = await getCountries(
-    currentPage,
-    postsPerPage
-  );
-  const { data: states} = await getStates(
-    currentPage,
-    postsPerPage
-  );
+  const { data: countries } = await getCountries();
+  const { data: states} = await getStates();
   const { data: cities } = await getCities();
 
 
@@ -54,7 +42,7 @@ const CustomersDetailsPage = async ({ params, searchParams }: Props) => {
             </div>
             <h1 className="text-2xl font-bold">Detalles Personales</h1>
             </div>
-            <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-4 py-2">Editar Perfil</Button>
+            <EditCustomerModal customer={customer} transactionTypes={transactionTypes} countries={countries} states={states} cities={cities} />
           </div>
           <div className="py-2 space-y-2">
             <h1 className="text-xl font-bold">Informacion Personal</h1>
