@@ -2,10 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  settingFormSchema,
-  SettingFormValues,
-} from "@/app/lib/schemas/commonFormSchema";
+
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -14,16 +11,22 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { StateSelect } from "../state/StateSelect";
 import { CitySelect } from "../citys/CitySelect";
+import {
+  UpdateSystemSettingInput,
+  UpdateSystemSettingSchema,
+} from "@/app/lib/schemas/commonFormSchema";
 
 type Props = {
   onOpenChange: (open: boolean) => void;
   // Pasa los valores iniciales desde el padre
-  initialData: Partial<SettingFormValues>;
+  initialData: Partial<UpdateSystemSettingInput> & { id: string };
 };
 
 const EditSettings = ({ onOpenChange, initialData }: Props) => {
   const router = useRouter();
-  const [selectedStateId, setSelectedStateId] = useState<string>(initialData.stateId || "");
+  const [selectedStateId, setSelectedStateId] = useState<string>(
+    initialData.stateId || ""
+  );
 
   const {
     register,
@@ -31,15 +34,15 @@ const EditSettings = ({ onOpenChange, initialData }: Props) => {
     setValue,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<SettingFormValues>({
-    resolver: zodResolver(settingFormSchema),
+  } = useForm<UpdateSystemSettingInput>({
+    resolver: zodResolver(UpdateSystemSettingSchema),
     defaultValues: {
       name: initialData.name || "",
       code: initialData.code || "",
       cityId: initialData.cityId || "",
       stateId: initialData.stateId || "",
       zipCode: initialData.zipCode || "",
-      numCustomerRate: initialData.numCustomerRate || 0,
+      numCustomerPercentRate: initialData.numCustomerPercentRate || 0,
       customerPercentRate: initialData.customerPercentRate || 0,
       moneyOrderFeed: initialData.moneyOrderFeed || 0,
       maxBankDepositLimit: initialData.maxBankDepositLimit || 0,
@@ -48,25 +51,18 @@ const EditSettings = ({ onOpenChange, initialData }: Props) => {
   });
 
   // Observar el estado seleccionado
-  const stateId = watch("stateId");
 
-  // Actualizar estado local cuando cambie
-  React.useEffect(() => {
-    if (stateId) {
-      setSelectedStateId(stateId);
-    }
-  }, [stateId]);
 
-  const onSubmit = async (data: SettingFormValues) => {
+  const onSubmit = async (data: UpdateSystemSettingInput) => {
     try {
-      const response = await fetch("/api/setting", {
-        method: "PATCH",
+      const response = await fetch(`/api/setting/${initialData.id}`, {
+        method: "PUT",
         body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log(data)
+      console.log(data);
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
         throw new Error(error.message || "Error al actualizar configuración");
@@ -75,7 +71,9 @@ const EditSettings = ({ onOpenChange, initialData }: Props) => {
       const res = await response.json();
       onOpenChange(false);
       router.refresh();
-      toast.success(res.message || "✅ Configuración actualizada correctamente");
+      toast.success(
+        res.message || "✅ Configuración actualizada correctamente"
+      );
     } catch (error) {
       console.error("Error:", error);
       toast.error("❌ No se pudo actualizar la configuración");
@@ -87,7 +85,9 @@ const EditSettings = ({ onOpenChange, initialData }: Props) => {
       <div className="grid gap-6 py-4">
         {/* Nombre */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="name" className="text-right">Nombre</Label>
+          <Label htmlFor="name" className="text-right">
+            Nombre
+          </Label>
           <Input
             id="name"
             type="text"
@@ -97,13 +97,17 @@ const EditSettings = ({ onOpenChange, initialData }: Props) => {
             required
           />
           {errors.name && (
-            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">{errors.name.message}</p>
+            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">
+              {errors.name.message}
+            </p>
           )}
         </div>
 
         {/* Code */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="code" className="text-right">Código</Label>
+          <Label htmlFor="code" className="text-right">
+            Código
+          </Label>
           <Input
             id="code"
             type="text"
@@ -115,7 +119,9 @@ const EditSettings = ({ onOpenChange, initialData }: Props) => {
 
         {/* ZIP Code */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="zipCode" className="text-right">Código Postal</Label>
+          <Label htmlFor="zipCode" className="text-right">
+            Código Postal
+          </Label>
           <Input
             id="zipCode"
             type="text"
@@ -125,62 +131,80 @@ const EditSettings = ({ onOpenChange, initialData }: Props) => {
             required
           />
           {errors.zipCode && (
-            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">{errors.zipCode.message}</p>
+            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">
+              {errors.zipCode.message}
+            </p>
           )}
         </div>
 
         {/* State */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="stateId" className="text-right">Estado</Label>
+          <Label htmlFor="stateId" className="text-right">
+            Estado
+          </Label>
           <div className="col-span-3">
             <StateSelect
-              countryId="US" // Ajusta si tienes múltiples países
-              value={watch("stateId")}
+              countryId="US"
+              value={watch("stateId") || ""} // ✅ Solución
               onChange={(value) => {
                 setValue("stateId", value, { shouldValidate: true });
-                setValue("cityId", ""); // Resetear ciudad
+                setValue("cityId", "");
               }}
             />
             {errors.stateId && (
-              <p className="mt-1 text-sm text-red-600">{errors.stateId.message}</p>
+              <p className="mt-1 text-sm text-red-600">
+                {errors.stateId.message}
+              </p>
             )}
           </div>
         </div>
 
         {/* City */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="cityId" className="text-right">Ciudad</Label>
+          <Label htmlFor="cityId" className="text-right">
+            Ciudad
+          </Label>
           <div className="col-span-3">
             <CitySelect
               stateId={selectedStateId}
-              value={watch("cityId")}
-              onChange={(value) => setValue("cityId", value, { shouldValidate: true })}
+              value={watch("cityId") || ""} // ✅ Solución
+              onChange={(value) =>
+                setValue("cityId", value, { shouldValidate: true })
+              }
             />
             {errors.cityId && (
-              <p className="mt-1 text-sm text-red-600">{errors.cityId.message}</p>
+              <p className="mt-1 text-sm text-red-600">
+                {errors.cityId.message}
+              </p>
             )}
           </div>
         </div>
 
         {/* Tasas */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="numCustomerRate" className="text-right">Tarifa por cliente</Label>
+          <Label htmlFor="numCustomerRate" className="text-right">
+            Tarifa por cliente
+          </Label>
           <Input
             id="numCustomerRate"
             type="number"
             step="0.01"
             placeholder="Tarifa por cliente"
             className="col-span-3"
-            {...register("numCustomerRate", { valueAsNumber: true })}
+            {...register("numCustomerPercentRate", { valueAsNumber: true })}
             required
           />
-          {errors.numCustomerRate && (
-            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">{errors.numCustomerRate.message}</p>
+          {errors.numCustomerPercentRate && (
+            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">
+              {errors.numCustomerPercentRate.message}
+            </p>
           )}
         </div>
 
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="customerPercentRate" className="text-right">Porcentaje por cliente</Label>
+          <Label htmlFor="customerPercentRate" className="text-right">
+            Porcentaje por cliente
+          </Label>
           <Input
             id="customerPercentRate"
             type="number"
@@ -191,12 +215,16 @@ const EditSettings = ({ onOpenChange, initialData }: Props) => {
             required
           />
           {errors.customerPercentRate && (
-            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">{errors.customerPercentRate.message}</p>
+            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">
+              {errors.customerPercentRate.message}
+            </p>
           )}
         </div>
 
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="moneyOrderFeed" className="text-right">Comisión Money Order</Label>
+          <Label htmlFor="moneyOrderFeed" className="text-right">
+            Comisión Money Order
+          </Label>
           <Input
             id="moneyOrderFeed"
             type="number"
@@ -207,12 +235,16 @@ const EditSettings = ({ onOpenChange, initialData }: Props) => {
             required
           />
           {errors.moneyOrderFeed && (
-            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">{errors.moneyOrderFeed.message}</p>
+            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">
+              {errors.moneyOrderFeed.message}
+            </p>
           )}
         </div>
 
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="maxBankDepositLimit" className="text-right">Límite depósito bancario</Label>
+          <Label htmlFor="maxBankDepositLimit" className="text-right">
+            Límite depósito bancario
+          </Label>
           <Input
             id="maxBankDepositLimit"
             type="number"
@@ -222,12 +254,16 @@ const EditSettings = ({ onOpenChange, initialData }: Props) => {
             required
           />
           {errors.maxBankDepositLimit && (
-            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">{errors.maxBankDepositLimit.message}</p>
+            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">
+              {errors.maxBankDepositLimit.message}
+            </p>
           )}
         </div>
 
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="minimunAge" className="text-right">Edad mínima</Label>
+          <Label htmlFor="minimunAge" className="text-right">
+            Edad mínima
+          </Label>
           <Input
             id="minimunAge"
             type="number"
@@ -237,7 +273,9 @@ const EditSettings = ({ onOpenChange, initialData }: Props) => {
             required
           />
           {errors.minimunAge && (
-            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">{errors.minimunAge.message}</p>
+            <p className="col-span-3 col-start-2 mt-1 text-sm text-red-600">
+              {errors.minimunAge.message}
+            </p>
           )}
         </div>
       </div>
