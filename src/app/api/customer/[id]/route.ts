@@ -76,7 +76,7 @@ export async function PUT(
     // Obtener archivo (asumiendo que el campo se llama 'dniImage')
     const customerPhoto = formData.get("customerPhoto") as Blob | null;
 
-    let imageUrl: string | null = null;
+    let imageUrl: string = ""
 
     // Procesar imagen si existe
     if (customerPhoto && customerPhoto.size > 0) {
@@ -154,7 +154,7 @@ export async function PUT(
       imageUrl: imageUrl,
       percentage: percentage,
       type: "CUSTOMER",
-      notes: formData.get("notes"),
+      notes: formData.get("notes") || "",
       countryId: formData.get("countryId"),
       stateId: formData.get("stateId"),
       cityId: formData.get("cityId"),

@@ -73,64 +73,12 @@ export default async function Dashboard() {
     },
   ]
 
-  const transaccionesRecientes = [
-    {
-      id: "TXN-001",
-      cliente: "Empresa ABC S.A.",
-      beneficiario: "Juan Pérez",
-      monto: 150000,
-      tipo: "Transferencia",
-      estado: "Completada",
-      fecha: "2024-01-15 14:30",
-    },
-    {
-      id: "TXN-002",
-      cliente: "Comercial XYZ",
-      beneficiario: "María García",
-      monto: 75000,
-      tipo: "Cheque",
-      estado: "Pendiente",
-      fecha: "2024-01-15 13:45",
-    },
-    {
-      id: "TXN-003",
-      cliente: "Distribuidora 123",
-      beneficiario: "Carlos López",
-      monto: 200000,
-      tipo: "Transferencia",
-      estado: "Completada",
-      fecha: "2024-01-15 12:15",
-    },
-    {
-      id: "TXN-004",
-      cliente: "Servicios Pro",
-      beneficiario: "Ana Martínez",
-      monto: 95000,
-      tipo: "Cheque",
-      estado: "En proceso",
-      fecha: "2024-01-15 11:20",
-    },
-  ]
-
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-CO", {
       style: "currency",
       currency: "COP",
       minimumFractionDigits: 0,
     }).format(amount)
-  }
-
-  const getEstadoBadge = (estado: string) => {
-    switch (estado) {
-      case "Completada":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Completada</Badge>
-      case "Pendiente":
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Pendiente</Badge>
-      case "En proceso":
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">En proceso</Badge>
-      default:
-        return <Badge variant="secondary">{estado}</Badge>
-    }
   }
 
   const getEstadoClienteBadge = (estado: string) => {

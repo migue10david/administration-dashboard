@@ -4,7 +4,6 @@ import Image from "next/image";
 import BreadCrumbs from "@/components/common/bread-crumbs";
 import { getCustomersById } from "@/app/lib/actions/customersActions";
 import { CustomerTab } from "@/components/customers/CustomersTab";
-import { Button } from "@/components/ui/button";
 import { getTransactionTypes } from "@/app/lib/actions/transactionTypeActions";
 import { getCompanies } from "@/app/lib/actions/companyActions";
 import { getRecipients } from "@/app/lib/actions/recipientActions";
@@ -51,7 +50,8 @@ const CustomersDetailsPage = async ({ params }: Props) => {
                 <Image
                   src={customer?.imageUrl || "/no-user.webp"}
                   alt={customer?.firstName + " " + customer?.lastNameOne}
-                  fill
+                  height={200}
+                  width={200}
                 />
               </div>
               <div className="row-span-2 space-y-4">
