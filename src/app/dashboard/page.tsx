@@ -16,10 +16,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu"
+import { getSummary } from "../lib/actions/homeActions"
+import { TransactionCharts } from "@/components/charts/TransactionCharts"
 
 
 export default async function Dashboard() {
-    const metricas = {
+
+  const { data } = await getSummary();
+
+  const metricas = {
     clientesActivos: 89,
     beneficiarios: 156,
     pagosEsteMes: {
@@ -200,13 +205,7 @@ export default async function Dashboard() {
               <CardDescription>Últimos 7 días</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-                <div className="text-center text-gray-500">
-                  <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>Gráfico de transacciones por día</p>
-                  <p className="text-sm">Aquí iría un gráfico de líneas o barras</p>
-                </div>
-              </div>
+                <TransactionCharts data={data} />
             </CardContent>
           </Card>
 
