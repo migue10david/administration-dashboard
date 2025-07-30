@@ -36,8 +36,6 @@ type TransactionData = TransactionAnalysisResult;
 export function TransactionCharts({ data }: { data: TransactionData }) {
   // Preparar datos para gráficos
 
-  console.log(data);
-
   const dailyData = Object.values(data.transactionsByDay);
   //const checkTypesData = Object.entries(data.checkTypes).map(([name, value]) => ({ name, value }));
 /*   const topCustomers = Object.entries(data.mostActiveCustomers)
