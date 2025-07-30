@@ -15,5 +15,5 @@ export const getSettings = async () => {
   });
 
   const settings = await res.json();
-  return settings as Settings;
+  return {data: settings as Settings};
 };

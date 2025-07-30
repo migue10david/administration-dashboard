@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Company, Customer, Recipient, TransactionType } from "@/app/lib/types/modelTypes";
+import { Company, Customer, Recipient, Settings, TransactionType } from "@/app/lib/types/modelTypes";
 import {
   CalendarDays,
   DollarSign,
@@ -27,6 +27,7 @@ type Props = {
   transactionTypes: TransactionType[];
   companies: Company[];
   recipients: Recipient[];
+  settings: Settings
 };
 
 export function CustomerTab({
@@ -34,6 +35,7 @@ export function CustomerTab({
   transactionTypes,
   companies,
   recipients,
+  settings
 }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -152,6 +154,7 @@ export function CustomerTab({
               onOpenChange={setIsModalOpen}
               customer={customer}
               transactionTypes={transactionTypes}
+              settings={settings}
             />
           </div>
         </TabsContent>
@@ -240,6 +243,7 @@ export function CustomerTab({
               onOpenChange={setIsModalOpen}
               customer={customer}
               companies={companies}
+              settings={settings}
             />
           </div>
         </TabsContent>

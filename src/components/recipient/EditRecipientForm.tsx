@@ -4,13 +4,12 @@ import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 // Formulario y tipos
-import { CreateCustomerFormSchema, CreateCustomerFormValues, CustomerFormSchema, CustomerFormValues } from "@/app/lib/schemas/customerFormSchema";
+import { CreateCustomerFormSchema, CreateCustomerFormValues} from "@/app/lib/schemas/customerFormSchema";
 
 // Componentes de selección
 import { CountrySelect } from "../country/CountrySelect";
@@ -40,10 +39,10 @@ import { format } from "date-fns";
 import { cn } from "@/app/lib/utils";
 
 // Tipos
-import { City, Country, Customer, State, TransactionType } from "@/app/lib/types/modelTypes";
+import { City, Country, Recipient, State, TransactionType } from "@/app/lib/types/modelTypes";
 
 type Props = {
-  customer: Customer;
+  recipient: Recipient;
   transactionTypes: TransactionType[];
   countries: Country[];
   states: State[];
@@ -51,8 +50,8 @@ type Props = {
   onSuccess: () => void;
 };
 
-export default function EditCustomerForm({
-  customer,
+export default function EditRecipientForm({
+  recipient,
   countries,
   states: initialStates,
   cities: initialCities,
@@ -71,20 +70,20 @@ export default function EditCustomerForm({
   const form = useForm<CreateCustomerFormValues>({
     resolver: zodResolver(CreateCustomerFormSchema),
     defaultValues: {
-      code: customer.code,
-      firstName: customer.firstName,
-      middleName: customer.middleName,
-      lastNameOne: customer.lastNameOne,
-      lastNameTwo: customer.lastNameTwo,
-      address: customer.address,
-      apartment: customer.apartment,
-      zipCode: customer.zipCode,
-      phone: customer.phone,
-      dob: customer.dob,
-      ssn: customer.ssn,
-      dlid: customer.dlid,
-      percentage: customer.percentage,
-      notes: customer.notes,
+      code: recipient.code,
+      firstName: recipient.firstName,
+      middleName: recipient.middleName,
+      lastNameOne: recipient.lastNameOne,
+      lastNameTwo: recipient.lastNameTwo,
+      address: recipient.address,
+      apartment: recipient.apartment,
+      zipCode: recipient.zipCode,
+      phone: recipient.phone,
+      dob: recipient.dob,
+      ssn: recipient.ssn,
+      dlid: recipient.dlid,
+      percentage: recipient.percentage,
+      notes: recipient.notes,
       countryId: "",
       stateId: "",
       cityId: "",
@@ -119,8 +118,8 @@ export default function EditCustomerForm({
       if (file) {
         formData.append("customerPhoto", file);
       }
-      console.log(formData, customer.id)
-      const response = await fetch(`/api/customer/${customer.id}`, {
+      console.log(formData, recipient.id)
+      const response = await fetch(`/api/customer/${recipient.id}`, {
         method: "PUT",
         body: formData,
         credentials: "include",

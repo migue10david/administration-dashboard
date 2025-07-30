@@ -11,6 +11,9 @@ import { getCountries } from "@/app/lib/actions/countryActions";
 import { getStates } from "@/app/lib/actions/stateActions";
 import { getCities } from "@/app/lib/actions/citiesActions";
 import EditCustomerModal from "@/components/customers/EditCustomerModal";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { getSettings } from "@/app/lib/actions/settingsActions";
 type Props = {
   params: {
     id: string;
@@ -27,7 +30,7 @@ const CustomersDetailsPage = async ({ params }: Props) => {
   const { data: countries } = await getCountries();
   const { data: states} = await getStates();
   const { data: cities } = await getCities();
-
+  const { data: settings } = await getSettings();
 
   return (
     <div className="bg-[#F3F5F9] min-h-screen">
@@ -58,7 +61,7 @@ const CustomersDetailsPage = async ({ params }: Props) => {
                 <div className="flex flex-col">
                   <p className="text-gray-600 text-lg">Nombre</p>
                   <h1 className="text-xl">
-                    {customer?.firstName + " " + customer?.lastNameOne}
+                    {customer?.firstName}
                   </h1>
                 </div>
                 <div className="flex flex-col">
@@ -77,7 +80,7 @@ const CustomersDetailsPage = async ({ params }: Props) => {
                 </div>
                 <div>
                   <p className="text-gray-600 text-lg">Dia de nacimiento</p>
-                  <h1 className="text-xl">{customer?.dob}</h1>
+                  <h1 className="text-xl">{customer?.dob ? format(new Date(customer.dob), 'PPP', { locale: es }) : "-"}</h1>
                 </div>
                 <div>
                   <p className="text-gray-600 text-lg">Seguridad Social</p>
@@ -127,7 +130,7 @@ const CustomersDetailsPage = async ({ params }: Props) => {
               </div>
             </div>
           </div>
-           <CustomerTab customer={customer} transactionTypes={transactionTypes} companies={data} recipients={recipients} />
+           <CustomerTab customer={customer} transactionTypes={transactionTypes} companies={data} recipients={recipients} settings={settings} />
         </div>
       </div>
     </div>

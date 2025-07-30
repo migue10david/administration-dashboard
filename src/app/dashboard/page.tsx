@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu"
 import { getSummary } from "../lib/actions/homeActions"
 import { TransactionCharts } from "@/components/charts/TransactionCharts"
+import Link from "next/link"
 
 
 export default async function Dashboard() {
@@ -110,9 +111,11 @@ export default async function Dashboard() {
               <p className="text-gray-600">Gestión de Clientes y Beneficiarios</p>
             </div>
             <div className="flex gap-3">
-              <Button>
+              <Button className="bg-blue-600 hover:bg-blue-700">
+               <Link href="/dashboard/create-check" className="flex items-center">
                 <Plus className="h-4 w-4 mr-2" />
                 Nuevo Pago
+               </Link>
               </Button>
               <Button variant="outline">
                 <Eye className="h-4 w-4 mr-2" />

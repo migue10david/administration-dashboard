@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Company, Customer } from "@/app/lib/types/modelTypes";
+import { Company, Customer, Settings } from "@/app/lib/types/modelTypes";
 import {
   Select,
   SelectContent,
@@ -27,12 +27,14 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   customer: Customer;
   companies: Company[];
+  settings: Settings;
 };
 
 const CreateCustomerTransferForm = ({
   onOpenChange,
   customer,
   companies,
+  settings
 }: Props) => {
   const router = useRouter();
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("");
@@ -56,7 +58,7 @@ const CreateCustomerTransferForm = ({
       recipientId: "",
       companyId: "",
       amount: 0,
-      feed: 0,
+      feed: settings.numCustomerPercentRate,
     },
     mode: "onChange",
   });

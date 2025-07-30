@@ -7,7 +7,7 @@ const RecipientPage = async () => {
  const {data, totalPages} = await getRecipients()
   return (
      <div className="space-y-4">
-      <Recipients customers={data} />
+      <Recipients recipients={data} />
       <div className="absolute bottom-8 left-0 right-0 flex justify-center">
         {/* <PaginationWithLinks
           page={currentPage}

@@ -1,3 +1,4 @@
+import { getCities } from "@/app/lib/actions/citiesActions";
 import { filters, getCustomers } from "@/app/lib/actions/customersActions";
 import Customers from "@/components/customers/Customers";
 import { PaginationWithLinks } from "@/components/ui/pagination-with-links";
@@ -17,10 +18,11 @@ const CustomersPage = async ({ searchParams }: Props) => {
     search: resolvedSearchParams.search as string || ""
   } 
   const { data, totalPages } = await getCustomers(filters);
+  const { data: cities} = await getCities();
 
   return (
     <div className="space-y-4">
-      <Customers customers={data} />
+      <Customers customers={data} cities={cities} />
       <div className="absolute bottom-8 left-0 right-0 flex justify-center">
         <PaginationWithLinks
           page={currentPage}

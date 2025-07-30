@@ -4,7 +4,7 @@ import { getStates } from "@/app/lib/actions/stateActions";
 import SettingsComponent from "@/components/settings/SettingsComponent";
 
 const SettingsPage = async () => {
-  const settings = await getSettings();
+  const { data: settings } = await getSettings();
   const { data: cities } = await getCities();
   const { data: states } = await getStates();
   return (

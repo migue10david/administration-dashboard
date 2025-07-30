@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 const navigationItems = [
@@ -61,6 +61,8 @@ const navigationItems = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const session = useSession()
+  console.log(session)
   return (
     <Sidebar {...props} className="bg-gray-50 border-r border-gray-200">
       <SidebarHeader className="bg-gradient-to-r from-blue-600 to-blue-800">
@@ -87,19 +89,42 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationItems.map((item) => (
-                <SidebarMenuItem key={item.title} className="px-2">
-                  <SidebarMenuButton className="h-12 px-4 text-base text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
-                    <Link
-                      href={`/dashboard/${item.url}`}
-                      className="flex items-center gap-3 w-full"
-                    >
-                      <item.icon className="h-5 w-5" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+             {session.data?.user?.role === "ADMIN" ? (
+               navigationItems.map((item) => (
+                 <SidebarMenuItem key={item.title} className="px-2">
+                   <SidebarMenuButton className="h-12 px-4 text-base text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                     <Link
+                       href={`/dashboard/${item.url}`}
+                       className="flex items-center gap-3 w-full"
+                     >
+                       <item.icon className="h-5 w-5" />
+                       <span>{item.title}</span>
+                     </Link>
+                   </SidebarMenuButton>
+                 </SidebarMenuItem>
+               ))
+             ) : (
+               <SidebarMenuItem className="px-2">
+                 <SidebarMenuButton className="h-12 px-4 text-base text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                   <Link
+                     href={`/dashboard/customer`}
+                     className="flex items-center gap-3 w-full"
+                   >
+                     <Users className="h-5 w-5" />
+                     <span>Clientes</span>
+                   </Link>
+                 </SidebarMenuButton>
+                 <SidebarMenuButton className="h-12 px-4 text-base text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                   <Link
+                     href={`/dashboard/recipient`}
+                     className="flex items-center gap-3 w-full"
+                   >
+                     <Users2 className="h-5 w-5" />
+                     <span>Beneficiarios</span>
+                   </Link>
+                 </SidebarMenuButton>
+               </SidebarMenuItem>
+             )}
               <SidebarMenuItem className="px-2 mt-4">
                 <button
                   className="w-full h-12 px-4 text-base text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-3 transition-colors duration-200"

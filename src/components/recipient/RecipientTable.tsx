@@ -7,13 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Customer } from "@/app/lib/types/modelTypes";
+import { Recipient } from "@/app/lib/types/modelTypes";
 
 type Props = {
-  customers: Customer[];
+  recipients: Recipient[];
 };
 
-const RecipientTable = ({ customers }: Props) => {
+const RecipientTable = ({ recipients }: Props) => {
   return (
     <div className="pt-4">
     <div className="border rounded-lg">
@@ -27,12 +27,12 @@ const RecipientTable = ({ customers }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {customers.map((customer) => (
-            <TableRow key={customer.id}>
-              <TableCell className="font-medium">{customer.firstName + ' ' + customer.lastNameOne}</TableCell>
-              <TableCell>{customer.address}</TableCell>
-              <TableCell>{customer.phone}</TableCell>
-              <TableCell>{customer.countryId}</TableCell>
+          {recipients.map((recipient) => (
+            <TableRow key={recipient.id}>
+              <TableCell className="font-medium">{recipient.firstName + ' ' + recipient.lastNameOne}</TableCell>
+              <TableCell>{recipient.address}</TableCell>
+              <TableCell>{recipient.phone}</TableCell>
+              <TableCell>{recipient.countryId}</TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Grid, List, Plus } from "lucide-react";
-import { Customer } from "@/app/lib/types/modelTypes";
+import { City, Customer } from "@/app/lib/types/modelTypes";
 import CustomerCard from "./CustomerCard";
 import CustomerTable from "./CustomerTable";
 import CustomerFormModal from "./CustomerFormModal";
@@ -10,9 +10,10 @@ import Search from "../common/search";
 
 type Props = {
   customers: Customer[];
+  cities: City[];
 };
 
-const Customers = ({ customers }: Props) => {
+const Customers = ({ customers, cities }: Props) => {
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -58,7 +59,7 @@ const Customers = ({ customers }: Props) => {
 
       {/* Vista condicional */}
       {viewMode === "cards" ? (
-        <CustomerCard customers={customers} />
+        <CustomerCard customers={customers} cities={cities} />
       ) : (
         <CustomerTable customers={customers} />
       )}

@@ -9,7 +9,7 @@ import {
   checkFormSchema,
   CheckFormValues,
 } from "@/app/lib/schemas/checkFormSchema";
-import { Customer, TransactionType } from "@/app/lib/types/modelTypes";
+import { Customer, Settings, TransactionType } from "@/app/lib/types/modelTypes";
 import {
   Select,
   SelectContent,
@@ -25,15 +25,17 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   customer: Customer;
   transactionTypes: TransactionType[];
+  settings: Settings;
 };
 
 const CreateCustomerCheckForm = ({
   onOpenChange,
   customer,
   transactionTypes,
+  settings
 }: Props) => {
   const router = useRouter();
-  const moneyOrderFeed = 5;
+  const moneyOrderFeed = settings.moneyOrderFeed;
   const [selectedTransactionTypeId, setSelectedTransactionTypeId] =
     useState<string>("");
   const [isCustomFeed, setIsCustomFeed] = useState(false);
