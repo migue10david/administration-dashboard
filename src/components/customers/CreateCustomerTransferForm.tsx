@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -34,7 +34,7 @@ const CreateCustomerTransferForm = ({
   onOpenChange,
   customer,
   companies,
-  settings
+  settings,
 }: Props) => {
   const router = useRouter();
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>("");
@@ -58,13 +58,24 @@ const CreateCustomerTransferForm = ({
       recipientId: "",
       companyId: "",
       amount: 0,
-      feed: settings.numCustomerPercentRate,
+      feed: 0,
     },
     mode: "onChange",
   });
 
   // Observa los valores relevantes
   const amount = watch("amount", 0);
+useEffect(() => {
+  if (amount > 0 && settings.numCustomerPercentRate !== undefined) {
+    const calculatedFeed = (amount * settings.numCustomerPercentRate) / 100;
+    setValue("feed", parseFloat(calculatedFeed.toFixed(2)), {
+      shouldValidate: true,
+    });
+  }else {
+    setValue("feed", 0, { shouldValidate: true });
+  }
+}, [amount, settings.numCustomerPercentRate, setValue]);
+
   const feed = watch("feed", 0);
   //const recipientId = watch("recipientId");
 
@@ -97,7 +108,9 @@ const CreateCustomerTransferForm = ({
 
   const handleFeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
-    setValue("feed", isNaN(value) ? 0 : value, { shouldValidate: true });
+    setValue("feed", isNaN(value) ? 0 : (amount * value) / 100, {
+      shouldValidate: true,
+    });
     setIsCustomFeed(true);
   };
 
@@ -234,7 +247,6 @@ const CreateCustomerTransferForm = ({
                   step="0.01"
                   placeholder="0.00"
                   {...register("feed", { valueAsNumber: true })}
-                  onChange={handleFeedChange}
                   className={`flex-1 ${errors.feed ? "border-red-500" : ""}`}
                 />
               </div>
