@@ -126,7 +126,7 @@ export function CustomerTab({
                       {formatCurrency(cheque.feed)}
                     </TableCell>
                     <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {cheque.amount + cheque.feed}
+                      {cheque.amount - cheque.feed}
                     </TableCell>
                     <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(cheque.createdAt.toString())}
@@ -218,7 +218,7 @@ export function CustomerTab({
                       {cheque.feed}
                     </TableCell>
                     <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {cheque.amount + cheque.feed}
+                      {cheque.amount - cheque.feed}
                     </TableCell>
                   </TableRow>
                 ))}

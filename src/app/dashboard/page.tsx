@@ -117,6 +117,12 @@ export default async function Dashboard() {
                 Nuevo Pago
                </Link>
               </Button>
+               <Button className="bg-blue-600 hover:bg-blue-700">
+               <Link href="/dashboard/create-transaction" className="flex items-center">
+                <Plus className="h-4 w-4 mr-2" />
+                Nueva Tranferencia
+               </Link>
+              </Button>
               <Button variant="outline">
                 <Eye className="h-4 w-4 mr-2" />
                 Ver Reportes

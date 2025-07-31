@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Grid, List, Plus } from "lucide-react";
-import { Recipient } from "@/app/lib/types/modelTypes";
+import { City, Recipient } from "@/app/lib/types/modelTypes";
 import Search from "../common/search";
 import RecipientCard from "./RecipientCard";
 import RecipientTable from "./RecipientTable";
@@ -10,9 +10,10 @@ import { RecipientFormModal } from "./RecipientFormModal";
 
 type Props = {
   recipients: Recipient[];
+  cities: City[];
 };
 
-const Recipients = ({ recipients }: Props) => {
+const Recipients = ({ recipients,cities }: Props) => {
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -58,9 +59,9 @@ const Recipients = ({ recipients }: Props) => {
 
       {/* Vista condicional */}
       {viewMode === "cards" ? (
-        <RecipientCard recipients={recipients} />
+        <RecipientCard recipients={recipients} cities={cities} />
       ) : (
-        <RecipientTable recipients={recipients} />
+        <RecipientTable recipients={recipients} cities={cities} />
       )}
 
     <RecipientFormModal open={isModalOpen} onOpenChange={setIsModalOpen} />
