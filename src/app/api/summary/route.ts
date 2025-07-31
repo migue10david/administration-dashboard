@@ -128,15 +128,15 @@ async function getTransactionBehaviorLast7Days() {
 
 // GET /api/summary  --> Obtener resumen
 export async function GET() {
-  const session = await auth();
+  //const session = await auth();
 
-  if (!session?.user?.id && session?.user?.role !== "ADMIN") {
+/*   if (!session?.user?.id && session?.user?.role !== "ADMIN") {
     return NextResponse.json(
       { success: false, error: "No autorizado" },
       { status: 401 }
     );
   }
-
+ */
   const now = new Date();
   const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
