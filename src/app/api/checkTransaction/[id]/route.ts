@@ -23,6 +23,9 @@ export async function GET(
   try {
     const check = await prisma.checkTransaction.findUnique({
       where: { id: id },
+      include: {
+        customer: true,
+      },
     });
 
     if (!check) {
@@ -104,10 +107,6 @@ export async function PUT(
       );
     }
 
-    if (validatedData.checkTransactionTypeId === "Cash Check") {
-      
-    }
-
     // Actualizar
     const updCheck = prisma.checkTransaction.update({
       where: { id: id },
@@ -175,58 +174,6 @@ export async function DELETE(
     return NextResponse.json({ data: updCheck }, { status: 200 });
   } catch (error) {
     console.log(error);
-    return NextResponse.json(
-      { error: "Error interno del servidor" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "No Autorizado" },
-        { status: 401 }
-      );
-  }
-
-  const { id } = await params; // Safe to use
-  const createdById = session.user.id;
-
-  try {
-    // 2. Parsear cuerpo
-    const body = await req.json();
-
-    // 3. Validación parcial (schema diferente al POST)
-    const validatedData = CheckTransactionFormSchema.parse(body);
-
-    // 4. Actualizar solo campos proporcionados
-    const updCheck = await prisma.checkTransaction.update({
-      where: { id: id },
-      data: {
-        ...validatedData,
-        createdById: createdById,
-      },
-    });
-
-    return NextResponse.json(updCheck, { status: 200 });
-  } catch (error) {
-    // Manejo de errores específicos
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          error: "Error de validación",
-          details: error.errors.map((e) => `${e.path}: ${e.message}`),
-        },
-        { status: 400 }
-      );
-    }
-
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
