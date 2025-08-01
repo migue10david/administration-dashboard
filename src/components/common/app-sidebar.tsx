@@ -1,7 +1,7 @@
 "use client";
 
 import type * as React from "react";
-import { Building2, DoorOpen, FileText, Flag, Home, Settings, Star, Users, Users2, WalletCards } from "lucide-react";
+import { Building2, DoorOpen, FileText, Flag, Home, Send, Settings, Star, Users, Users2, WalletCards } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -39,6 +39,11 @@ const navigationItems = [
     icon: WalletCards,
   },
   {
+    title: "Transferencias",
+    url: "/transfer",
+    icon: Send
+  },
+  {
     title: "Compañías",
     url: "/companies",
     icon: Building2,
@@ -67,7 +72,6 @@ const navigationItems = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const session = useSession()
-  console.log(session)
   return (
     <Sidebar {...props} className="bg-gray-50 border-r border-gray-200">
       <SidebarHeader className="bg-gradient-to-r from-blue-600 to-blue-800">

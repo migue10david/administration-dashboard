@@ -90,3 +90,13 @@ export type Settings = {
   maxBankDepositLimit: number
   minimunAge: number
 }
+
+export type WireTransfer = {
+  id: string
+  customerId: string
+  recipientId: string
+  companyId: string
+  amount: number
+  feed: number
+  createdAt: Date
+}
