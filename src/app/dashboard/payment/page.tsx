@@ -1,5 +1,5 @@
 import { getCheckTransactions } from "@/app/lib/actions/checkTransactionActions";
-import { getCustomers } from "@/app/lib/actions/customersActions";
+import { filters, getCustomers } from "@/app/lib/actions/customersActions";
 import CheckTransactions from "@/components/payments/CheckTransactions";
 import { PaginationWithLinks } from "@/components/ui/pagination-with-links";
 import React from "react";
@@ -13,7 +13,10 @@ const PaymentPage = async ({ searchParams }: Props) => {
   const postsPerPage = parseInt(
     (resolvedSearchParams.pageSize as string) || "12"
   );
-  const { data: checkTransactions, totalPages } = await getCheckTransactions();
+      const filters: filters ={
+    search: resolvedSearchParams.search as string || ""
+  } 
+  const { data: checkTransactions, totalPages } = await getCheckTransactions(filters);
     const { data: customers } = await getCustomers();
   return (
     <div className="px-4 py-4">

@@ -26,6 +26,7 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
+import Search from "../common/search";
 
 type Props = {
   wireTranfers: WireTransfer[];
@@ -59,15 +60,16 @@ const WireTransfers = ({
     <div className="overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 bg-white">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-xl font-semibold text-gray-800">
+        <div className="flex  sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col w-1/2">
+            <h1 className="text-xl  font-semibold text-gray-800">
               Transferencias Bancarias
             </h1>
             <p className="text-sm text-gray-500 mt-1">
               Historial de transferencias
             </p>
           </div>
+          <Search />
         </div>
       </div>
 

@@ -1,10 +1,14 @@
 import { headers } from "next/headers";
-import { CheckTransaction, WireTransfer } from "../types/modelTypes";
+import {  WireTransfer } from "../types/modelTypes";
+import { filters } from "./customersActions";
 
-export const getWireTransfer = async () => {
+export const getWireTransfer = async (filters?: filters) => {
   const cookie = (await headers()).get("cookie");
 
   const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/wireTransfer`);
+   if (typeof filters?.search === "string" && filters.search.trim()) {
+    url.searchParams.set("search", encodeURIComponent(filters.search.trim()));
+  }
 
   const res = await fetch(`${url}`, {
     method: "GET",

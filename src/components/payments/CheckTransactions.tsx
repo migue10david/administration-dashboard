@@ -22,6 +22,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import Image from "next/image";
+import Search from "../common/search";
 
 type Props = {
   checkTransactions: CheckTransaction[];
@@ -48,8 +49,8 @@ const CheckTransactions = ({ checkTransactions, customers }: Props) => {
     <div className="overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 bg-white">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
+        <div className="flex flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col w-1/2">
             <h1 className="text-xl font-semibold text-gray-800">
               Transacciones con Cheque
             </h1>
@@ -57,6 +58,7 @@ const CheckTransactions = ({ checkTransactions, customers }: Props) => {
               Historial de pagos y cobros con cheques
             </p>
           </div>
+          <Search />
         </div>
       </div>
 

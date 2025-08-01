@@ -1,5 +1,5 @@
 import { getCompanies } from "@/app/lib/actions/companyActions";
-import { getCustomers } from "@/app/lib/actions/customersActions";
+import { filters, getCustomers } from "@/app/lib/actions/customersActions";
 import { getRecipients } from "@/app/lib/actions/recipientActions";
 import { getWireTransfer } from "@/app/lib/actions/wireTransferActions";
 import WireTransfers from "@/components/transfer/WireTransfers";
@@ -15,7 +15,10 @@ const TransferPage = async ({ searchParams }: Props) => {
   const postsPerPage = parseInt(
     (resolvedSearchParams.pageSize as string) || "12"
   );
-  const { data: wireTranfers, totalPages } = await getWireTransfer();
+    const filters: filters ={
+    search: resolvedSearchParams.search as string || ""
+  } 
+  const { data: wireTranfers, totalPages } = await getWireTransfer(filters);
   const { data: companies } = await getCompanies();
   const { data: customers } = await getCustomers();
   const { data: recipients } = await getRecipients();
