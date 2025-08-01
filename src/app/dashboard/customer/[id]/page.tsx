@@ -96,6 +96,10 @@ const CustomersDetailsPage = async ({ params }: Props) => {
                   <p className="text-gray-600 text-lg">Pais</p>
                   <h1 className="text-xl">{ countries.find((country) => country.id === customer?.countryId)?.name}</h1>
                 </div>
+                <div className="flex flex-col">
+                  <p className="text-gray-600 text-lg">Porciento</p>
+                  <h1 className="text-xl">{ customer?.percentage * 100 } %</h1>
+                </div>
               </div>
             </div>
           </div>
