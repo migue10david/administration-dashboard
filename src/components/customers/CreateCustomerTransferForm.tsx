@@ -59,28 +59,21 @@ const CreateCustomerTransferForm = ({
       companyId: "",
       amount: 0,
       feed: 0,
+      percent: 0,
     },
     mode: "onChange",
   });
 
   // Observa los valores relevantes
   const amount = watch("amount", 0);
-useEffect(() => {
-  if (amount > 0 && settings.numCustomerPercentRate !== undefined) {
-    const calculatedFeed = (amount * settings.numCustomerPercentRate) / 100;
-    setValue("feed", parseFloat(calculatedFeed.toFixed(2)), {
-      shouldValidate: true,
-    });
-  }else {
-    setValue("feed", 0, { shouldValidate: true });
-  }
-}, [amount, settings.numCustomerPercentRate, setValue]);
-
+  const percent = watch("percent", settings.numCustomerPercentRate);
   const feed = watch("feed", 0);
-  //const recipientId = watch("recipientId");
-
-  // Calcula "A pagar"
   const totalToPay = Number(amount) - Number(feed);
+
+  useEffect(() => {
+    const calculatedFeed = (amount * percent) / 100;
+    setValue("feed", calculatedFeed, { shouldValidate: true });
+  }, [amount, percent, setValue]);
 
   const onSubmit = async (data: WireTransferFormValues) => {
     try {
@@ -106,12 +99,12 @@ useEffect(() => {
     }
   };
 
-  const handleFeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
-    setValue("feed", isNaN(value) ? 0 : (amount * value) / 100, {
-      shouldValidate: true,
-    });
+    const newPercent = isNaN(value) ? 0 : value;
+    setValue("percent", newPercent, { shouldValidate: true });
     setIsCustomFeed(true);
+    // El feed se actualizará automáticamente por el useEffect
   };
 
   const handleRecipientSelect = (recipient: Customer) => {
@@ -129,9 +122,9 @@ useEffect(() => {
       }}
       ref={formRef}
     >
-      <div className="grid gap-6">
+      <div className="grid gap-4">
         {/* Sección de información del cliente */}
-        <div className="grid grid-cols-1 gap-4 p-4 bg-gray-50 rounded-lg">
+        <div className="grid grid-cols-1 gap-2 p-4 bg-gray-50 rounded-lg">
           <div className="space-y-2">
             <Label className="text-gray-600">Nombre del Cliente</Label>
             <Input
@@ -156,7 +149,7 @@ useEffect(() => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 p-4 bg-gray-50 rounded-lg">
+        <div className="grid grid-cols-1 gap-2 p-4 bg-gray-50 rounded-lg">
           {/* Campo de búsqueda de destinatario */}
 
           <div className="space-y-2">
@@ -203,58 +196,63 @@ useEffect(() => {
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-gray-600">Compañía *</Label>
-            <Select
-              onValueChange={(value) => {
-                setValue("companyId", value, { shouldValidate: true });
-                setSelectedCompanyId(value);
-              }}
-              value={selectedCompanyId}
-            >
-              <SelectTrigger
-                className={
-                  errors.companyId ? "border-red-500 w-full" : "w-full"
-                }
-              >
-                <SelectValue placeholder="Seleccione una compañía" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {companies.map((company) => (
-                    <SelectItem key={company.id} value={company.id}>
-                      {company.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            {errors.companyId && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.companyId.message}
-              </p>
-            )}
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="feed" className="text-gray-600">
+              <Label className="text-gray-600">Compañía *</Label>
+              <Select
+                onValueChange={(value) => {
+                  setValue("companyId", value, { shouldValidate: true });
+                  setSelectedCompanyId(value);
+                }}
+                value={selectedCompanyId}
+              >
+                <SelectTrigger
+                  className={
+                    errors.companyId ? "border-red-500 w-full" : "w-full"
+                  }
+                >
+                  <SelectValue placeholder="Seleccione una compañía" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {companies.map((company) => (
+                      <SelectItem key={company.id} value={company.id}>
+                        {company.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {errors.companyId && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.companyId.message}
+                </p>
+              )}
+            </div>
+
+            {/* Comisión */}
+            <div className="space-y-3">
+              <Label htmlFor="feed" className="text-gray-700 font-medium">
                 Comisión ($)
               </Label>
               <div className="flex items-center gap-2">
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  {...register("feed", { valueAsNumber: true })}
-                  className={`flex-1 ${errors.feed ? "border-red-500" : ""}`}
-                />
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                    $
+                  </span>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={percent}
+                    onChange={handlePercentChange}
+                    className={`pl-8 ${errors.feed ? "border-red-500" : ""}`}
+                  />
+                </div>
+                <span className="text-sm text-gray-500 whitespace-nowrap">
+                  %
+                </span>
               </div>
-              {errors.feed && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.feed.message}
-                </p>
-              )}
             </div>
 
             <div className="space-y-2">
@@ -279,6 +277,27 @@ useEffect(() => {
               {errors.amount && (
                 <p className="mt-1 text-sm text-red-600">
                   {errors.amount.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="feed" className="text-gray-600">
+                Comisión Calculada($)
+              </Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  disabled={true}
+                  {...register("feed", { valueAsNumber: true })}
+                  className={`flex-1 ${errors.feed ? "border-red-500" : ""}`}
+                />
+              </div>
+              {errors.feed && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.feed.message}
                 </p>
               )}
             </div>

@@ -54,6 +54,7 @@ export const wireTransferFormSchema = z.object({
     recipientId: z.string().min(1, "Seleccione Beneficiario"),
     companyId: z.string().min(1, "Seleccione Compañia"),
     amount: z.number().min(100, "Minímo a transferir 100").max(10000),
+    percent: z.number().min(0).max(100),
     feed: z.number().min(0).max(100),
 })
 

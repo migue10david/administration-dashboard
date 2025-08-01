@@ -5,7 +5,8 @@ export const checkFormSchema = z.object({
     checkTransactionTypeId: z.string(),
     number: z.string().min(1).max(10),
     amount: z.number(),
-    feed: z.number()
+    feed: z.number(),
+    percent: z.number(),
 })
 
 export type CheckFormValues = z.infer<typeof checkFormSchema>;
