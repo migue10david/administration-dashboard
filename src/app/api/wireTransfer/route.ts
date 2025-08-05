@@ -1,9 +1,9 @@
 import prisma from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { FilterSchema, PaginationSchema } from "@/app/lib/schemas/common";
-import { WireTransferWhereInput } from "@/app/lib/types/common";
 import { auth } from "@/app/lib/auth-credentials/auth";
 import { wireTransferFormSchema } from "@/app/lib/schemas/commonFormSchema";
+import { Prisma } from '@prisma/client';
 
 // GET /api/wiretransfer  --> Obtener todas las tansferencias bancarias
 export async function GET(request: NextRequest) {
@@ -28,56 +28,88 @@ export async function GET(request: NextRequest) {
       search: searchParams.get("search") || undefined,
     });
 
-    const where: WireTransferWhereInput = {};
+    const where: Prisma.WireTransferWhereInput = {
+      isActive: true,
+      OR: filters.search ? [] : undefined
+    };    
 
-    // Filtro por texto (búsqueda)
     if (filters.search) {
+      const searchTerm = filters.search;
+      const numericValue = parseFloat(searchTerm);
+      const isNumeric = !isNaN(numericValue);
+
       where.OR = [
+        { recipientId: { contains: searchTerm, mode: "insensitive" } },
+        { customerId: { contains: searchTerm, mode: "insensitive" } },
+        ...(isNumeric ? [{ amount: numericValue }] : []),
         {
-          customerId: {
-            contains: filters.search as string,
-            mode: "insensitive",
-          },
-          recipientId: {
-            contains: filters.search as string,
-            mode: "insensitive",
-          },
-          companyId: {
-            contains: filters.search as string,
-            mode: "insensitive",
-          },
-        },
+          customer: {
+            OR: [
+              { firstName: { contains: searchTerm, mode: "insensitive" } },
+              { middleName: { contains: searchTerm, mode: "insensitive" } },
+              { lastNameOne: { contains: searchTerm, mode: "insensitive" } },
+              { lastNameTwo: { contains: searchTerm, mode: "insensitive" } },             
+            ]
+          }
+        }
       ];
     }
 
-    // Consulta base
-    const query = {
+    // Consulta con tipado explícito
+    const query: Prisma.WireTransferFindManyArgs = {
       where,
       skip: (pagination.page - 1) * pagination.limit,
       take: pagination.limit,
+      include: {
+        customer: {
+          select: {
+            id: true,
+            firstName: true,
+            middleName: true,
+            lastNameOne: true,
+            lastNameTwo: true,
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
     };
 
-    // Ejecutar consulta
     const [wireTransfers, total] = await Promise.all([
       prisma.wireTransfer.findMany(query),
       prisma.wireTransfer.count({ where }),
     ]);
 
+    // Serializar fechas a ISO string para consistencia
+    const serializedTransfers = wireTransfers.map(transf => ({
+      ...transf,
+      createdAt: transf.createdAt.toISOString(),
+      updatedAt: transf.updatedAt.toISOString(),
+    }));
+
     return NextResponse.json({
       status: 200,
-      data: wireTransfers,
+      success: true,
+      data: serializedTransfers,
       meta: {
         total,
         page: pagination.page,
-        llimit: pagination.limit,
+        limit: pagination.limit,
         totalPages: Math.ceil(total / pagination.limit),
+        // Incluir timestamp de generación para debugging
+        generatedAt: new Date().toISOString()
       },
     });
   } catch (error) {
-    console.log(error);
+    console.error('Error en GET /api/wire-transactions:', error);
     return NextResponse.json(
-      { error: "Error obteniendo transferencias bancarias" },
-      { status: 401 }
+      { 
+        success: false,
+        error: "Error obteniendo transferencias bancarias",
+        details: error instanceof Error ? error.message : String(error)
+      },
+      { status: 500 }
     );
   }
 }

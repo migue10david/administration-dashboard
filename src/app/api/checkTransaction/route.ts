@@ -1,9 +1,9 @@
 import prisma from "@/app/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { FilterSchema, PaginationSchema } from "@/app/lib/schemas/common";
-import { CheckTransactionWhereInput } from "@/app/lib/types/common";
 import { CheckTransactionFormSchema } from "@/app/lib/schemas/commonFormSchema";
 import { auth } from "@/app/lib/auth-credentials/auth";
+import { Prisma } from '@prisma/client';
 
 // GET /api/checkTransaction  --> Obtener todas las transacciones de cheques
 export async function GET(request: NextRequest) {
@@ -28,51 +28,92 @@ export async function GET(request: NextRequest) {
       search: searchParams.get("search") || undefined,
     });
 
-    const where: CheckTransactionWhereInput = {};
+    const where: Prisma.CheckTransactionWhereInput = {
+      isActive: true,
+      OR: filters.search ? [] : undefined
+    };    
 
-    // Filtro por texto (búsqueda)
     if (filters.search) {
+      const searchTerm = filters.search;
+      const numericValue = parseFloat(searchTerm);
+      const isNumeric = !isNaN(numericValue);
+
       where.OR = [
+        { number: { contains: searchTerm, mode: "insensitive" } },
+        { customerId: { contains: searchTerm, mode: "insensitive" } },
+        ...(isNumeric ? [{ amount: numericValue }] : []),
         {
-          number: {
-            contains: filters.search as string,
-            mode: "insensitive",
-          },
-        },
+          customer: {
+            OR: [
+              { firstName: { contains: searchTerm, mode: "insensitive" } },
+              { middleName: { contains: searchTerm, mode: "insensitive" } },
+              { lastNameOne: { contains: searchTerm, mode: "insensitive" } },
+              { lastNameTwo: { contains: searchTerm, mode: "insensitive" } },             
+            ]
+          }
+        }
       ];
     }
 
-    // Consulta base
-    const query = {
+    // Consulta con tipado explícito
+    const query: Prisma.CheckTransactionFindManyArgs = {
       where,
       skip: (pagination.page - 1) * pagination.limit,
       take: pagination.limit,
+      include: {
+        customer: {
+          select: {
+            id: true,
+            firstName: true,
+            middleName: true,
+            lastNameOne: true,
+            lastNameTwo: true,
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
     };
 
-    // Ejecutar consulta
     const [checks, total] = await Promise.all([
       prisma.checkTransaction.findMany(query),
       prisma.checkTransaction.count({ where }),
     ]);
 
+    // Serializar fechas a ISO string para consistencia
+    const serializedChecks = checks.map(check => ({
+      ...check,
+      createdAt: check.createdAt.toISOString(),
+      updatedAt: check.updatedAt.toISOString(),
+    }));
+
     return NextResponse.json({
       status: 200,
-      data: checks,
+      success: true,
+      data: serializedChecks,
       meta: {
         total,
         page: pagination.page,
-        llimit: pagination.limit,
+        limit: pagination.limit,
         totalPages: Math.ceil(total / pagination.limit),
+        // Incluir timestamp de generación para debugging
+        generatedAt: new Date().toISOString()
       },
     });
   } catch (error) {
-    console.log(error);
+    console.error('Error en GET /api/check-transactions:', error);
     return NextResponse.json(
-      { error: "Error obteniendo pagos de cheques" },
-      { status: 401 }
+      { 
+        success: false,
+        error: "Error obteniendo transacciones",
+        details: error instanceof Error ? error.message : String(error)
+      },
+      { status: 500 }
     );
   }
 }
+
 
 // POST /api/checkTransaction --> Crear un nuevo pago por cheque
 export async function POST(req: Request) {
